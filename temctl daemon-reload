@@ -1,0 +1,37 @@
+[0;1;32m●[0m docker.service - Docker Application Container Engine
+   Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
+   Active: [0;1;32mactive (running)[0m since Thu 2018-09-20 06:49:07 UTC; 2h 54min ago
+     Docs: https://docs.docker.com
+ Main PID: 1125 (dockerd)
+    Tasks: 108
+   Memory: 161.6M
+      CPU: 1min 43.778s
+   CGroup: /system.slice/docker.service
+           ├─1125 /usr/bin/dockerd -H fd://
+           ├─1298 docker-containerd --config /var/run/docker/containerd/containerd.toml
+           ├─5328 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 8080 -container-ip 172.18.0.2 -container-port 80
+           ├─5342 docker-containerd-shim -namespace moby -workdir /var/lib/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/4a5e385f8dd1ed0503b06685c581cea84bae10b1054a541c765651bcfc8d2253 -address /var/run/docker/containerd/docker-containerd.sock -containerd-binary /usr/bin/docker-containerd -runtime-root /var/run/docker/runtime-runc
+           ├─6840 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 7054 -container-ip 172.18.0.3 -container-port 7054
+           ├─6851 docker-containerd-shim -namespace moby -workdir /var/lib/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/fcfa1663824a070ac7be0179782219b0a3c213e15215b5774db7a60c99529ba1 -address /var/run/docker/containerd/docker-containerd.sock -containerd-binary /usr/bin/docker-containerd -runtime-root /var/run/docker/runtime-runc
+           ├─6950 docker-containerd-shim -namespace moby -workdir /var/lib/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/2028d1384f81a2c9cd79edc3d07dc814bc652a851ccb144ac1bfbd795dde4f23 -address /var/run/docker/containerd/docker-containerd.sock -containerd-binary /usr/bin/docker-containerd -runtime-root /var/run/docker/runtime-runc
+           ├─6975 docker-containerd-shim -namespace moby -workdir /var/lib/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/dd33e8a5486fc732ba5ad6b1bf80a719954b9f6f9e1fa2761c6024b92d18e96e -address /var/run/docker/containerd/docker-containerd.sock -containerd-binary /usr/bin/docker-containerd -runtime-root /var/run/docker/runtime-runc
+           ├─7243 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 7058 -container-ip 172.18.0.6 -container-port 7053
+           ├─7265 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 7056 -container-ip 172.18.0.6 -container-port 7051
+           ├─7275 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 7053 -container-ip 172.18.0.7 -container-port 7053
+           ├─7282 docker-containerd-shim -namespace moby -workdir /var/lib/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/243c305bae77969cdb9733655855439f07d88216a862c27942f0f111bd589aaa -address /var/run/docker/containerd/docker-containerd.sock -containerd-binary /usr/bin/docker-containerd -runtime-root /var/run/docker/runtime-runc
+           ├─7294 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 7051 -container-ip 172.18.0.7 -container-port 7051
+           ├─7304 docker-containerd-shim -namespace moby -workdir /var/lib/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/06b50ecb36a74437d1e0c6f90436c36da89f50fdb702b0928b5570806e70924c -address /var/run/docker/containerd/docker-containerd.sock -containerd-binary /usr/bin/docker-containerd -runtime-root /var/run/docker/runtime-runc
+           ├─7460 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 4000 -container-ip 172.18.0.8 -container-port 4000
+           └─7479 docker-containerd-shim -namespace moby -workdir /var/lib/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/03b4e7b7a5a2767344094e29278d1139f51e0297185d4f1489b123f930031a64 -address /var/run/docker/containerd/docker-containerd.sock -containerd-binary /usr/bin/docker-containerd -runtime-root /var/run/docker/runtime-runc
+
+Sep 20 09:36:12 ip-172-31-13-190 dockerd[1125]: time="2018-09-20T09:36:12.695436613Z" level=info msg="ignoring event" module=libcontainerd namespace=moby topic=/containers/delete type="*events.ContainerDelete"
+Sep 20 09:36:13 ip-172-31-13-190 dockerd[1125]: time="2018-09-20T09:36:13.662017444Z" level=info msg="ignoring event" module=libcontainerd namespace=moby topic=/containers/create type="*events.ContainerCreate"
+Sep 20 09:36:13 ip-172-31-13-190 dockerd[1125]: time="2018-09-20T09:36:13Z" level=info msg="shim docker-containerd-shim started" address="/containerd-shim/moby/13547948176aa6631d2f44ed206b2e78c2e92f3ca7aaa3856e6a6ec9a349a668/shim.sock" debug=false module="containerd/tasks" pid=10865
+Sep 20 09:36:13 ip-172-31-13-190 dockerd[1125]: time="2018-09-20T09:36:13.792478910Z" level=warning msg="unknown container" container=13547948176aa6631d2f44ed206b2e78c2e92f3ca7aaa3856e6a6ec9a349a668 module=libcontainerd namespace=plugins.moby
+Sep 20 09:36:13 ip-172-31-13-190 dockerd[1125]: time="2018-09-20T09:36:13.808084315Z" level=warning msg="unknown container" container=13547948176aa6631d2f44ed206b2e78c2e92f3ca7aaa3856e6a6ec9a349a668 module=libcontainerd namespace=plugins.moby
+Sep 20 09:36:13 ip-172-31-13-190 dockerd[1125]: time="2018-09-20T09:36:13.945072957Z" level=warning msg="unknown container" container=13547948176aa6631d2f44ed206b2e78c2e92f3ca7aaa3856e6a6ec9a349a668 module=libcontainerd namespace=plugins.moby
+Sep 20 09:36:13 ip-172-31-13-190 dockerd[1125]: time="2018-09-20T09:36:13Z" level=info msg="shim reaped" id=13547948176aa6631d2f44ed206b2e78c2e92f3ca7aaa3856e6a6ec9a349a668 module="containerd/tasks"
+Sep 20 09:36:13 ip-172-31-13-190 dockerd[1125]: time="2018-09-20T09:36:13.978314062Z" level=info msg="ignoring event" module=libcontainerd namespace=plugins.moby topic=/tasks/delete type="*events.TaskDelete"
+Sep 20 09:36:13 ip-172-31-13-190 dockerd[1125]: time="2018-09-20T09:36:13.978635364Z" level=info msg="ignoring event" module=libcontainerd namespace=moby topic=/tasks/delete type="*events.TaskDelete"
+Sep 20 09:36:14 ip-172-31-13-190 dockerd[1125]: time="2018-09-20T09:36:14.017909616Z" level=info msg="ignoring event" module=libcontainerd namespace=moby topic=/containers/delete type="*events.ContainerDelete"
+[0;1;31mWarning:[0m docker.service changed on disk. Run 'systemctl daemon-reload' to reload units.

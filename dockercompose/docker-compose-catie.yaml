@@ -1,0 +1,113 @@
+#
+# Copyright Altoros. All Rights Reserved.
+#
+
+version: '2'
+
+volumes:
+  peer0.catie.myrmica.com:
+  peer1.catie.myrmica.com:
+
+services:
+
+  ca.catie.myrmica.com:
+    container_name: ca.catie.myrmica.com
+    image: hyperledger/fabric-ca:1.2.0
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.catie.myrmica.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/5fa72f3a2dcd3fd1bb0fee4ef0d3e32c3c026d3728ddd65dc5dc05baf0be117b_sk
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CA_NAME=ca.catie.myrmica.com
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.catie.myrmica.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/5fa72f3a2dcd3fd1bb0fee4ef0d3e32c3c026d3728ddd65dc5dc05baf0be117b_sk
+    ports:
+      - 7054:7054
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/catie.myrmica.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../artifacts/fabric-ca-server-config-catie.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+
+  peer0.catie.myrmica.com:
+    container_name: peer0.catie.myrmica.com
+    extends:
+      file: base-intercept.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.catie.myrmica.com
+      - CORE_PEER_LOCALMSPID=catieMSP
+      - CORE_PEER_ADDRESS=peer0.catie.myrmica.com:7051
+    ports:
+      - 7051:7051
+      - 7053:7053
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/catie.myrmica.com/peers/peer0.catie.myrmica.com/:/etc/hyperledger/crypto/peer
+      - peer0.catie.myrmica.com:/var/hyperledger/production
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - ca.catie.myrmica.com
+    
+
+  peer1.catie.myrmica.com:
+    container_name: peer1.catie.myrmica.com
+    extends:
+      file: base-intercept.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.catie.myrmica.com
+      - CORE_PEER_LOCALMSPID=catieMSP
+      - CORE_PEER_ADDRESS=peer1.catie.myrmica.com:7051
+    ports:
+      - 7056:7051
+      - 7058:7053
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
+      - ../artifacts/crypto-config/peerOrganizations/catie.myrmica.com/peers/peer1.catie.myrmica.com/:/etc/hyperledger/crypto/peer
+      - peer1.catie.myrmica.com:/var/hyperledger/production
+    depends_on:
+      - ca.catie.myrmica.com
+    
+
+  # fabric-rest api server
+  api.catie.myrmica.com:
+    extends:
+      file: base-intercept.yaml
+      service: api-base
+    container_name: api.catie.myrmica.com
+    ports:
+      - 4000:4000
+    environment:
+      - ORG=catie
+      - PORT=4000
+    depends_on:
+      - peer0.catie.myrmica.com
+      - peer1.catie.myrmica.com
+    
+
+  cli.myrmica.com:
+    container_name: cli.myrmica.com
+    extends:
+      file: base-intercept.yaml
+      service: cli-base
+    volumes:
+      - ../artifacts/crypto-config/ordererOrganizations/myrmica.com/orderers/orderer.myrmica.com/tls:/etc/hyperledger/crypto/orderer/tls
+    
+
+  cli.catie.myrmica.com:
+    container_name: cli.catie.myrmica.com
+    extends:
+      service: cli.myrmica.com
+    environment:
+      - CORE_PEER_LOCALMSPID=catieMSP
+    volumes:
+        - ../artifacts/crypto-config/peerOrganizations/catie.myrmica.com/users/Admin@catie.myrmica.com:/etc/hyperledger/crypto/peer
+    
+
+  # simple http server to disseminate certificates
+  www.catie.myrmica.com:
+    extends:
+      file: base-intercept.yaml
+      service: www-base
+    container_name: www.catie.myrmica.com
+    ports:
+      - 8081:80

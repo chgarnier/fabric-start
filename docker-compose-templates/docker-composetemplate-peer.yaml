@@ -41,8 +41,9 @@ services:
       - PEER0_PORT:7051
       - PEER0_EVENT_PORT:7053
     volumes:
-        - ../artifacts/crypto-config/peerOrganizations/ORG.DOMAIN/peers/peer0.ORG.DOMAIN/:/etc/hyperledger/crypto/peer
-        - peer0.ORG.DOMAIN:/var/hyperledger/production
+      - ../artifacts/crypto-config/peerOrganizations/ORG.DOMAIN/peers/peer0.ORG.DOMAIN/:/etc/hyperledger/crypto/peer
+      - peer0.ORG.DOMAIN:/var/hyperledger/production
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - ca.ORG.DOMAIN
     PEER_EXTRA_HOSTS
@@ -60,8 +61,9 @@ services:
       - PEER1_PORT:7051
       - PEER1_EVENT_PORT:7053
     volumes:
-        - ../artifacts/crypto-config/peerOrganizations/ORG.DOMAIN/peers/peer1.ORG.DOMAIN/:/etc/hyperledger/crypto/peer
-        - peer1.ORG.DOMAIN:/var/hyperledger/production
+      - /var/run/docker.sock:/var/run/docker.sock 
+      - ../artifacts/crypto-config/peerOrganizations/ORG.DOMAIN/peers/peer1.ORG.DOMAIN/:/etc/hyperledger/crypto/peer
+      - peer1.ORG.DOMAIN:/var/hyperledger/production
     depends_on:
       - ca.ORG.DOMAIN
     PEER_EXTRA_HOSTS

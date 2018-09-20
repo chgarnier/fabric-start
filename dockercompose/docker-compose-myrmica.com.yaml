@@ -1,0 +1,57 @@
+#
+# Copyright Altoros. All Rights Reserved.
+#
+
+version: '2'
+
+volumes:
+  orderer.myrmica.com:
+
+services:
+
+  orderer.myrmica.com:
+    container_name: orderer.myrmica.com
+    image: hyperledger/fabric-orderer:1.2.0
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/crypto/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/crypto/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/crypto/orderer/tls/server.crt
+      #- ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/crypto/orderer/tls/ca.crt, /etc/hyperledger/crypto/peercatie/tls/ca.crt, /etc/hyperledger/crypto/peerhappyledger/tls/ca.crt, /etc/hyperledger/crypto/peermedapp/tls/ca.crt]
+      #TODO remove?
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/crypto/orderer/tls/ca.crt]
+    working_dir: /etc/hyperledger
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+        - ../artifacts/channel:/etc/hyperledger/configtx
+        - ../artifacts/crypto-config/ordererOrganizations/myrmica.com/orderers/orderer.myrmica.com/:/etc/hyperledger/crypto/orderer
+        - orderer.myrmica.com:/var/hyperledger/production/orderer
+#        - ../artifacts/crypto-config/peerOrganizations/catie.myrmica.com/peers/peer0.catie.myrmica.com/:/etc/hyperledger/crypto/peercatie
+#        - ../artifacts/crypto-config/peerOrganizations/happyledger.myrmica.com/peers/peer0.happyledger.myrmica.com/:/etc/hyperledger/crypto/peerhappyledger
+#        - ../artifacts/crypto-config/peerOrganizations/medapp.myrmica.com/peers/peer0.medapp.myrmica.com/:/etc/hyperledger/crypto/peermedapp
+
+  cli.myrmica.com:
+    container_name: cli.myrmica.com
+    extends:
+      file: base-intercept.yaml
+      service: cli-base
+    volumes:
+        - ../artifacts/hosts/catie/cli_hosts:/etc/hosts
+#      - ../artifacts/crypto-config/ordererOrganizations/myrmica.com/orderers/orderer.myrmica.com/tls:/etc/hyperledger/crypto/orderer/tls
+
+
+  # simple http server to disseminate certificates
+  www.myrmica.com:
+    extends:
+      file: base-intercept.yaml
+      service: www-base
+    container_name: www.myrmica.com
+    ports:
+      - 8080:80
