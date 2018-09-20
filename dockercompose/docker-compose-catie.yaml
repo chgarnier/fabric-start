@@ -16,11 +16,11 @@ services:
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.catie.myrmica.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/5fa72f3a2dcd3fd1bb0fee4ef0d3e32c3c026d3728ddd65dc5dc05baf0be117b_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/f1bd2918d3b30d0d4b61a06634b5fbfca575d5acdb3d6cea70f986c32cafebe5_sk
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_CA_NAME=ca.catie.myrmica.com
       - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.catie.myrmica.com-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/5fa72f3a2dcd3fd1bb0fee4ef0d3e32c3c026d3728ddd65dc5dc05baf0be117b_sk
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/f1bd2918d3b30d0d4b61a06634b5fbfca575d5acdb3d6cea70f986c32cafebe5_sk
     ports:
       - 7054:7054
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
@@ -46,7 +46,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - ca.catie.myrmica.com
-    
+    extra_hosts:
+      - orderer.myrmica.com:54.204.73.164
 
   peer1.catie.myrmica.com:
     container_name: peer1.catie.myrmica.com
@@ -66,7 +67,8 @@ services:
       - peer1.catie.myrmica.com:/var/hyperledger/production
     depends_on:
       - ca.catie.myrmica.com
-    
+    extra_hosts:
+      - orderer.myrmica.com:54.204.73.164
 
   # fabric-rest api server
   api.catie.myrmica.com:
@@ -82,7 +84,10 @@ services:
     depends_on:
       - peer0.catie.myrmica.com
       - peer1.catie.myrmica.com
-    
+    extra_hosts:
+      - orderer.myrmica.com:54.204.73.164
+      - peer0.happyledger.myrmica.com:18.212.204.227
+      - peer0.medapp.myrmica.com:18.234.52.199
 
   cli.myrmica.com:
     container_name: cli.myrmica.com
@@ -91,7 +96,12 @@ services:
       service: cli-base
     volumes:
       - ../artifacts/crypto-config/ordererOrganizations/myrmica.com/orderers/orderer.myrmica.com/tls:/etc/hyperledger/crypto/orderer/tls
-    
+    extra_hosts:
+      - orderer.myrmica.com:54.204.73.164
+      - www.myrmica.com:54.204.73.164
+      - www.catie.myrmica.com:54.145.198.255
+      - www.happyledger.myrmica.com:18.212.204.227
+      - www.medapp.myrmica.com:18.234.52.199
 
   cli.catie.myrmica.com:
     container_name: cli.catie.myrmica.com
@@ -101,7 +111,12 @@ services:
       - CORE_PEER_LOCALMSPID=catieMSP
     volumes:
         - ../artifacts/crypto-config/peerOrganizations/catie.myrmica.com/users/Admin@catie.myrmica.com:/etc/hyperledger/crypto/peer
-    
+    extra_hosts:
+      - orderer.myrmica.com:54.204.73.164
+      - www.myrmica.com:54.204.73.164
+      - www.catie.myrmica.com:54.145.198.255
+      - www.happyledger.myrmica.com:18.212.204.227
+      - www.medapp.myrmica.com:18.234.52.199
 
   # simple http server to disseminate certificates
   www.catie.myrmica.com:
@@ -110,4 +125,4 @@ services:
       service: www-base
     container_name: www.catie.myrmica.com
     ports:
-      - 8081:80
+      - 8080:80
