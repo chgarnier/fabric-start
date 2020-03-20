@@ -1,0 +1,171 @@
+version: '2'
+
+volumes:
+  peer0.adeo.myrmica.com:
+  peer1.adeo.myrmica.com:
+
+services:
+
+  ca.adeo.myrmica.com:
+    container_name: ca.adeo.myrmica.com
+    image: hyperledger/fabric-ca:1.4.0
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.adeo.myrmica.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/85b76310c2ca877a49727dd1d3fd0edce6c329f2adabdd5e4363e53e54216eb8_sk
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CA_NAME=ca.adeo.myrmica.com
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.adeo.myrmica.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/85b76310c2ca877a49727dd1d3fd0edce6c329f2adabdd5e4363e53e54216eb8_sk
+    ports:
+      - 7054:7054
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/adeo.myrmica.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../artifacts/fabric-ca-server-config-adeo.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+
+  peer0.adeo.myrmica.com:
+    container_name: peer0.adeo.myrmica.com
+    extends:
+      file: base-intercept.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.adeo.myrmica.com
+      - CORE_PEER_LOCALMSPID=adeoMSP
+      - CORE_PEER_ADDRESS=peer0.adeo.myrmica.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.adeo.myrmica.com:7052
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE:true
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.adeo.myrmica.com:5984
+# The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+# provide the credentials for ledger to connect to CouchDB.  The username and password must
+# match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    ports:
+      - 7051:7051
+      - 7053:7053
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/adeo.myrmica.com/peers/peer0.adeo.myrmica.com/:/etc/hyperledger/crypto/peer
+      - peer0.adeo.myrmica.com:/var/hyperledger/production
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - ca.adeo.myrmica.com
+      - couchdb.adeo.myrmica.com
+    
+
+  peer1.adeo.myrmica.com:
+    container_name: peer1.adeo.myrmica.com
+    extends:
+      file: base-intercept.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.adeo.myrmica.com
+      - CORE_PEER_LOCALMSPID=adeoMSP
+      - CORE_PEER_ADDRESS=peer1.adeo.myrmica.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer1.adeo.myrmica.com:7052
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE:true
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.adeo.myrmica.com:5984
+# The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+# provide the credentials for ledger to connect to CouchDB.  The username and password must
+# match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    ports:
+      - 7056:7051
+      - 7058:7053
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
+      - ../artifacts/crypto-config/peerOrganizations/adeo.myrmica.com/peers/peer1.adeo.myrmica.com/:/etc/hyperledger/crypto/peer
+      - peer1.adeo.myrmica.com:/var/hyperledger/production
+    depends_on:
+      - ca.adeo.myrmica.com
+      - couchdb.adeo.myrmica.com
+    
+
+# couchdb database
+  couchdb.adeo.myrmica.com:
+    extends: 
+      file: base-intercept.yaml
+      service: couchdb-base 
+    container_name: couchdb.adeo.myrmica.com
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 5984:5984
+
+  # fabric-rest api server
+  api.adeo.myrmica.com:
+    extends:
+      file: base-intercept.yaml
+      service: api-base
+    container_name: api.adeo.myrmica.com
+    ports:
+      - 4000:4000
+    environment:
+      - ORG=adeo
+      - PORT=4000
+    depends_on:
+      - peer0.adeo.myrmica.com
+      - peer1.adeo.myrmica.com
+    
+
+
+  # # explorer
+  # explorerDatabase.adeo.myrmica.com:
+  #   extends:
+  #     file: base-intercept.yaml
+  #     service: explorer-database
+  #   container_name: explorerDatabase.adeo.myrmica.com
+  #   environment:
+  #     - DATABASE_DATABASE=fabricexplorer
+  #     - DATABASE_USERNAME=hppoc
+  #     - DATABASE_PASSWD=password
+  #     - DATABASE_PORT=5432
+  #     - DATABASE_HOST=explorerDatabase.adeo.myrmica.com
+
+  # explorer.adeo.myrmica.com:
+  #   extends:
+  #     file: base-intercept.yaml
+  #     service: explorer
+  #   container_name: explorer.adeo.myrmica.com
+  #   environment:
+  #     - DATABASE_DATABASE=fabricexplorer
+  #     - DATABASE_USERNAME=hppoc
+  #     - DATABASE_PASSWORD=password
+  #     - DATABASE_PORT=5432
+  #     - DATABASE_HOST=explorerDatabase.adeo.myrmica.com
+  #   ports:
+  #     - EXPLORER_PORT:8080
+
+  cli.myrmica.com:
+    container_name: cli.myrmica.com
+    extends:
+      file: base-intercept.yaml
+      service: cli-base
+    volumes:
+      - ../artifacts/crypto-config/ordererOrganizations/myrmica.com/orderers/orderer.myrmica.com/tls:/etc/hyperledger/crypto/orderer/tls
+    
+
+  cli.adeo.myrmica.com:
+    container_name: cli.adeo.myrmica.com
+    extends:
+      service: cli.myrmica.com
+    environment:
+      - CORE_PEER_LOCALMSPID=adeoMSP
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/adeo.myrmica.com/users/Admin@adeo.myrmica.com:/etc/hyperledger/crypto/peer
+    
+
+  # simple http server to disseminate certificates
+  www.adeo.myrmica.com:
+    extends:
+      file: base-intercept.yaml
+      service: www-base
+    container_name: www.adeo.myrmica.com
+    ports:
+      - 8081:80

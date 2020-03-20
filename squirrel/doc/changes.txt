@@ -1,0 +1,3960 @@
+SQuirreL SQL Client Change Log
+==============================
+
+Not yet released, available in our GIT repository and in snapshots and future releases.
+===============================================================================================
+
+Enhancements:
+
+Introduced Java 11 compatibility.
+
+#570 Cancel option for 'New file', 'Close file' and 'Open file'
+
+Upgraded to latest RSyntax version (2.6.1).
+
+Alias Tree: Sorting now works the same way as column sorting (ascending, descending, former state).
+
+Alias Tree: Improved drag and drop behavior. Sorting now works the same way as column sorting (ascending, descending, former state).
+
+SQL comments are now maintained in SQL history as well as SQL result header and info tab.
+
+SQL Editor: Grouped right mouse entries concerning quotes, see comment in bug #1349.
+
+#567 SQL History dropdown is now sorted youngest to oldest instead of oldest to youngest.
+
+#323 DBCopy-Plugin: The 'Paste table as ...' feature was turned into 'Paste table as/filtered ...' and now allows
+  to provide an optional WHERE clause.
+
+Find Alias dialog (ctrl alt shift F) now has a check box to remember the last search string.
+
+Improved layout of upper part of result tab.
+
+New right mouse menu on result tables: 'Copy separated by ...' which opens a small
+  configuration dialog to enter cell and row separators and then copies values to clipboard.
+
+Version check message was improved. It was misleading as mentioned in feature request #568.
+
+When a Session tab is renamed the rename dialog's text box now contains the old name.
+  Thanks to Chris B for the code.
+
+New toolbar button on the upper right of an SQL result tab: 'Mark duplicate values in columns'
+  The mark's brightness alters between succeeding non unique values.
+
+Two new right mouse menus on result tables: 'Color selected rows' and 'Go to color'.
+
+New right mouse menu entries on SQL result tabs: 'close all to left' and 'close all to right'
+
+Added JSON to export formats. See right mouse menu on tables or tools popup (ctrl+t) on SQLs.
+
+Added SAS default driver definition.
+ Thanks to Luca Vercelli
+
+Aliases can be colored. This feature for example can be used to mark important Aliases.
+
+Cell data popup dialog --> Browse button now remembers last directory.
+
+Reworked corrections/abbreviations dialog. See Session toolbar button 'Configure auto correct /abreviation'.
+
+#438 The 'Run query output to a file'-feature does now respect the 'Abort on error ...'-property.
+  See menu File --> New Session Properties --> tab SQL
+
+#566 Simplified launch scripts by using wildcards to build the classpath.
+  This was done for the SQuirreL application and CLI launch scripts.
+
+#438 Run query output to a file by defining the file as part of the SQL statement
+  Example:
+    @file '/tmp/customers.xlsx' SELECT * FROM customers
+  will write the result of 'SELECT * FROM customers' to '/tmp/customers.xlsx'
+  The settings for the output will be taken from the 'Store result of SQL to file' dialog.
+  Please note the single quotes around the file name.
+
+Allowed Java version 10 in starter scripts.
+
+New right mouse menu entry 'Copy selected rows to new window' available in all tables.
+  If windows with with matching column names and column types already exist another pop up menu allows to append
+  the selected rows to one of these windows.
+
+#412 Provided Command Line Interface (CLI).
+  See Readme.txt in the squirrelcli/ subdirectory of your SQuirreL installation.
+
+
+Bug fixes:
+
+#1360 Fixed typo in error message
+
+#1358 Window "Value of column" out of sight
+
+#1357 Switching a result set to be editable makes row numbers invisible
+
+Corrected outdated editor information in the Syntax Plugin prefrences UI, see menu File --> New Session Properties --> tab Syntax.
+
+
+#1315 MySQL: Tables are not listed in Object tree for certain JDBC driver/RDBMS versions
+
+Tree nodes of the 'Show foreign key references' dialog are now shown in alphabetical order.
+
+#1349 Added missing keyboard short cuts to SQL editors right mouse menu.
+
+#1354 Regex filter in SQL history is limited to capital letters
+  Thanks to Chris B for the fix.
+
+#1353 Object tree search field's focus can now be transferred using shift+tab
+
+#1352 After "Modify Alias..." a longer Alias name is cut off and displayed with "..." in Aliases tree view
+
+#1348 Shortcut is displayed twice in flyover/tooltip
+
+Reading on SQL results (see combo box on upper right) didn't work when multiple SQLs were executed.
+
+Canceling SQL executions raised NullPointerException.
+
+Editing results didn't work when multiple SQLs were executed using statement separator.
+
+Column search feature: Moving multiple columns to table begin did not work right.
+
+#1282 Session menu now has a scroll bar if it's too long to fit on screen.
+
+Corrections/abbreviations dialog didn't scroll right when new row was added.
+
+DBCopy-Plugin: When 'Paste table as/filtered...' was used before simple 'Paste table' information of the first action were not cleaned.
+
+Reloading last SQL contents (*) did mark the SQL editor dirty i.e. unsaved buffer edits confirm firm was triggered.
+  (*) See See menu File --> Global Preferences --> Tab SQL --> Section General --> Check box 'Reload last SQL editor contents when Session is opened'
+
+Close confirmations now also work for extra SQL Worksheets (ctrl N).
+
+'New Session Properties' --> tab SQL was not initially scrolled to top.
+
+#1341 Squirrel was started twice by squirrel-sql.bat in the plain zip versions of snapshot-20180406_0118.
+
+Added new alternative to fix MAC OS launch script problem with setting SQUIRREL_SQL_HOME.
+  Thanks to Frank Kemmer
+
+CSV export --> Corrected line separator. This bug was lately introduced with feature #438.
+
+'Find column'-button now also available when result was moved to own window.
+
+MAC launch scripts: Added double quotes to the definition of the IZPACK_JAVA_HOME variable
+  as requested by Pete K. in bug #1321
+
+#1337 Version check dialog told Java 8 was needed for version 3.x instead of 3.8.1
+
+#740 The 'Copy as INSERT-VALUES/UPDATE-SET statement' functions generate 'PressCtrlH' instead of table name.
+  This problem is not generally solvable. Improvements were implemented to provide a table name in more occasions.
+  Note: PressCtrlH is meant to be a hint to use the editor's replace function to correct a generated script.
+
+#565 Double clicking selection should stop at '=' '>' '<' chars.
+
+Improved repaint behavior when rows are deleted in a table.
+
+Fixed NullPointer in the 'Show foreign key references' feature. (See right mouse menu of SQL results.)
+
+#1334 The 'Limit read' feature of CHAR, VARCHAR, LONGVARCHAR type columns was declared unstable,
+  see menu File --> Global preferences --> tab Data type controls --> section CHAR, VARCHAR, LONGVARCHAR.
+  Corresponding Errors are now clearly telling about the instability.
+
+SQLs that used double quoted table or schema names do now have a chance to be identified as editable.
+
+
+Fix problem in RotatedTableCtrl with rawtype columns (BINARY, VARBINARY,(VAR)CHAR FOR BIT DATA, BLOB)
+ Thanks to Stefan Mueller for the patch.
+
+#1330 Plugin SQLReplace does not function in SQL Worksheets (ctrl+n)
+  Also added a small help file for the Plugin.
+
+Recent file feature: Files were not loaded.
+
+
+3.8.1 (12/29/2017)
+==================
+
+
+Enhancements:
+
+Launch script improvements:
+ - Several improvements to the MAC launch scripts provided by Harry Evans in bug #1321.
+ - '-Xmx256m' was removed from all scripts as a consequence of Java 1.8 being required.
+
+Display of current schema in a Session tab's status bar / Option to set the schema.
+  The JDBC API methods to do this were introduced with Java 1.7 and currently do not work for all drivers/RDBMSes
+  NOTE: WITH THIS CHANGE SQUIRREL REQUIRES Java 8.
+
+#532 Increased maximum font size of SQL editor: Maximum was 14 and is now 28.
+  See menu File --> New Session Properties --> tab SQL --> Section SQL Entry Area
+
+INSERT/data scripts can now be created from multiple SQL statements instead of from just on statement.
+  Thanks to  Daniel Stränger for the merge request.
+
+Columns of SQL results can be searched for by a new tool bar button on the upper right of the result tab.
+
+Introduced Java 9 compatibility at the cost of loosing recent file history ones.
+  A warning is issued the points to the XML file where the former version history can be found.
+
+#558 New toolbar button: 'File reload'
+
+New find Alias dialog to find and connect to Aliases, use shortcut ctrl alt shift F
+
+The combo box of the SQL result table find function now has an 'exact' entry.
+
+Added SQLLite default driver definition.
+ Thanks to Chris Papps
+
+Added default driver definitions for OpenEdge and older 9.1E and 10.0B Progress databases.
+ Thanks to Tinco van Engen
+
+
+Bug fixes:
+
+#1327 Postgres Plugin: Sequence details are not fetched on PostgreSQL 10+
+
+#1099 Mac OS: Introduced Harry Evans' application name fix to the Mac OS launch script.
+
+#1324 SQL script generation corrupts data when remapping newlines.
+
+Fixed two minor issues of the SQL results column search feature:
+  - When columns were moved and table was made editable the first moved column reappeared at its former position.
+  - If different tables occur in a SQL result and if your RDBMS/driver gives access to SQL results table names
+    then columns' will be qualified in the column search dialog.
+
+#1323 Fixed compile bugs when compiling with Java 9
+
+Fixed Java 9 compatibility issue concerning the JavaBeans Activation Framework:
+  javax.activation.jar was added to our libs following Bill Shannon's suggestion here https://github.com/javaee/javamail/issues/266
+  The jar was downloaded here https://github.com/javaee/activation
+
+
+Mac scripts where changed according to the comment of Nov. 18. 2017 in bug #1321.
+  This change contradicts the change made for bug #1310.
+  Since there seems to be no version that works for all Mac users
+  the problem is well documented in the script itself
+  to allow users to change the script and to try out which version works for them.
+
+
+#1321 Scripts for the plain zip releases are updated and now match the installer versions.
+ Please note that there are now separate scripts for Linux/Unix and Mac.
+ While the installers automatically come with the right script
+ the plain zip packages now contain squirrel-sql.sh for Linux/Unix and squirrel-sql-mac.sh for the Mac.
+
+For some databases schema loading took long even if schema loading was configured to ignore most schemas.
+  Those databases, e.g. Oracle, take long to execute DatabaseMetaData.getTables(..., String[] tablesTypes)
+  even if the tablesTypes array is empty.
+
+When column display size (ResultSetMetaData.getColumnDisplaySize()) was a very large value
+ the column width in result tables turned out to be very small. Seen on Postgres.
+
+
+#1317 Oracle type INTERVALDS not properly displayed
+ The problem occurred when SQuirreL encountered an unknown SQL-Type and decided not to read the data,
+ see menu File --> Global Preferences --> tab Data Type Controls --> Section Unknown Data Types
+
+#1310 Mac OS installation does not run
+  Separate scripts for Linux/Unix and MACOS were introduced.
+  The MACOS script was adjusted according to Jörn's suggestions in bug #1310
+
+When file is opened cursor is now positioned at the beginning of the editor.
+
+Fixed missing text resource "Procedures" in Alias schema properties
+
+Fixed error display when connection failed (Resource not found)
+
+
+3.8.0 (08/29/2017)
+==================
+
+Enhancements:
+
+The 'Locale' combo box at menu File --> Global Preferences --> Tab General
+  now has an entry 'Don't change'. This entry may prevent translation problems
+  and will be the default entry for new installations.
+
+The format floating point numbers can now be user defined.
+  See menu File --> Global Preferences --> Tab 'Data Type Controls --> section 'FLOAT, REAL, ...'
+
+Updated French translation. Thanks to Erwan Duroselle.
+
+The SQL result panel can now be hidden and restore by the new 'Toggle minimize results' function.
+  Use ctrl shift M, tools popup or right mouse menu of SQL editor.
+
+#555 New features for code completion needed --> Completion for UDTs
+  UDT names are now available in code completion and can be configured in the Alias Properties dialog.
+  Note: If you find UDTs are not of use in code completion you can switch it off.
+        See menu File --> New Session Properties --> Tab 'Code completion' --> Checkbox at bottom.
+
+
+The new paste history can be called using ctrl+shift+V oder ctrl+shift+insert. It offers to paste
+  the content of former copy or cut actions.
+
+Enhancement of feature request #545: New table right mouse menu 'Copy as markdown table'
+
+The minimum number of decimal digits of floating point numbers can now be defined
+  (see menu File --> Global Preferences --> Tab 'Data Type Controls --> section 'FLOAT, REAL, ...')
+ Thanks to Krzysztof Szymko for the patch.
+
+
+The limit string loading size option (see menu File --> Global Preferences --> Tab 'Data Type Controls --> section 'CHAR, VARCHAR, ...')
+  used to work for the Object tree only and now works for SQLs too.
+  Furthermore limited strings are now indicated by the ending '...'.
+ Thanks to Krzysztof Szymko for the patch.
+
+
+Table types shown in Object tree can now be filtered, see menu File --> New Session Properties --> tab Object tree --> section Filters
+
+#470 New global preference to auto-save current SQL commands into file at exit and auto-reload them at startup into SQL editor pane.
+  See menu File --> Global Preferences --> Tab SQL --> Section General --> Check box 'Reload last SQL editor contents when Session is opened'
+ Thanks to Krzysztof Szymko for the patch.
+
+
+The Logs window now remembers its size.
+
+
+Dataimport Plugin:
+ - Improved messaging
+ - Table refresh after import
+ Thanks to Krzysztof Szymko for the patch.
+
+
+Bookmarks Plugin: It's now possible to define default values for parameters.
+   Here is an extract from updated the SQLBookmark-Plugin help:
+     In case you want to give a default value for a parameter the syntax would be ${prompt[, tip](defaultValue)}.<BR>
+     Also a list of predefined values is possible. The syntax then is ${prompt[, tip](defaultValue_1|defaultValue_2|defaultValue_3)}
+   Thanks to Krzysztof Szymko for the patch.
+
+Comment/uncomment short cuts (ctrl minus / ctrl shift minus) now work with Numpad-minus too.
+
+Added "Create Data Script from SQL", "Store result of SQL in table", "Create Data Script from SQL" functions to editor's right mouse menu.
+
+#491 Tab length can be configured and tabs can be chosen to be replace by spaces.
+        See menu File --> New Session Properties --> Tab Syntax
+
+#548 Size of table cell popup can be configured to be saved,
+     see menu File --> Global Preferences --> tab General --> last check box in section Appearance
+
+#548 Add button "as XML" to the modal window "Value of column ..." opened from Results table
+     AND integrated Json formatting
+
+More Granular RSYNTAX Color Tokens
+ Thanks to Duane Redfern for the merge request
+
+Tabs can be closed by middle mouse click
+
+Added default driver definition for Salesforces DB
+
+#545 Copy table excerpts as ascii art for convenient inclusion in text-only docs
+   See new entry in table's right mouse menu: Copy aligned (as in 'Results as text' tab)
+
+Added configuration as formulated in bug #1238 (Format SQL puts all columns in SELECT statement in one line)
+  See menu "File" --> "Global Preferences" --> tab "SQL formatting" --> "Column list split behavior"
+
+Netezza SYNONYM support added and enhanced 
+  Thanks to Richard Kooijman for the patch
+
+New high definition icon
+  Thanks to Richard Kooijman for the patch
+
+
+Graph plugin: Added a 'NOT LIKE' operator to Query builder filter.
+
+Bug fixes:
+
+Paste history (ctrl +shift + v or insert): The pasted content didn't move to the top of the history list.
+
+'Toggle minimize results' didn't work for horizontal SQL panel layout. (See menu File --> New Session Properties --> Tab General)
+
+MS Windows: List in 'Paste from History' dialog didn't get focused when opened.
+
+
+#1262 Error when viewing the content of a table of PostgreSQL database in Object tree.
+  The error occurred when a table contained an OID.
+ Thanks to Jjarmolowicz for the patch.
+
+#1304 Saving script ruins greek words
+
+Fix the problem with "Show foreign key references..." on a row with
+  a raw type (BINARY, VARBINARY, (VAR)CHAR FOR BIT DATA, BLOB) primary-key.
+ Thanks to Stefan Mueller for the patch
+
+#1303 Close via session menu does NOT remove session tab
+
+PostgreSQL sequences are now sorted
+ Thanks to Krzysztof Szymko for the patch.
+
+#1302 ObjectTree SEQUENCE parent node Details tab tries to fetch details of non-existing sequence
+
+#1298 DROP TABLE IF EXISTS doubles VIEW content
+
+#1297 Data Type Controls (max number of digits input - no error handling)
+
+#1289 Connection Error Dialog does not show the actual JDBC error message emitted
+  Thanks to Peter G. Horvath for the patch.
+
+#1206 The workaround implemented lately has been replaced by a proper resolution
+ Thanks to Krzysztof Szymko for the patch.
+
+Postgres Plugin: Procedure sources are now shown with signature
+  rather than only procedure's body code.
+ Thanks to Krzysztof Szymko for the patch.
+
+
+#1290 Bookmarks plugin: NPE Add empty bookmark --> Empty bookmarks are prevented
+#1291 Bookmarks plugin: Add Bookmark dialog looks awfully
+#1292 Bookmarks plugin: Edit bookmark is not refreshing User bookmarks tree
+
+
+When menu File --> Global Preferences --> tab "Data Type Controls" --> "Show newlines as \n within cells"
+ was activated newlines where replaced by /n instead of \n
+ (mentioned in Bug #1005)
+
+Table export to MS Excel failed when only the selected part of a table was chosen to export.
+
+#1287 On MacOS, the launcher script contains a hard-coded reference to Contents/Resources/Java
+  Thanks to Peter G. Horvath for the fix.
+
+Old application icon was shown Unix/Linux OSes.
+
+#618 sqlparam plugin asks for commented variables  is now also fixed for /* */ style comments
+
+#1276 DB Copy Plugin: An error occurred when a table was copied and the table name needed to be double quoted.
+
+Session tabs wheren't selected on mouse click. This bug occurred since the "Tabs can be closed by middle mouse click" feature.
+
+Reconnecting (ctrl alt t) failed on Vertica DB with error:
+ java.lang.ClassCastException: net.sourceforge.squirrel_sql.fw.gui.SQLCatalogsComboBox$NoCatalogPlaceHolder cannot be cast to java.lang.String
+  	at net.sourceforge.squirrel_sql.client.gui.session.CatalogsPanel.getSelectedCatalog(CatalogsPanel.java:184)
+  	at net.sourceforge.squirrel_sql.client.gui.session.SessionPanel.getSelectedCatalogFromCatalogsComboBox(SessionPanel.java:513)
+  	at net.sourceforge.squirrel_sql.client.session.Session.reconnect(Session.java:561)
+
+#1273 Session, when in detached frame, closes although close is not confirmed.
+
+#1267 NullPointerException on Create Data Script
+
+Postgres plugin:
+  Trigger details tab was still using the deprecated condition_timing column in the trigger query,
+  causing PSQLException: ERROR: column "condition_timing" does not exist and preventing tab from displaying.
+   Thanks to Joseph Dillman for the fix.
+
+
+#1263 DB copy from MS SQL to HSQLDB with NVARCHAR column leads to no dialect mapping error
+   Fixed HSQLDB dialect as suggested in the bug.
+
+#1260 Session scripts Plugin: NullPointerException occurred when Session start up script was executed.
+
+#1248 "Statment" misspelled
+
+#1257 Procedure source not shown
+
+Ctrl+h opens replace dialog again
+  Note: Ctrl+r didn't work on Linux
+
+3.7.1 (05/08/2016)
+==================
+
+Enhancements:
+
+Option to en/disable the "Run all SQLs in editor" function, see menu File --> Global Preferences --> tab SQL
+
+Updated Polish translation. Thanks to Begina Felicysym.
+
+#531 Bookmarks Plugin: In the general options of the bookmarks Plugin (see menu File --> Global Preferences --> tab Bookmarks)
+  there is a new option "In ctrl+j popup use "contains" instead of "starts with" to filter entries".
+
+Alias properties --> Tab Schemas --> Table is now sortable
+  Thanks to Marek for the patch.
+
+Data import plugin: New option to choose if import is done in a single transaction
+                    or if data is committed after every N numbers of inserts, where N can be configured.
+
+Foreign key references window now also produces a result for the root table of the references tree.
+
+Format SQL has three new options, see menu File -> Global Preferences -> Tab SQL formatting
+ - Indent sections check box
+ - Comma placing radio buttons
+ - When AND/OR keywords occur in FROM clauses you can choose to ignore the start new line setting.
+   This may be considered to lead to more readable JOIN clauses.
+
+Current SQL mark: In the SQL editor if the caret placed inside an SQL such that this SQL could be executed using ctrl enter, this SQL is now marked by a blue box.
+  The feature can be switched off or the color of the box can be changed at menu File --> Global Preferences --> Tab "SQL" --> Section "General"
+
+New global preference "In quotes functions should copy quoted SQLs to clipboard", see menu File --> Global Preferences --> Tab "SQL" --> Section "General"
+  Note: With this change the "Edit Extras"-Plugin was removed. All its functions are now part of SQuirreL's core. The change doesn't effect the
+  usage of the functions involved in the change. SQuirreL will not load the "Edit Extras"-Plugin anymore.
+
+Updated Polish translation. Thanks to Begina Felicysym.
+
+Syntax plugin: Last five find strings are now saved and can be selected from the drop down of the find and replace dialog.
+
+
+Bug fixes:
+
+#963 Stored Procedures are not shown in object tree (reported of Informix DB)
+
+#1245 SQL Script Plugin: Table script creation failed when a column type could not be derived from a Hibernate dialect.
+  This problem was probable to occur for user defined types e.g. when domains were used by Postgresql.
+
+Quoting columns didn't work as in other script generation functions when SELECT statements were created (see Object tree's right mouse menu).
+  Thanks to Joao Paulo Limberger for the patch.
+
+#1235 Netezza Plugin: Squirrel not showing Netezza (IBM Puredata) synonyms
+
+Fixed bug in "Copy as SQL INSERT-VALUES statement" option: Closing brackets could be lost when timestamp was generated.
+  Thanks to Marek for the patch.
+
+#1241 Switching tab using Alt Left/Right doesn't work right after tabs were moved using drag and drop
+
+Improved logging and handling of "Content" tab display in "Objects" tab with the aim of tracking/preventing.
+ - If an SQL to load the content tab fails, the complete SQL string ist written to the logs
+ - "SELECT *  ..." statement is issued as last fallback.
+
+For the DB2 data types "FOR BIT DATA", GRAPHIC and VARGRAPHIC the "Store result of SQL in table" function did not create the correct "CREATE TABLE" script.
+  Thanks to Marek for the patch.
+
+
+Concerning result output as text:
+  Replace null string character (0x00) with SPACE char, as this character cannot be copied to clipboard and data after this null char are not copied.
+  (E.g. occurs when working on Win7 with DB2.)
+  This fix also replace FF form feed character (0x0C) with SPACE char,
+  as FF character is causing problem when text data are pasted into advanced text editor like Ultraedit, it creates unexpected new lines.
+  Thanks to Marek for the patch.
+
+Some options in New Session Properties (abort on error, write sql errors to log file) are not saved after Squirrel restart
+  Thanks to Marek for the patch.
+
+Milliseconds are lost when you copy timestamp value via "Copy as SQL INSERT-VALUES statement" option
+  Thanks to Marek for the patch.
+
+#1240 Data import plugin: When exception occured auto commit mode was usually changed.
+  Along with this fix come the following improvements:
+  - UI is resizeable
+  - Better error messages
+
+#1237 Missing color on SQL window and Object tree window
+
+#1236 Shortcut for comment/uncomment current line (ctrl + "/") does not work
+  Fixed according to the suggestion in the bug #1236
+  Please note: The orginal comment/uncomment hot key of SQuirreL is ctrl+Numpad minus / ctrl+shift+Numpad minus.
+
+Current SQL Mark was shown in Object tree find field.
+
+#1226 Reconnect didn't work when Session toolbar was configured to be not shown.
+  See menu "File" --> "New Session Properties" --> Tab "General" and check the "Show toolbar" check box.
+
+
+Object tree: Contents tab loading raised ClassCastException when table contents where viewed as text output.
+
+NullPointerException occurred when the "Show foreign key references" right mouse menu item of an SQL result table was clicked.
+
+3.7.0 (09/14/2015)
+==================
+
+Enhancements:
+
+Feature request #521 Alias name in SQL History search dialog.
+
+Upgraded to latest RSyntax version (2.5.6).
+  The new version has a clipboard history which is accessible through ctrl shift v.
+  A little drawback of the new version is that background colors are not supported in syntax styles.
+
+
+Feature request #485 Execute multiple SQL statements on one click without selection
+   The new feature executes all SQLs in the editor.
+   If there are multiple SQLs in the editor the statement separator has to be used.
+   The feature is accessible through a new tool bar button, tools popup and the alt shift ENTER key combination
+
+
+Feature request #484 Query output preferences --> Allow table and text output simultaneously
+   Note: SQL result output as table or editable table now includes text output in an extra tab.
+         That's why there should be only few cases where choosing text output in Session Properties makes sense anymore.
+
+Feature request #479 Add option for tab names to contain only Alias name
+   The option can be found at menu File --> Global Preferences --> Tab General --> Bottom of section Appearance
+
+Feature request #487 Show AS label as column header (if present)
+   If a SQL result contains at least one column whose column name is not equal to its column label a button is shown at the header of the tab named "Result".
+   By this button one can toggle display between column names and labels.
+   Note: To configure the default display see menu File -> Global Preferences -> Tab Data Type Controls -> Top of panel.
+
+
+WIKI table Plugin: Added support for JIRA/Confluence Markup Style
+  Thanks to Thomas Hackel for the merge request.
+
+Feature request #501 Overview/Charts Tab: Distinct Counts
+  - Distinct counts for an Overview as a whole are now displayed right next to the column name
+  - Distinct counts of Intervals are available as tool tips
+    as well as a new details window which is accessible through the right mouse menu
+
+Sybase dialect support when using jtds
+ Thanks to Sumit Agarwal for the merge request.
+
+On Mac OS X the SQuirreL now uses the acorn icon instead of the default java coffee cup icon.
+  Thanks to Martin W. Kirst for the merge request.
+
+New command line parameter:
+ Short form: -detectEDT
+ Long form: --detect-long-running-swing-edt-events
+ The parameter has no arguments.
+ The parameter enables SQuirreL to detect long running Swing Event Dispatch Thread events.
+ When the dispatch thread is blocked for longer than two seconds a warning containing a thread dump is written to the logs.
+
+Upgraded to the latest RSyntax version (2.5.3).
+
+Syntax Plugin: Made background color for white spaces affect the whole SQL editors background, see menu File --> New Session Properties --> tab Syntax
+   Note: If you combine this feature with the Metal-Charcoal Look and Feel you can make SQuirreL appear in "fashionable" black.
+   Thanks to Duane Redfern for the patch.
+
+
+When adjusting table column widths a maximum width may now be defined.
+  See menu File --> Global Preferences --> Tab General --> right column
+
+Speeded up reading and writing Alias properties. As result opening and closing a connections will be much faster for big, complicated databases.
+  Thanks to Jaroslaw Jarmolowicz for the patch
+
+Starting and stopping SQuirreL is much faster for big, complicated databases
+  Thanks to Jaroslaw Jarmolowicz for the patch
+
+Postgres Plugin:
+- For postgres query plans explain was used which is less accurate than explain analyze so it was changed to use it instead.
+- Previous implementation had limitation of producing query plans only for SELECT queries. It was changed so query plan can work for every type of query.
+- Query plan executions are wrapped in transaction so they don't change database state.
+Thanks to Jaroslaw Jarmolowicz for the patch
+
+
+Bug fixes:
+
+#1185 The example URL for MariaDB is wrong
+ Unfortunately the change will only take effect for new installations.
+
+#1191 Remove Newlines Hotkey not working for several versions
+
+#1206 SQuirrel detects single line comment inside string literals
+
+#1210 Empty Contents Tab in SQuirreL when Column-Names contain dashes (except HSQL-DB)
+
+#1212 Selected catalog is not the catalog that is shown in combo box after reconnect.
+
+#1216 PostgreSQL: Content tab doesn't display data when quoting column names is necessary
+
+The overview- and rotated table- tabs broke when more results where read.
+
+DBDiff Plugin: Loading of the DBDiff Object tree menus failed when an Object tree window was opened:
+   java.lang.IllegalStateException: ObjectTreeApi can only be provided for SessionInternalFrame or ObjectTreeInternalFrame
+   at net.sourceforge.squirrel_sql.client.session.Session.getObjectTreeAPIOfActiveSessionWindow(Session.java:962)
+
+#1161 Sorting Aliases creates duplicate entries in the tree view
+   After sorting Aliases in the view without tree, there were duplicate Alias entries in the tree view.
+   Note: If your Aliases got duplicated this way you may delete the SQLAliases23_treeStructure.xml file in your SQuirreL user dir.
+         This way Aliases will be unique again but tree folder structure gets lost.
+
+
+#1193 Wrong command for MySQL when renaming a column.
+  The problem was a wrong preselection of the dialect for MySql5 DBs.
+
+Hibernate Plugin: In menu File --> Global Preferences --> Tab Hibernate --> The "Details..." button in the lower part of the panel used to break with a NullPointerException
+  when a directory of the Hibernate class path did not exist.
+
+#1188 Help tree links don't work.
+
+#1183 Empty Contents Tab in SQuirreL when Column-Names contain dashes.
+  This was because double quotes were missing around column names
+
+SQuirreL once and again hangs for some seconds on Windows.
+  With help of the new detectEDT-feature it was possible to track the problem back to a JDK problem: https://bugs.openjdk.java.net/browse/JDK-6477756
+  A workaround is to use the JVM parameter -Dsun.awt.nopixfmt=true. This parameter was introduced to the start batches we ship.
+  People who experience the problem and use their own start batches should set the parameter manually.
+
+#1177 Export results to xls fails for large exports that contain DATE columns
+  Thanks to Neville Rowe for the fix.
+
+Tool bar of SQL Worksheet was doubled any time it was moved from between different frames.
+
+#1174 PostgreSQL: create table script: wrong data type numeric
+
+#618 SQLParam plugin asks for commented variable.
+ Thanks to Michal Stekrt for the patch.
+
+
+Postgres Plugin:
+- Postgres locks table was not displayed.
+Thanks to Jaroslaw Jarmolowicz for the patch
+
+Look-and-Feel Plugin: JTattoo-AluminiumLookAndFeel was not available and logged an exception stack trace during start up.
+
+SQuirreL used log an exception stack trace when 'Keep-Alive' was enabled in Alias properties but no SQL statement was entered. Now SQuirreL issues an understandable message.
+  This concerns one discussion entry of bug #1162
+
+
+3.6.0 (10/12/2014)
+==================
+
+Enhancements:
+
+Feature request #443 SQL results have new tab "Rotated table" where rows and columns are swapped.
+
+Charts of SQL results: Plain x-y-charts of pairs of numeric columns can now be created.
+  Note: Charts make use of JFreeChart: http://www.jfree.org/jfreechart/)
+
+New right mouse menu entry in SQL results: "Show foreign key references".
+ Select one or more cells of a SQL result then choose the right mouse menu to display the foreign references for the selected cells.
+ This function is also available in the right mouse menu of tables in the object tree.
+
+SQL result --> Info tab: SQL is now displayed in text field instead of label. Formatting is preserved.
+
+Check boxes to enable / disable navigation from the SQL editor to the object tree by Ctrl+B and Ctrl + mouse click.
+  See Menu File --> New Session Properties --> Tab SQL --> Section Jump to object tree
+  This will fix bug #982
+
+Patch #66 New toolbar button to clone the current Session with a new connection.
+  The button is right next to the new SQL tab button.
+  Thanks to Jaroslaw Jarmolowicz for the patch
+
+Patch #67 Session tab tooltip now shows the connections JDBC-URL.
+  Thanks to Jaroslaw Jarmolowicz for the patch
+
+Patch #68 The "Copy as INSERT / UPDATE statement" functions now provide the right table name
+  when copying from a content tab.
+  Thanks to Jaroslaw Jarmolowicz for the patch
+
+Bug fixes:
+
+Fixed NullPointerException in data export that could occur when BLOB fields with NULL values were present.
+
+#1157 Move line feature didn't work in sql editor
+
+Rerun was not loaded into Session menu
+
+Rerun did not work for result tabs outside of SQL panels.
+
+Fixed NullPointerException during Session start when no Hibernate dialect is available for the Session's database connection.
+
+Bug #1150 Exports to excel xls format not working in version 3.5.3
+
+DB2 Plugin / bug #1097 DB2: don't display UDF source : SQL0206N "SCHEMA" is not valid in the context where it is used.
+ Thanks to Andy Helmer for the fix.
+
+Data import Plugin / bug #1133: Now imports new Excel format *.xlsx
+
+Patch #69 Postgres: Fixing problem with long running "getTypesInfo" on Postgres.
+ Thanks to Jaroslaw Jarmolowicz for the patch
+
+Patch #70 Refactoring --> Dropping foreign key was generating wrong object names in SQL.
+ Thanks to Jaroslaw Jarmolowicz for the patch
+
+Patch #71 Postgres: When a WHERE clause with UUID type is generated data is now enclosed in ''
+ Thanks to Jaroslaw Jarmolowicz for the patch
+
+
+
+
+3.5.3 (05/11/2014)
+==================
+
+Enhancements:
+#469 Show selected row count (like result row count)
+
+#490 Continue offering MS Exel XLS (older file format) export.
+  Users can now choose between XLSX and XLS.
+
+Bug fixes:
+
+#1144 Error exporting null valued boolean/bit cols to XLS/XLSX
+#1143 Error exporting null valued date cols to XLS/XLSX
+
+Reintroduced compatibility with Java 1.6
+
+#1137 ArrayIndexOutOfBoundsException when querying PostGIS geometry columns
+Thanks to Jaroslaw Jarmolowicz for the patch
+
+
+#1129 Export table to XLSX does not work / #1129 Export table to XLSX does not work --> Export broke on null values
+#1135 Export of date/time values to XLSX exports number instead of date
+
+#1132 keyboard shortcut alt-down/alt-up not working
+
+Hibernate Plugin: HQL queries that returned results with enum types used to lead to unmarshall exceptions.
+
+
+
+
+3.5.2 (03/15/2014)
+==================
+
+Note: Automatic updates were disabled. Please use our home page to download latest versions and snapshots.
+
+Enhancements:
+
+- SQLFilter tab can support custom operators and functions depending on column type
+- Improved loading of content tab for tables with big data
+- Added support for postgres UUID-s
+- Added support for postgres arrays
+- Added support for postgis Geometry (requires postgis.jar added to driver classpath).
+  Geometries are presented and edited as WKT. WKT is more human readable and allows quick editing.
+  Content tab displays summary (containing only: type, center point, and total number of vertexes)
+  that is lazy loaded and substituted, with full content, when given cell is clicked.
+Thanks to Jaroslaw Jarmolowicz for the patches
+
+
+Allowed command line arguments to be defined by Plugins. See Method IPlugin.getPluginApplicationArguments().
+Thanks to David Green for the patch
+
+
+Bug fixes:
+
+#1130 Unable to save SQLReadOn properties
+
+
+
+
+3.5.1 (02/01/2014)
+==================
+
+Enhancements:
+
+File export: Replaced the old xls export by the newer xlsx export which allows far mor rows to export.
+   Thanks to André Schild for the patch.
+   This also fixes bug #625
+
+#1108 (in bugs): New entry in table's right mouse menu: Copy column names
+
+Upgraded to the latest RSyntax version (2.5.0 / 3).
+
+Added MongoDB driver to default driver list.
+
+
+New Plugin: Vertica DB Plugin
+  New Plugin for the Vertica DB. Thanks to Vertica team.
+
+
+Added Vertica driver to default driver list.
+
+Fixed bug in windows start script squirrel-sql.bat: javaw.exe could not be found in certain cases.
+
+Fixed bug in Oracle dialect concerning type information for timestamps.
+
+#1084 Added MariaDB driver to default driver list.
+
+Made data editing problems that concern update row counts more transparent by printing
+  out details to SQuirreL's message panel. This may help to fix bugs like #1086.
+
+Bug fixes:
+
+SQL editors keyboard short cut to comment block (Ctrl-) didn't work.
+
+#1064 DataSetViewerTextPanel cannot be cast to DataSetViewerTablePanel
+
+Fixed NullPointer during shutdown:
+java.lang.IllegalArgumentException: obj parameter must not be null
+    at net.sourceforge.squirrel_sql.client.gui.recentfiles.RecentFilesManager.saveXmlBean(RecentFilesManager.java:84)
+    at net.sourceforge.squirrel_sql.client.Application._saveApplicationState(Application.java:302)
+    at net.sourceforge.squirrel_sql.client.Application.shutdown(Application.java:240)
+    at net.sourceforge.squirrel_sql.client.gui.mainframe.MainFrame.dispose(MainFrame.java:141)
+    at net.sourceforge.squirrel_sql.client.gui.mainframe.MainFrame$4.windowClosing(MainFrame.java:386)
+    at javax.xml.bind.helpers.AbstractMarshallerImpl.checkNotNull(Unknown Source)
+    at javax.xml.bind.helpers.AbstractMarshallerImpl.marshal(Unknown Source)
+    at net.sourceforge.squirrel_sql.client.gui.recentfiles.RecentFilesManager.saveXmlBean(RecentFilesManager.java:77)
+
+
+3.5.0 (5/5/2013)
+==================
+
+Enhancements:
+
+Updated Italian translations. Thanks to Ivo Neri.
+
+Updated French translations. Thanks to Erwan Duroselle.
+
+SQL script save/open dialog remembers the last selected file name extension.
+
+DBCopy-Plugin: Added table name suggestion to "Paste table as ..."
+  dialog when a table is selected in the destination Object tree.
+
+Update Tab (in Global Preferences): Added hint/link to Proxy configuration.
+
+Added support for the JTattoo suite of Look-and-Feel classes to the Look-and-Feel plugin.  Thanks to Michael
+Hagen (JTattoo author) for integration tips.
+
+New function to open recent and/or favourite sql script files in the SQL editor.
+  Available in the SQL editor's and the Aliase's toolbar.
+  Look for the icon showing a folder with a watch .
+
+
+Patch #57 Additional features for dataimport plugin.
+  New checkbox in data import dialog that allows to input rows with over 100.000 characters.
+  Thanks to Phillip (P_W999) for the patch
+
+Logging of application shutdown:
+  Sometimes closing SQuirreL can take some time. From looking at the log file
+  one can find out which shutdown actions take long:
+  Choose log level: info
+  Search the log file for: "Application.shutdown"
+  The first Global preferences tab tells where log and log configuration files are.
+
+
+Introduced keyboard shortcut Ctrl+Shift+Enter to rerun SQL results.
+  Thanks to Johnathan James for re-working and drawing attention to the patch hosted at
+  http://muzso.hu/2011/06/04/patch-for-squirrel-sql-client-v3.2.1-adds-keyboard-shortcut-for-sql-query-rerun-re-execut
+  See also bug #1057.
+
+1609223: New option to enable SQL result tables to read more query results when the user scrolls to the end of the table.
+  This option can be switched on in Session Properties and on top of the SQL-Editor just at the place where the
+  "Limit rows" check box is.
+
+
+2569169: Find function for SQL result tables.
+
+Closing or reconnecting Sessions caused SQuirreL to hang when the JDBC driver's connection close method didn't return.
+   Now closing timeouts after 2 seconds.
+
+Function to detach/close a file while keeping its contents in the SQL editor. Accessible through Toolbar and tools pop up.
+
+Hibernate Plugin:
+   New function in tools pop up and right mouse menu of HQL editor: Copy SQL generated from current HQL to clipboard.
+
+Sorting can now be returned to natural order by clicking on a column header a third time. (First time is asc, second time desc and third time natural)
+
+Execution time passed is shown during SQL execution.
+
+Session tabs can be detached in separate windows. The tabs can be arbitrarily moved between the main and separated windows using drag and drop.
+
+Cristiano Guadagnino contributed all of the SQL required for the DB2Plugin to properly support the DB2 z/OS 
+platform. Many thanks to Cristiano Guadagnino.
+
+Overview tab:
+ - Allows to adjust the maximum number of intervals
+ - Traces drill downs by coloring clicked buttons
+ - Offers functionality to view query result data in bar charts. (Uses JFreeChart: http://www.jfree.org/jfreechart/)
+ - Has a button to copy a HTML-report of an overview to clipboard
+
+Abbreviation/Auto-correction now works also if it is placed right after an opening bracket.
+
+Added new default driver definition for Starschema BigQuery JDBC Driver.
+
+Updated French translations. Thanks to Erwan Duroselle.
+
+Positions of SQL result tabs and of Session tabs can now be changed using drag and drop.
+
+
+
+Bug fixes:
+
+#1076, 1061 Squirrel does not list tables when connected to DB2
+  Thanks to Gabor Keresztfalvi for the patch.
+
+#1077 EDT Violation reported in log while copying tables
+
+For detached Session windows drag and drop to query builder did not work
+  because the query builder became hidden behind the Session window.
+
+#1073 db2 plugin - extended error code message. Thanks to Marcin Krol for the patch.
+
+#939 DBCopy-Plugin: Copy to HSQLDB 2.0 failed because column lengths where not defined in create table statements for various column types.
+    This problem existed for other RDBMSes too.
+
+#464 (Feature request) Add tho double quotes to Copy as HTML to become XML well formed output.
+
+Global Preference: "Select Object tree Nodes On Right Mouse Click" didn't work on windows.
+  Thanks to Betsy Baxter
+
+#1009 FileNotFoundException when trying to save write protected file. (Thanks to Johnathan James for the patch.)
+
+#1060  When more result tabs than the maximum defined in Session properties are in execution, SQuirreL freezes.
+
+Fixed bug in logging: Log level could not be set in log4j.properties file.
+
+2759952 (Update fails unless run as admin on Vista): Fixed mis-spelled variable in squirrel-sql.bat which
+caused the application updater to fail to work properly with Windows when UAC is enabled.  Thanks to user
+dandar3 for the tip.
+
+
+Tables cells that contained html where rendered incorrect. Now the plain html string is shown.
+
+When schema info was refreshed (using F5) the SQL editor used to color tables as undefined (error red).
+
+Column sorting indicator icon was lost when sorted column headers where dragged to reorder columns
+
+2798081 Right click on column header changes sort order
+
+On DB2 for AS400 column completion didn't work in some cases. (Thanks to Stefan Hohenstein for the patch.)
+
+3575054: SQL results text mode is not working
+
+Fixed repaint problem in Hibernate Plugin.
+
+Code completion: When selecting a completion by tab, overwriting of subsequent characters does not stop
+  only at the next white space but also at .,'();"= characters.
+
+
+3.4.0 (8/6/2012)
+==================
+
+Enhancements:
+
+Hibernate Plugin:
+   Improved connection error messaging when creation of a Hibernate SessionFactoryImpl in an external process fails.
+
+Removed misleading button "Remember widths" from Overview Tab
+
+Instead of displaying the file paths in Session tabs a small button is displayed when an open file exists.
+  Clicking the button will open a popup menu that gives access to several information and functions concerning the file.
+
+3488629: SQL formatting can be configured. See menu File--> Global Preferences --> Tab SQL formatting
+
+Installer: The DB Copy, DB Diff and Refactoring Plugin have been made standard Plugins.
+
+Graph Plugin: Tables can be selected by rectangle selection like icons on a desktop of modern operating systems.
+
+SQL Execution: The execution panel that is displayed while an SQL statement is being processed is now closeable.
+   Before the panel is closed the cancel action gets executed.
+
+Created new Multisource Plugin:
+  - Allows SQuirreL to support native multiple source queries where one SQL query spans multiple sources.
+  - The plugin supports standard SQL including joins, group by, aggregation, LIMIT, and ordering where tables may come from one or more sources.
+  - The plugin will perform function translation where a user requests a function that is not supported on a certain source. 
+  - Added a new UnityJDBC default driver definition that supports this virtualization.
+  
+Graph Plugin: When a child table was removed from a Graph and the the parent tables columns were reordered constraint lines reappeared pointing nowhere.
+
+Syntax Plugin: Upgraded to RSyntax text area version 1.5.2
+
+Add new default driver definitions for HXTT Cobol and XML drivers.
+
+About Dialog:
+  Added a tab for displaying the status off all threads.
+
+3463374: Ability to rename SQL Worksheet tabs through Session menu, tab's right mouse menu or shortcut shift F6. (Thanks to Vladislav Vavra for the patch.)
+
+Hibernate Plugin:
+ - Support of hql results that return plain values instead of mapped objects. Mixes of plain values mapped objects are supported, too.
+ - Support of data changing hql statements.
+ - Support for JDBC standard date/time/timestamp escape strings in hql queries. (String are parsed and converted to hql parameters).
+
+
+DBCopy Plugin:
+  - Offers a new menu item "Paste table as ..." that allows to change the pasted table's name.
+    This function works if only a single table was copied.
+  - Tables can now be pasted to arbitrary Schemas.
+  - In the Plugin preferences the user may choose to append copied data to existing tables
+
+Copy as INSERT-VALUES statement now works on almost any table not just on editable tables. If a table isn't in
+  a Session scope ";" is used as statement separator instead of the separator defined in Session properties.
+
+
+Swing Violation Detector Plugin:
+  This new plugin will help to detect rule violations of the Swing programming model. The usage of this plugin is only recommonend for
+  testers and developers.
+
+Code Completion Plugin:
+  The Code Completion Plugin's preferences allows to switch on CamelCase completion
+  which is a common feature in many modern IDEs.
+  CamelCase completion may be useful if a RDBMS supports capital and small letters in database object names.
+
+Hibernate Plugin:
+  - Redesign of HQL result display. Focus is now on displaying result objects instead of Hibernate generated SQL.
+  - User can choose if he wants to use the Session's JDBC connection or the one configured with Hibernate.
+
+Syntax Plugin:
+  Duplicate line (ctrl+d) now duplicates the line at cursor if no text is selected
+  and duplicates the selection if a selection exists.
+
+Hibernate Plugin:
+  On Windows the class path's files defined in the Hibernate configuration would remain locked even
+  after disconnecting Hibernate. This doesn't happen anymore when Hibernate is run in its own process.
+
+Graph Plugin:
+  Tables can be added to a Graph from within the SQL-Editor (accessible from right mouse menu and tools popup).
+
+Graph Plugin:
+  Graphs can be copied and pasted.
+
+Graph Plugin:
+  New Session toolbar button to create links to Graphs of other JDBC-URLs or to Graphs that are placed arbitrary directories.
+  With this feature it is possible to work with shared repositories of Graphs.
+
+
+Bug fixes:
+
+Fixed layout problem in code completion preference panel.
+
+Applied patch 3100757: squirrel-sql.bat broke if %TEMP% had white space. Thanks to Taneli Waltari for the patch.
+
+Hibernate Plugin: Added missing HQL keyword 'by'. Will now be highlighted and available in HQL code completion.
+
+Graph Plugin --> Query Builder:
+  When a table was removed from a query builder graph join types of remaining joins were reset to the default inner join type.
+
+Referesh (F5) didn't work right and didn't delete schema cache files when schema caching was used.
+
+Fixed memory leak: Sessions didn't get garbage collected as soon as a popup (code completion, bookmarks, tools popup) was used.
+
+Connection/Login timeouts (menu File --> Global Preferences --> Tab SQL) as well as canceling the "Connect to" dialog now works cleanly.
+
+When a Session tab is closed that is not the active tab
+ the Session menu used to be disabled and keyboard shortcuts didn't work anymore for the active Session.
+
+Graph Plugin: Query Builder: Mixed up ASC and DESC in SQL generation and "order by" panel
+
+Hibernate Plugin: Fixed NullPointer that occurred in HQL execution concerning assisted but nonetheless initialized objects.
+
+2947296 Table script creation for multiple tables fails (on OpenJDK)
+
+Graph Plugin: Opening Link dialog failed on Windows when one or more links already existed.
+
+SQL Editor: Parser mistook minus signs in SQL IN lists as errors.
+
+Error dialog showed up twice when an error occurred during Alias connect.
+
+3026995 Fixed problem in squirrel-sql.bat for 64-bit windows.
+
+Graph Plugin --> Query Builder:
+  The "Sync result" button of the "Result" view now refreshes the result even if the SQL statement was not changed.
+
+
+3.3.0 (11/20/2011)
+==================
+
+Enhancements:
+
+Hibernate Plugin:
+  Directories containing archive files (Jars, Zips) can now be added to a Hibernate configuration's classpath.
+  All files in the directory will be added as classpath entries.
+
+Hibernate Plugin:
+  HQL errors during results reading are now displayed as a result tab. (Similar to the new SQL error display.)
+
+Some performance improvements, when searching in the object tree. 
+	Now, Squirrel will not try to expand a node twice, if no children were found for a node at a previous search. 
+
+Updated Translations:
+ * French (Erwan Duroselle)
+ 
+The make editable function for SQL result tables now preserves the table's layout (ordering, scrolling position, ... ).
+
+New (prettier acorn) icons bundle for MacOS X (Thanks to Travis Hein for arranging the icon bundle and to the 
+original photograher - George Georgiades - for releasing the photo under the creative commons license.)
+
+New default SQL driver for LucidDB (Thanks to Brandon Jackson)
+	To use the new default driver, it must be imported (Menu Drivers => Install default driver definitions)  
+
+Improved memory management: Now when SQuirreL runs out of memory, it will attempt to close all result tabs, 
+in order to free some memory.  This may allow the user to save their preferences/scripts and restart SQuirreL.
+
+SQL Scripts Plugin: Added the capability to "store the execution result of an SQL query into file". This 
+  allows the user to store the result of the selected SQL directly into a file, instead of displaying it in 
+  a result table. This is avaiable in the tools pop-up (sql2file) and the menu 
+  (Session ==> Scripts ==> Store result of SQL in file).
+  
+  
+DBCopy Plugin: (Feature request #3291501) This plugin now has a command-line interface (via DBCopyCLI).  See
+               DBCopy plugin documentation for usage details.
+
+Syntax Plugin:
+  Ostermiller and Netbeans editors were removed. Users that still used these editors are automatically
+  switched to the RSyntax editor.
+
+MSSQL Plugin:
+  - Added display of triggers source code.
+  - If two views with same name in different schemas exist now the views' source code is
+    displayed correctly according to the selected Object tree node.
+  Thanks to damluar for the patch (Patch ID: 3310900)
+
+
+New Plugin: Greenplum DB Plugin
+  New Plugin for the Greenplum DB. Thanks to Adam Winn for the patch (Patch ID 3217167)
+
+Feature Request 3438689: (Process SQL Server's NVARCHAR fields).  
+	Added dialect mapping support for N* fields in SQL create scripts.
+
+Feature Request 1744964: Copy text from the SQL editor panel as rich text. 
+	This functionality is available via the pop-up menu and the tools pop-up. Additionally this mode can be 
+	activated for copy shortcuts. 
+	See: Session Properties => Syntax => Copy shortcuts use the "Rich Text Format"
+	To use this, the RSyntax editor (Syntax Plugin) must be activated.
+
+Source Tabs:
+	Syntax highlighting is used for displaying the source of database objects, if the syntax plugin is installed.
+
+Query Builder / New features in Graph plugin:
+   The Query Builder is part of the Graph plugin. That means besides the former default and Zoom/Print modes
+   Query Builder is a new mode of the Graph Plugin. Any existing Graph can be switched to the new mode.
+   Besides the Query Builder itself several new features have been added to the Graph plugin:
+   - A Graph can be viewed in separate window.
+   - Tables can be dragged from the Object tree to a Graph window. For convenience there is a
+     new Session tool bar button that creates a new Graph window and places it right besides the Session's 
+     Object tree.
+   - Graphs have a Kick off/Start button on the lower left of a Graph panel to give more intuitive access to 
+     Graph functions.
+
+Feature Request 3307812: Select an entire row via the table's pop-up menu.
+
+Oracle Plugin: 
+   - The DDL of a index could be displayed under the source tab.
+   - Display the table related indexes in the object tree under the table node. This is additional to the
+     generally index node, which displays all indexes of the schema.
+   
+New plugin "WIKI table configurations":
+  This plugin provides some predefined configurations for various WIKI engines. With these configurations, 
+  SQuirreL can transform the selection of a result table into a WIKI table. Currently, configurations for the 
+  following WIKI's are provided:
+    - Mediawiki
+    - TiddlyWiki
+  This plugin is a enhancement for the functionality "Copy as WIKI table"
+
+Copy as WIKI table:
+  Squirrel is now able, to copy the selection of a result table as WIKI text into the clipboard. 
+  (Right click on the result table => Copy as WIKI table) 
+  At the new preferences panel "Global Preferences => Wiki Tables", the user can configure individual 
+  templates for the WIKI syntax.
+
+Detached result windows now can be rerun.
+
+Feature Request 3185630: SQL Panel layout:
+ - Squirrel uses a vertical layout for the SQL Panel. Now, this layout can be changed to horizontal,
+   which might be useful on wide screen displays. This can be configured within the 
+   Session Properties and New Session Properties => Tab General => Combo Box: SQL Panel layout 
+ - A double click on the divider restores the divider position to the default value.
+  
+Editing numeric values: SQuirreL now has consistent behavior for signed values in all numeric data types. 
+  A minus sign is allowed only at the first position and if the data type allows signed values.
+
+Hibernate Plugin: Improved display of mapped objects in table cells:
+                  The class name, primary key and toString() are displayed instead of toString() only.
+
+DB-Diff-Plugin:
+  Allowed to compare tables within one Session the same way as with different Sessions using select and
+  compare of the Object tree's right mouse menu. It is still possible to compare tables inside the
+  same Session without using select by marking two tables and just using the compare.
+
+Feature request 3129413: The number of decimal digits are now configurable 
+  (See Global Preferences --> 'Data Type Controls')
+
+Feature requests 3001253, 2896494: New icons in Object tree
+
+Display errors in result tab (Feature request 2826179):
+  SQL execution errors are now additionally displayed in a temporary result tab.
+  - This new feature is enabled by default and can be disabled by navigating 
+  	to File --> New Session Properties --> Tab SQL --> Show SQL execution errors in result tab.
+  - Along with this feature comes a new Message Panel right mouse menu "Save size 0" that allows
+    to hide the Message panel at application start up.
+
+Bug-fixes:
+
+Graph Plugin / Query Builder: Fixed adding Quotes behavior for IN/NOT IN where clause expressions.
+
+3433001: Elapsed time for building output is incorrect.
+
+3183001: ClassCastException occurs, when the first tab should be closed after running a query.
+
+Hibernate Plugin:
+ Fixed several bugs in the HQL results reading function concerning lazy loaded non collection attributes.
+
+3408086: Non ASCII characters are highlighted as as invalid characters at the SQL-Editor pane. 
+
+SQLScripts plugin:
+  Generating data/insert scripts from inside the Object tree failed for tables that didn't belong to the
+  default schema when the Plugins preferences where chosen not to qualify table names.
+
+
+Patch #3401315 (Derby Object tree trigger).  Trigger source was not being displayed because the  
+SYS.SYSTRIGGERS.REFERENCINGOLD and SYS.SYSTRIGGERS.REFERENCINGNEW columns no longer accept 1 and 0 as values 
+for comparison.  Now an actual boolean data type is used. (Thanks to Jesus Marin for the patch)
+
+3139446 fixed squirrelsql.bat: % was missing at the end of line set IZPACK_JAVA=%JAVA_HOME
+
+3308469, 3209074, 2983094: SQL with aliases don't result always with aliases as column headings
+  Affected modules: 
+  - Export as CSV/XLS/XML
+  - Copy with headers
+  - Copy as HTML
+
+Fixed some memory issues with closed sessions. 
+
+3393589: Introduced performance warning for the global preference " Save Preferences Immediately" when
+multiple statements are executed and set the property's default value to false.
+
+2985845: Create table script generates incorrect foreign key stmt: Foreign key columns were used as primary key columns.
+
+If the global setting "General => Save preferences immediately" is enabled, the SQLHistory will be saved immediately after the execution of a statement.  
+
+The column numbers of the header columns are now correct, when exporting the result table as XML.
+
+When displaying the content of a table, the dialog "Please wait while the query is executed" may not dispose.
+  This may occurs only for tables of a "In Memory Database" with only a few rows of data. 
+
+When editing table cells in a text area, the input field for the file name will be shown in an appropriate size 
+  instead of being very small. If the user change the size of the dialog, the input field for the file name will use the extra space.
+
+Now, "Press to open logs" shows  the current log file by default instead of a random one.
+
+SQL Scripts Plugin: Increased multi table script configuration dialog's size.
+
+Fixed NullPointerException in Hibernate Plugin when executing HQL with 'view objects' switched on.
+
+Hibernate Plugin: Made HQL code completion work more exact.
+
+Hibernate Plugin: Removed unused imports to regain compile independence from Hibernate API changes, see patch ID 3168381
+
+3309565: Not possible to translate SQL connection error messages, because they are hard coded.
+
+3303174: Installer hangs on linux.  Updated version of IzPack compiler to 4.3.4.
+
+3293737: A exception occurs if the value of a SMALLINT column is edited in a result table.
+
+3238037: It's impossible to create a foreign key in oracle 10g, if some tables contains a / in their name eg. recycle bins
+
+3222350: Cannot enter negative values for numeric fields when editing the result table.
+
+3196153: When typing using shift, you must release shift to type space
+
+3175871: On export to Excel, some numeric values are not exported correctly.  
+
+3172465: Error connecting to DB after 3.2.1 upgrade
+
+3171762: Wrong syntax for DROP KEY (When qualify table name preference is selected this produced two schema
+         or catalog prefixes on the table name)
+
+3148653: Missing App Icon on Mac OS X (Fix is available in the Mac OS X 3.2.1 installer file)
+
+3137852: DB2 Plugin - The source code is not visible, if a char column contains a default value.
+
+3088572: Squirrel fails when user tries to edit DB fields which have particular characters.
+
+3.2.1 (12/29/2010)
+==================
+
+Enhancements:
+
+Feature request 3030479: New global preference that allows scrollable tabbed pane for Session tabs.
+
+Feature request 1608435: (checkbox in I18N administration: "show only bundles with missing translations").
+        Thanks to Ivo Neri for the patch.
+
+Updated translation for Italian (Thanks to Ivo Neri)
+
+New translation
+ Japanese (Thanks to Toshiki IGA)
+
+Graph Plugin: Multiple tables can now be selected and moved simultanously
+  Thanks to Markus Schulz for the patch.
+
+New Session property to let SQuirreL set fetch size (call Statement.setFetchSize(int)).
+  See Session properties --> SQL tab.
+  Thanks to Stefan (wis775) for the patch.
+
+
+Bug-fixes:
+
+3138746: Typo within PluginClassName of SyntaxPlugin.
+3137390: Cannot connect after latest software update.
+3136386: Deleting table content via context menu does not work.
+3123014: StackOverflow ProgressCallBackDialog.
+                         Thanks to Stefan (wis775) for the patch.
+3055859: Regular expressions did not work in find & replace dialog.
+                         Thanks to Stefan (wis775) for the patch.
+
+Fixed translation label that was not being applied to "Initialize Session Timezone" checkbox.
+  Thanks to Ivo Neri for the patch.
+
+
+3.2.0 (11/21/2010)
+==================
+
+Enhancements:
+
+Updated Translations:
+ - Chinese (Thanks to xpdz)
+ - French  (Thanks to Erwan DUROSELLE)
+ 
+SQL Scripts Plugin:
+  New preference that allows to choose the escape string for new lines. See Global Preferences --> Tab SQL Scripts
+  (See patch #3079664 by Paul Wagland)
+
+Hibernate Plugin:
+  - New handling of limiting object count for HQL queries. This may prevent severe performance problems.
+    Formerly the limit was set more or less under the hood (SQL limit was used).
+    Setting the limit can cause the performance problems.  
+  - Hibernate session can now be started in an external process.
+    This can keep SQuirreL from running into memory problems when working with the Hibernate Plugin.
+    See Hibernate configuration panel for details. 
+
+Introduced a new general data type property 'Use column labels instead of column names in result headers'.
+See Global Preferences --> Tab 'Data Type Controls'. Will be useful e.g. for MySQL if Aliases are used in Select clauses.
+
+Session Property: "Keep SQL result table layout on rerun SQL"
+If this option is checked the layout of the table of a SQL result is tried to be restored after rerunning the SQL.
+Note: You rerun an SQL statement when you click the running man button on the upper left of a SQL result.
+
+New way to view query results: There is a new tab inside a query result named "Overview".
+It might need some trying out to understand what it does.  
+
+Incorporated patch which provides a node in the object tree called LOB which lists all LOBs, providing 
+details about each (Thanks to Bogdan Cristian Paulon) 
+
+Incorporated patch which provides a node under each table in the object tree that lists all of the 
+constraints for that table. (Thanks to Bogdan Cristian Paulon)
+
+Netezza Plugin: Added support for displaying external tables in the object tree.
+
+SQuirreL SQL Client is now built, tested and released with Maven.
+
+Bug-fixes:
+
+2693968: The "Load columns in background" setting (session properties -> SQL tab) is lost through restarts.
+
+3085119: NullPointerException when adding tables to graph.
+
+3088284: CSV export doesn't escape quotes. Thanks to wolfgang22 for the patch.
+3086444: Date/Time/Timestamp types did not display right after application restart when others than standard
+  formats were chosen in Global Prefs. (See patch 3087989)
+2998121: (Update doesn't work, settings seem correct).  Now, if the local release.xml file 
+         is not found the error dialog states as the cause, rather than merely saying the release.xml file 
+         couldn't be downloaded.
+2991971: RSyntax text editor ignores font settings
+2992443: Cannot use RSyntax or Netbeans editors
+2973045: Export to excel results in strange rounding; Thanks to Bogdan Cristian Paulon for the patch 
+1808038: Splash screen was always on top hiding all other windows behind it
+
+Popup-Menu for adding or removing driver specific properties didn't appear in driver properties
+ tab of alias properties on Win XP. (See patch 3083166)
+
+Double click in Alias tree always opened the selected Alias even if the mouse pointer wasn't placed on the Alias.
+ This way Aliases where opened when tree nodes where quickly closed or opened.
+
+RSyntax editor: Replace dialog: Replace button now does a find next after replacing. 
+
+Fixed problem with sorting after dragging columns
+
+Button sizes differed in Alias and Driver docking frame  
+
+Hibernate plugin: Icon buttons for connecting and opening configuration could be very small.
+
+Firebird Manger Plugin: Removed dialog (that pointed out missing Firebird driver) from startup routines.
+
+Fixed Alias Properties not showing when drivers getPropertyInfo() fails. Behavior has been seen with Oracle driver.
+
+RSyntax: Turned off drag and drop inside the editor. It conflicted with our
+drag and drop feature for files and caused editor texts to vanish. See bug #3006515. 
+
+RSyntax: When code reformatting was used on Windows, carriage return chars (\r) where inserted in the editor.
+These chars made keyboard arrow keys fail: If you stepped over an \r the key hit did nothing.
+
+Parser could be triggered far to often which resulted in high CPU and memory load.
+This problem was caused by redundant carriage return chars (\r).
+
+Any redundant carriage return chars (\r) are removed from files.
+On Win Platforms carriage return line feeds (\r\n) are kept for new lines.
+
+3.1.1 (4/24/2010)
+================
+
+Enhancements:
+
+Code completion Plugin:
+ - Users may choose to see column remarks in completion lists.
+   See Menu File --> New Session Properties --> Code Completion --> Checkbox an bottom of panel
+
+Hibernate Plugin:
+  - Results of HQL Queries can be displayed as objects
+  - Hibernate logs can be seen in SQuirreL logs when Hibernate logging is configured for console output.
+
+
+Bug-Fixes:
+
+2991709: Quotes missing in squirrel-sql.bat
+2990527: nChar() is unknown field
+2982594 / 2988387: RSyntax editor crash
+When database errors occurred while loading table columns, SQuirreL slowed down and produced a lot of log messages.
+2981691 / 2981694: squirrel-sql.bat fails on Windows 7 64 bit
+2980873: squirrel-sql.bat doesn't work out of box
+2978540: Identifiers starting with '_' where not handled as identifiers by the RSyntax lexer. This resulted in syntax coloring and completion problems. 
+2974533: Informix: Method can be called only once. / ErrorCode: -79
+2965617: Fail to open session with RSyntax editor
+2963371: Splash on 3.1 - copyright (was not updated for 2010)
+
+
+
+3.1 (3/3/2010)
+================
+
+Enhancements:
+
+Updated Translations:
+ - Korean (Thanks to Youngwoo Kim)
+ - Chinese (Thanks to xpdz)
+ - French (Thanks to Erwan DUROSELLE)
+ 
+Improved display of SQL result metadata
+
+Hibernate Plugin:
+  The Classpath configuration now allows to move entries up or down. 
+
+New plugin for Netezza NPS database server.  This plugin allows for viewing source and details of Views, 
+Stored Procedures, and synonyms.  It also provides the ability to execute stored procedures in the SQL Editor.
+See Help for screenshots and more details.
+
+Aliases now have the ability to setup a keep-alive SQL statement and sleep time (in seconds) to prevent a 
+connection from being disconnected while appearing to be idle.  This is done using the new Connection tab 
+on the Alias properties dialog.
+
+Derby Plugin:
+ New tab to display the source code of Derby stored procedures 
+ Thanks to Glenn (bassnfool2) for the patch (Patch ID 2907220)
+
+XML Export:
+ Tables in SQuirreL's GUI now allow to export data as XML (besides CSV and MS-Excel export)
+ Thanks to mironsadziak for the patch (Patch ID 2905595) 
+
+New editor component: RSyntaxTextArea by fifesoft.com.
+ New features:
+  - No long line problems
+  - Enhanced search functions:
+      shift F3: Find selected.
+      F3: Repeat last find.
+      control shift F3: Mark selected.
+      escape: Unmark all.
+  - Line numbers can be displayed
+  - Current line can be highlighted
+  Note: On MS-Windows systems the Java-VM parameter -Dsun.java2d.noddraw=true must be set in your SQUirreL 
+        start batch to prevent performance problems. 
+
+
+ - New Polish translation available (Thanks to Miron Sadziak)
+
+Better table header rendering for MAC OS
+  Thanks for Brian Mauter's Patch (ID 2856103)
+
+Feature request 2826175:
+  Number of rows read is now visible on message panel and results tab.
+
+Feature request 1656320:
+  Background Color Configuration is now available via a new tab ("Color Properties") in Alias 
+  Properties dialog.  
+
+MySQL Plugin
+  Fixed object tree menu items:
+   * Create database (on root node)
+   * Drop database (on catalog nodes)
+   * Rename (on table nodes)
+
+SQL Scripts Plugin:
+ New checkbox 'Use double quotes (") for qualifying' in global scripting preferences. 
+
+Feature Request #2818444:  Oracle: Connecting as SYS not possible - now it is possible to add the necessary 
+driver property to connect as SYS, or any other account that needs to connect as SYSDBA.
+
+Look & Feel Plugin
+ - Better support for Nimbus: No horizontal scrollbars on pop up lists (e.g. code completion) 
+ - Removed choices for Metouia and OYOAHA as these are not supported for use in Java 6.
+
+Oracle Plugin
+ - SQL*Loader control file generation.
+   Adds a new right mouse menu item to tables in the object tree: "Generate SQL*Loader control file"
+   Thanks to José David Moreno Juárez for the patch (Patch ID 2776344)
+
+About dialog now has a clickable link to our home page.
+ - Thanks to Hashim Kubba for this patch (ID 2104309)
+
+Graph Plugin:
+ - Show constraint name can be selected on each constraint separately. See right mouse menu on constraint 
+   line.
+ - Allowed constraints to be created using drag and drop.
+   To create such a non-DB constraint using drag and drop hold
+   down the control key. Then right click the constraint to configure it.  
+
+
+Bug-Fixes:
+
+SQuirreL was seen consuming a lot of memory and CPU.
+ For details about the fix see comments in class ExitParserThreadRequestException
+ See: http://squirrel-sql.cvs.sourceforge.net/viewvc/squirrel-sql/sql12/app/src/net/sourceforge/squirrel_sql/client/session/parser/kernel/ExitParserThreadRequestException.java?view=log
+
+Loading and saving files on Windows produced multiple CR (carriage return) chars in files.
+When copy and paste was used on such files multiple empty lines were created.
+Note: The Windows standard editor Notepad shows multiple CR chars where they exist and allows to remove them.
+      SQuirreL does not remove them automatically at any place.
+
+Moved focus to SQL Editor when it gets visible through previous Session / next Session navigation (Alt left/right)
+
+Fixed class not found exception in Oracle Plugin when setting Session Time Zone.
+Thanks to Neville Rowe
+
+
+2946165: preferences messages not translatable
+2946160: translation missing in refactoring
+2944128: remote not translatable
+2942351: Program doesn't launch
+2927576: NPE at Copy as SQL INSERT-VALUES
+2913463: Problems with system classpath with quotes
+2908407: MSSQL driver plugin example URL isn't correct
+2891190: block comment content produces error
+2879711: Fix for Excel date export concerning dates earlier than 1900-03-01.
+ 		 Thanks to mironsadziak for the patch (Patch ID 2905218)
+2853329: Ctrl-S overwrites existing file on 2nd try
+2819161:  squirrel-sql.sh in plain zip had an errant apostrophe.  Tested this fix on MacOS 10 and Ubuntu 9.04.  
+         Thanks to Jonathan James for vetting the anonymously submitted patch.
+2818117 ("Make Editable" uses column label instead of name)
+		 Thanks to Christian Gruenberg for the patch (Patch ID 2924887)
+2801011: Sybase (CREATE TABLE script generate decimal(15,2) instead of (15,4))
+2794860: Sybase (CREATE TABLE script generate numeric(15) instead (15,2))
+2754166: SQLScript plugin loses precision for Timestamp in H2
+2746982: Error occurred in IPlugin.sessionEnded() for SQL Parametrisation
+2713952: Create table script (on Sybase): Always generate "datetime" type for "date" (and datetime)
+2657987: Session was closed even if session closing confirm dialog was not confirmed. Connection was not 
+         closed then.
+
+ArrayIndexOutOfBounds exception occurred when more than one Alias was deleted form Alias tree  
+
+Fixed startup error:
+ java.lang.NullPointerException
+ at ... .AliasFolderState.applyExpansionAndSelectionToNode(AliasFolderState.java:144)
+
+Error in Alias tree: Alias vanished or gave an error when dragged on itself.
+
+SQL Scripts Plugin:
+ - Several scripting functions did not respect global scripting preferences about qualifying tables.
+ - When generating insert scripts from a SQL statement the global
+   preference "Qualify table names in generated scripts with the schema name" did not work.
+   Thanks to Johann Geyer for the patch (Patch ID 2365193)
+ - Generating data scripts may throw java.lang.StringIndexOutOfBoundsException when timestamps where scripted
+ - Foreign key constraints with more than one column were not scripted correctly. (Only first column was 
+   included.)  
+
+Schema caching:
+ Removed problems with selective schema caching when the same table name
+ exisits in two different schemas. E.g. column completion didn't word anymore.
+
+Stored Procedures that return a mix of update counts and results sets weren't displayed properly.
+
+
+3.0.1 (3/23/2009)
+================
+
+Enhancements:
+
+ - New Korean translation available (Thanks to Youngwoo Kim)
+
+Bug-Fixes:
+
+2686268: OS X Look and Feel is Incorrect
+2645286: Quotes missing in squirrel-sql.sh (Thanks to mdykierek for the patch)
+2531193: Oracle create table script the "ON UPDATE" is wrong
+2644778: "Contents Tab SQL filter" and "Limit cell edit WHERE clause size" dialogs didn't work
+
+Other reported bug-fixes:
+
+ - Fixed UI freeze issue which sometimes occurred when using software update feature.
+
+ - Better support for PointBase 5.7
+
+ - Fixed bug which caused NullPointerException in Refactoring when modifying column types
+ 
+ - Fixed bug which occurred when generating FK SQL for DB2 where the update and delete action clause result 
+   in syntax error for certain standard constraint actions.
+ 
+ - Fixed the case of the install directory (java -> Java) to match the case of the directory created by the 
+   installer. 
+
+ - NullPointerException occurred when last tab was closed
+
+ - Fixed several problems when Schemas where cached. For example, "Contents Tab SQL filter" and 
+   "Limit cell edit WHERE clause size" dialogs did not open.
+
+ - Fixed a problem where when certain windows were closed (for example, the Session Properties window) the 
+   first tab was always selected
+
+3.0 (2/21/2009)
+==============
+
+Enhancements: 
+
+Dataimport Plugin:
+  * SuggestColumns: if columns in database and in the first line of the file
+    are equal, they are matched for the import.
+
+Sybase Plugin:
+  * New ExceptionFormatter for SQLWarnings: better viewing warnings while the parameter
+    showplan is on (set showplan on) 
+
+Look an Feel Plugin:
+  * Made Nimbus look and feel available (needs at least JDK/JRE 1.6.0_10)
+  * Made Metal look and feel with Ocean theme the default (used at first start up).
+  * Added warning message that look and feels other than Metal may cause perfomance and/or functional problems
+
+
+Updated Italian translation (Ivo Neri), Chinese translation (xpdz), French translation (Erwan Duroselle)
+
+New user interface layout: Tabbed layout
+
+Hibernate Plugin:
+   - Cleaned up details display in mapped objects tab: Now every tree node displays an appropriate details table.
+   - Added hint to solve StackOverflowError caused by logging that may occur when connecting to a Hibernate configuration.
+
+Object tree search (Feature request 2004240):
+   Above the Object tree is a text field and a find button.
+   The search string has to be the exact simple (unqualified) name of an DB object or may contain placeholders ("%" or "_").
+   The text field supports code completion.
+   A filter button allows to apply the search string as Object tree filter. 
+
+Object tree filtering:
+   Multiple (comma separated) Object tree filters can be defined. Filter conditions can be excluding oder including.
+   Better support for placeholders "%" and "_".
+   See "Session Properties"/"New Session Properties" dialogs --> Tab "Object Tree".
+
+Graph Plugin:
+ - Qualified table names can now be displayed. Use the right mouse menu on graph background.
+
+Edit Extras Plugin:
+ - Improved handling and look of Escape date dialog. 
+
+Graph Plugin:
+ - New entries in table's popup menu: "Copy table name" and "Copy qualified table name".
+ - Columns of all tables in a graph can now be ordered at once. Use the right mouse menu on graph background.
+
+New Plugin: Smarttools by Michael Romankiewicz
+  - Searching for tables that do not have a primary key or unique index or index.
+  - Searching for non nullable columns that contain null values. Some DBs e.g. Firebird can be tricked to have this inconsistency.
+  - Changing values database wide according to specified criteria.
+  For more information see the Plugin's help.
+
+
+New Plugin: Firebird Manager by Michael Romankiewicz
+  - Storing and restoring Firebird DBs
+  - Managing users and roles for the Firebird RDBMS
+  For more information see the Plugin's help.
+
+ - Aliases can be displayed as list or as tree.
+
+ - A new preference for choosing Locales is available in Global Preferences -> General tab.  This allows you to
+   set your preferred locale, and if an optional translation is installed that corresponds with the preferred
+   locale, then restart and the changes take effect.(No longer necessary to hand edit the start script)
+
+ - Copy as "SQL WHERE" / "UPDATE-SET" / "INSERT-VALUES" statement function in tables
+   Tables offer right mouse menu to copy WHERE, UPDATE-SET or INSERT-VALUES clauses of selected data to clip board.
+   Works like the existing "Copy as SQL IN statement" function.
+
+ - New Plugin: SQLReplace by Dieter Engelhardt
+   This plugin replaces a set of variables before a statement is executed.
+   The variables to replace can be defined at the Plugin's Global Preferences tab.  
+
+ - Added a preference option to allow the selection of items in lists to change while activating
+   the popup menu on a single right-mouse button click.  For example, without this, you need to 
+   select an object in the tree with a left mouse button click, then press the right mouse button 
+   to activate the popup menu.(See Global Preferences -> General -> Select On Right Mouse Click)
+
+Data Import Plugin: It now warns the user when importing data into an existing table, that it's current data 
+                    will be truncated first.
+
+DBCopy Plugin: 
+ - Added support for mapping the DISTINCT source column type for copying data from PostgreSQL
+
+DB2 Plugin: Lars Heller provided a patch to add support for XML column types in SQuirreL via the 
+            DB2 Plugin (tested against DB2 v9.5 LUW)
+
+Oracle Plugin:
+ - Added validity (VALID|INVALID) field to trigger details tab for triggers.
+ - Allow the user to configure whether or not to show the syntax error offset in 
+   the SQL Editor.  This feature creates a user-defined function called 
+   SQUIRREL_GET_ERROR_OFFSET, which can be disabled.
+ - Added ability to recognize "create package" and "create package body" statements.   
+
+PostgreSQL Plugin:
+ - Added support for PostgreSQL(8.3.x) new XML type.
+
+ Contributions from Daniel Regli and Yannick Winiger:
+ - Menu: added a new "PostgreSQL" menu to the object tree and the session menu for
+   PostgreSQL-specific functionalities.
+ - Vacuum: added visual (dialog) support for the PostgreSQL-specific VACUUM statement for
+   garbage-collecting a selection of tables or the whole database.
+ - Explain: added an additional SQLResultExecuter to the sql panel that shows
+   the query plan of executed statements.
+
+Refactoring Plugin:
+ - Fixed bug which caused column comment alter statement to be generated even when no column column 
+   change was made.
+
+ - Don't try to order the list of tables to be dropped (forcing FK info retrieval) 
+   when there is only one table being dropped.
+
+ - Contributions from Daniel Regli and Yannick Winiger:
+   Added new Refactorings (All new refactoring dialogs can now be closed with the ESCAPE key):
+    - Rename Table
+    - Add/Rename/Drop View
+    - Add/Modify/Drop Sequence
+    - Add/Drop Index
+    - Add/Drop Foreign Key
+    - Add/Drop Unique Constraint
+    - Add Lookup Table
+    - Add Auto Increment
+    - Merge Column
+    - Merge Table
+
+ - Refactoring, scripting for Intersystems Cache DB:
+   Made Refactoring and scripting functions available for the Intersystems Cache DB by activating its 
+   Hibernate dialect.
+
+Bug-Fixes:
+
+SQL Replace Plugin: Fixed a bug that caused patterns such as $P{startDate} to throw an exception.
+
+Add/Edit Alias window did not resize properly
+
+SQL Scripts Plugin: On some DBs (e.g. MySQL) "Store result of SQL in table"
+                    did not work for SQLs that returned a lot of rows.   
+
+
+Graph Plugin: Table's right mouse menu "Add Parent tables" did add a parent more
+              than once when more than one foreign key to the parent existed.    
+
+Graph Plugin: Refresh didn't work for newly created constraints
+
+Fixed several bugs which made it impossible to work with SQLite.
+
+Fixed a bug which made it difficult to see text that was being edited in a table.
+
+2609090: Auto update fails if "empty" change list is validated
+
+2480365: Plugin loading fails when installdir has spaces
+
+2220792: SQLite: content not editable
+
+2184379: (SQuirrel client 2.6.6 fills up 52 gigs of log file space).  Added a new log 
+appender that is based on file size rather than time.
+
+2119937: Windows EOL chars (CRLF) are converted to Linux EOL (LF).
+
+2104422: Fixed some potential bugs (Thanks to Hashim Kubba)
+
+2102894: Missing Scale Placeholder in Sql server dialect.  This causes script generation and dbcopy 
+targeting MS-SQL server to produce decimal columns without the scale attribute (that is, decimal(7) instead 
+of decimal(7,5))
+
+2092902: Focus remains on hidden session window for Alt-Arrow.  Removed code which was a 
+work-around for a bug in java 1.3, that has since been fixed and was actually producing a 
+bug seen in java5 and java6, where the Alt-RightArrow key shortcut switched session windows 
+into the foreground without giving them focus.  Thanks goes to Johnathan James for the 
+bug-fix.
+
+2091569: FAQ is missing its images
+
+2049336: Make Editable disappear from SQL/results tab
+
+2018512: DB2 timestamps still don't work when milliseconds are zero. Patch submitted by Daniel Stränger.
+
+2018018: (Bug in FormatSql function) Formatter now uses platform-specific EOL char sequence.  
+
+2013346: export csv with option "carriage return + linefeed"
+
+1995728: Unable to switch database
+
+1958881: (Unable to see source of database views)  Adjusted the query for view source to use 
+underlying system tables instead of INFORMATION_SCHEMA.VIEWS, since this view cannot handle views 
+that are greater than 4000 characters.
+
+1968807: Unsigned INT problem with IMPORT FILE functionality
+
+1968270: Displaying unsigned INT as signed INT in column
+
+1845987: PostgreSQL interval types are not displayed
+
+1840266: Create Table Script sets varchar columns to 8000
+
+1830649: Focus Loss
+
+1824534: Constraint created twice
+
+1902611: (Oracle) Don't fail on SQL-Plus "SET ..." commands in SQL script; Now, the Oracle plugin skips over 
+                  them. 
+
+1876352: (DB2) Incorrect  TIMESTAMP in create data script (loss of precision - nanosecond component - also
+               affected other databases.
+
+1861402: (Informix catalog switching doesn't work correctly) 
+ - Better catalog switching behavior for databases that support catalogs.  Now if a connection is made 
+   without specifying the catalog, a place-holder
+   catalog ("None") is inserted into the catalog drop-down menu and removed once a catalog is selected.  
+ - Fixed a race condition that caused the tree to be refreshed before data was refreshed from the database 
+   when the catalog was switched.  
+ - For Informix, setCatalog seems to have no effect, so now an explicit DATABASE <catalog name> command is 
+   issued. 
+
+1848924: Sybase object browser contents not displayed
+
+1769599: fix for permission problem with Windows Vista.  Now we create our temporary path file in a temporary 
+location that the user should always be able to write to.  Thanks to user aberdeen61 for contributing the 
+fix. 
+
+1596240: Fixed bug when displaying HSQLDB->Objects->Content, where contents are not shown and exceptions are 
+thrown because tables are not being qualified with the schema name.
+
+1541325: (Derby) Connection doesn't close when ending session - thanks goes to Alex Pivovarov for the 
+                 patch that fixed the issue. 
+
+Bug-Fix for bug that caused Frontbase indexes not to be displayed in the indexes tab, for tables in the 
+Object tree.
+
+Fixed identifier qualification in Progress - tested on OpenEdge 10.1C.  Now only schema is pre-fixed to 
+identifiers, instead of catalog and schema.
+
+Code Completion Plugin:
+ - Made column completion available for databases/JDBC drivers that support catalogs and/or schemas
+   but don't provide catalog or schemas in their column meta data. For example some versions of MySQL
+   show this behavior.
+
+DBCopy Plugin:
+ - Only attempt to order the tables being copied if there is more than one table in the copy set.
+
+Changing to another window using Alt + left/right arrow did not properly set focus.
+
+Hibernate Plugin: 
+ - Class names in completion list could change from fully qualified to simple
+   while scrolling through the completion list.
+ - Fixed identifier qualification in Progress - tested on OpenEdge 10.1C.  
+   Now only schema is pre-fixed to identifiers, instead of catalog and schema.
+   When a statement like "from Kv k where k." was completed the fields for k. would come from 
+   any arbitrary mapped class which name started with Kv
+
+Refactoring Plugin: When generating DROP TABLE statements, Frontbase requires
+CASCADE or RESTRICT.  Now we append CASCADE to the DROP TABLE statement.
+
+1830649: Focus Loss
+1820792: Sybase ASE - table not shown in object browser
+1821354: Changing default value of a column in Derby does nothing
+1820214: 2.5.1 DB aliases do not transfer properly to 2.6.1
+1820020: modified tables aren't sorted
+1815667: Create Table Script does not include column defaults
+
+Syntax Plugin: Fixed memory leak which caused sessions not to be garbage 
+collected.
+
+Bug-fix for plugin unloading where unloading a session plugin did not prevent 
+it from binding to new sessions.
+
+2.6.1 (10/24/2007)
+==============
+
+Bug-Fixes:
+
+1818446: Packaging problem in v2.6 on MacOS X
+1805954: Tables not in alpha order in Object view
+
+2.6 (10/20/2007)
+==============
+
+Enhancements:
+
+New Plugin (Hibernate)
+   - allows to generate SQL statements from Hibernate HQL statements
+   - shows object tree of mapped objects
+   - HQL Code completion and syntax highlighting
+   - Three ways to create a HibernateSessionFactory
+     * Native way using "new Configuration().configure().buildSessionFactory();"
+     * JPA way using "Persistence.createEntityManagerFactory("<persitence-unit name>");"
+     * User defined way to by calling a user defined provider method.
+   See help for further details.
+
+Improved speed at which large files are loaded into import popup for 
+CLOB/VARCHAR cells.
+
+Added basic drag-n-drop to transfer a file from the desktop into an SQL Editor 
+panel.
+
+
+New Plugin (SQL Parametrisation - Thorsten Mürell) allows you to put variables 
+           into your SQL statements.
+           
+New Plugin (Data import - Thorsten Mürell) allows you to import arbitrary files
+           into the database.
+
+DBCopy Plugin:
+ - Copy thread will wait for the dialog record progress bar to be updated 
+   before continuing to copy records.
+ - Fixed bug which caused cursors to remain open in the source database after
+   the copy operation was complete. 
+
+DB2 Plugin: 
+ - Added tab for displaying the source code for DB2 MQTs as well as DB2 
+   tables.
+ - Added support for OS/400 (trigger source and details not yet implemented). 
+   Special thanks goes to Tilmann Brenk for submitting OS/400 versions of all SQL 
+   statements required to support the plugin features.
+ - Added support for showing user-defined functions in the object tree and the 
+   source code that is associated with them if it is available.
+ - Exceptions from DB2 Universal JDBC driver are now interpreted as 
+   DB2Diagnoseable exceptions so that the cause of the exception can be printed 
+   (Thanks to Christoph Schmitz).
+ - When the source tab of a C-language stored procedure is selected, we now 
+   show the user a nice informative message stating that the source code is 
+   unavailable instead of merely displaying the word "null".
+
+Code Completion Plugin:
+  When Ctrl+Space is hit while completion popup is already open the prefix up to
+  where all completion candidates match will be written to the SQL editor. The 
+  completion popup will remain open.
+		   
+Derby Plugin: New custom QueryTokenizer which allows Derby sessions to give the 
+              command:  run '<abs-path-to-script>'
+              This reads in the file and executes it's statements.  This is 
+              supported in Derby's own ij command-line interpreter.
+
+Firebird Plugin: Added triggers node for each table to display triggers.
+
+Informix Plugin: 
+ - 1732161: Fixed Source code of procedures and triggers to work 
+            with Informix version 7.3.1
+ - When executing an SQL statement with a syntax error, the driver is now asked
+   to provide the position of the error in the statement.  If it is available, 
+   the cursor is moved to the position of the incorrect syntax.
+
+LAF Plugin: Added Substance 4.0 look and feel as an option.
+
+MySQL Plugin: 
+ - Added support for handling stored procedure create statements.
+ - Added source tab for Stored Procedures, Triggers and Views.  Triggers are 
+   displayed as object nodes beneath tables as is done in other plugins.
+
+Oracle Plugin: 
+ - 1446678 (SQL Error Help) Added capability to put the cursor at the position 
+   in the SQL where the statement failed.
+ - 890843, 1787653: Added support Oracle's SYS.XMLTYPE column.
+ - Warning message is displayed if string literal timestamp setting is used for
+   internal where clauses - this setting may result in the inability to edit 
+   tables.
+ - (Feature Request 1735530: Hide Oracle Bin$.....==$0 tables ) 
+ 	Added configuration for removing the Recycle Bin tables from the object tree.
+ - Show the source for Oracle tables, as well as materialized views.  
+ - Added additional query tokenization pass to find begin...end;/ type 
+   anonymous procedures.
+   
+PostgreSQL Plugin:
+ - Added database locks display tab for PostgreSQL sessions.  Click on the top 
+ node in the object tree and look for a "Locks" tab.  Code was adapted from Rocco
+ Rutte's tab of the same name and purpose in the EclipseSQL project.
+
+Refactoring Plugin: 
+
+ - Fixed problem where the comment of a column could not be altered if it was 
+   null.
+ - Refactored drop tables command to not use the event dispatch
+thread for calculating foreign keys(UI Responsiveness).  Also, now FKs in child 
+tables are dropped before any parent tables are dropped when cascade 
+constraints is selected.
+
+SQLScripts Plugin: Now uses types generated by Hibernate dialects for create
+table script feature.  Also, it now uses the session query tokenizer.  
+
+Sybase Plugin: Added new trigger and index nodes beneath tables in the tree.  
+Also, added trigger source tab for triggers.
+
+Patch 1761706 (Miscellaneous Java 5 Generics) submitted by Bron Eubanks
+
+Task 138098 (Plugins Session Menu Items (Disable)) When using a session that 
+  is not supported by a db-specific plugin, that plugin should disable it's 
+  Session menu items
+
+Task 137959 (Refactor PreferencesManager) removed redundant plugin class 
+  definitions related to Preferences which were very similar.
+
+- Added unload button to plugin summary dialog which will cause the selected 
+  plugin to be unloaded.
+  
+- Added support for setting whether or not plugins are loaded at startup 
+  (without physically removing them), using the plugin summary dialog.  You must 
+  restart SQuirreL for plugin change to take effect.
+  
+- Added 'Use PK' button on the "Edit Where clause" dialog which will cause only
+  PK columns to be used for updating rows in the table contents panel.
+- Added "All Objects" to alias properties.
+- Use the last directory that a file was imported from when importing 
+  additional files for binary fields.
+  
+1757076: (DATE column seen as TIMESTAMP, update in editable mode fails) Changed
+the default of "Read Date as Timestamp" to false.  This setting breaks editing
+dates on Derby.
+
+1743720: (Save settings immediately, not only when closing SQuirreL).  Now there
+is a setting in Global Preferences to "Save Preferences Immediately" (Default 
+is true) Additionally, if this is not desired and it can be disabled to give the 
+old behavior (faster), and a new menu item under "File" called "Save Preferences" 
+is available to immediately save everything that is normally saved during 
+shutdown.
+
+1742033: (Skipping quoting escape in table dropping) Refactoring plugin drop 
+table functionality now handles tables with embedded double quotes by doubling 
+the double quotes to allow the database to recognize the doubled quote as a 
+single quote which is part of the identifier. Thanks goes to Thomas Mueller 
+(from www.h2database.com) for contributing code to fix the issue)
+
+1731251: (Cryptic exceptions with DB2 JCC driver) Provides an API to allow 
+plugin authors to create and register custom exception formatters to be used 
+when displaying error messages and the like in the session message panel.
+
+Updated French translation (Thanks to Erwan Duroselle)
+Finished German translation
+
+Bug-Fixes:
+
+Statements like
+"SELECT TestTab.testid, TestTab.testname FROM TestTab"
+were not editable.
+
+Fixed bug in CodeReformator which is exposed when the statement separator 
+is "|".  Also, made formatted source tab able to handle this type of problem 
+more gracefully by showing the source in it's original form, instead of 
+nothing at all.
+
+Goto line dialog (ctrl+g) was missing labels.
+
+1752089 (ConcurrentModificationException raised when loading schema)
+
+1716859 Can't see data in content tab or row count tab (MS SQLServer databases
+        with a dash ("-") in their name would cause the content tab or row count
+        tabs to render no data.
+
+1714476 (DB copy uses wrong case for table names) The copy operation would
+         sometimes fail to select records from the source table.  Since the
+         case for the source table is always known to be correct, the plugin
+         no longer erroneously attempts to correct the case.
+
+1714475: (Adding rows from the content tab)  When inserting row data, pay 
+         attention to isAutoIncrement flag so that these columns are excluded 
+         like rowId columns.  After insert, refresh the table data so that 
+         auto-generated fields are populated.
+
+1704798 ISQLExecutionListeners cannot return "null"
+
+1701380 addSQLExecutionListener is broken
+
+1700093 Formatter fails for insert script with multiple sub-selects
+
+1699294 Squirrel imports BLOB, but does not update data 
+
+138092 (PostgreSQL table types) Now PostgreSQL table types list and object tree
+       exclude "SYSTEM INDEX" type.  Treating these objects as tables causes 
+       lots of SQLExceptions from the PostgreSQL jdbc driver.
+
+Refactoring Plugin:
+ - When building a new TableColumnInfo, if the defaultValue textfield is blank, 
+   then make the default value be null.
+
+Task 137984 (Bug in alias delete) The problem was that notifications were 
+  being sent to the alias drop-down that the item was being deleted which 
+  triggered an update and new selection forcing the connect to alias window to 
+  be launched.  Now, the alias drop down is disabled while the update is 
+  happening and enabled immediately afterward.
+
+Fixed a bug that occurred when no plugin installs a custom QueryTokenizer in 
+a Session - changing the session properties for query tokenizing has no 
+effect.
+
+Fixed bug which appeared while editing tables in PostgreSQL 8.1.  If the table 
+was created without an OID column, the last column would not be editable.
+
+Fix for issue where dates aren't correctly displayed or updated when using 
+'treat date as timestamp' pref in the SQl Editor result panel.
+
+2.5 (4/7/2007)
+==============
+
+Enhancements:
+
+- Updated Czech translation (Thanks to Jan Kostrhun)
+- Updated Simplified Chinese translation (Thanks to xpdz)
+- Updated French translation (Thanks to Erwan Duroselle)
+- Updated Italian translation strings (Thanks to Ivo Neri)
+
+- When the user control-clicks on an identifier in the SQL editor it takes you 
+  will show that object in the object tree (Same behavior as Ctrl-b).
+
+- Dialog prompt to save file changes on exit, now includes the filename in 
+  case there are multiple open files in different sessions.  Also, the session
+  alias name appears in the title, in case the editor contents aren't yet 
+  associated with a file.
+
+- SQL history window
+  The contents of the SQL history combo box can now be opened in a window
+  where the user can search for formerly excuted statements. The history
+  is available through a button next to the SQL history combo box or through
+  tools pop up (ctrl+t).
+
+- Export: Warn the user when exporting data to CSV/Excel if there are Clob 
+  placeholders (<Clob>) in the table data being exported.  Also, let the user 
+  know when the export to file is complete, if no command is to be executed to 
+  show the exported file.
+  
+- 'Delete Records' action now orders the selected tables in order to satisfy any
+  FK dependencies.  Previously, this operation would fail if PK tables preceded
+  (by name alphabetically) FK tables in the object tree list.
+
+- Certain plugins (Oracle, Sybase, MS SQL-Server) now have configuration tabs 
+  (in Global Preferences) to allow for configuration of the statement separator 
+  for scripts independently from the Session properties configuration.  For 
+  example, this means that now when you switch between session windows that use 
+  different statement separators (Oracle = ';' / Sybase = 'GO'), you no longer 
+  have to change the global statement separator for all sessions to get the 
+  correct one for script execution. As long as you have the plugin installed 
+  which corresponds to the type of database that a session is accessing, a 
+  reasonable default is supplied to make this configuration unnecessary in most 
+  cases.
+
+- Added better support for executing large scripts (by default, a script is 
+  considered large if it has > 200 SQL statements selected for execution in the
+  script).  Now, only one message is written in the message panel at the bottom
+  of the session window at the end of running many statements summarizing the 
+  details of execution (timing, statement type and count, etc).  The message
+  "SQL Statement x of y <some sql...>" is still displayed in the results panel to 
+  indicate progress. Also, the history bar isn't updated during large script 
+  execution. The "200 SQL statement" default is configurable in Global 
+  Preferences under 'SQL' tab and all of this new functionality can be disabled 
+  by using '0' (zero) as the value of large script statement count.  This 
+  dramatically improves UI responsiveness for large scripts (especially those 
+  with statement counts in the thousands) and makes it possible to cancel the 
+  execution using the cancel button - which is otherwise effectively disabled 
+  while the UI attempts to keep up with all of the UI updates in a large script.
+
+New Plugins for H2, PostgreSQL and DB2
+	These plugins provide source tabs for stored procedures, views and triggers.
+	They also provide details tab for sequences and triggers	
+
+New Plugin for Sybase ASE by Ken McCullough
+  	The plugin allows to script the code of Views and Stored Procedures of the 
+  	Sybase ASE DB.
+
+Code Completion:
+   - The number of table columns that should be displayed on top of the 
+     completion list when completion is called outside of the scope of a 
+     table/view is now configurable in code completion properties.
+
+Edit Extras:
+   - New formatting action - remove newlines.  This is useful when copying SQL 
+     from console windows that insert end-of-line characters when copying.
+
+Refactoring Plugin
+  - Added support for modifying the column type from varchar2 -> clob and 
+    clob -> varchar2 (which isn't directly supported by Oracle's column modify 
+    alter statement).
+  - 'Drop Tables' action now orders the selected tables in order to satisfy any
+    FK dependencies.  Previously, this operation would fail if PK tables 
+    preceded (by name alphabetically) FK tables in the object tree list.
+    
+SQL Scripts Plugin
+  - Now when selecting 'Create Data Script', the insert statements created are
+    ordered by the first column.
+
+Oracle Plugin
+  - Added configuration panel for Oracle plugin in Global Preferences to allow 
+    configuration of new custom Oracle query tokenizer.
+  - Added support for executing create procedure, create function and create
+    trigger blocks delimited by a single "/" such as is supported in SQL-Plus.  
+    Also, added support for the "@" construct which is used to specify a script 
+    file to be executed without loading it into the SQL Editor first.
+  - Source tab for views now presents source code that is formatted and 
+    correctly formed to allow it to be used as an SQL statement to replicate 
+    the view.
+  - Added the schema name to the SID for session nodes - it's easier now to 
+    find the session you are looking for.
+
+Informix Plugin
+  - Is now using the code reformatter for formatting the Source Tab for views 
+    The code reformatter was written by Gerd Wagner and previoously located in 
+    the EditExtras plugin.  It has been moved to core so that other plugins can 
+    take advantage of this capability.
+
+DBCopy Plugin 
+  - Allow the user to set "0" for the fetch size to indicate that this should 
+    not be called.  JDBC-ODBC bridge driver fails to execute *any* SQL once you 
+    have set the fetch size to *any* value.
+  - Analyzes FKs to be copied and skips them if they already exist in 
+    destination database. 
+  - Now the plugin reorders source tables to satisfy FK dependencies when 
+    copying data into existing tables with similar constraints.
+  - The error message for SQLExceptions now includes the SQL statement that was 
+    last executed (including bind variable values if it was a PreparedStatement)
+
+Data Type Controls/DBCopy preference sheet scrolling - sped up the scrollbar 
+so that one click of the down arrow gives ~10 pixels of scroll instead of 
+only 1 pixel.  This makes it so that scrolling with a wheel mouse moves from 
+top edge to bottom edge in about three full rotations of the wheel instead of 
+about thirty.
+
+Bug-Fixes:
+- Fixed issue where USERS, SESSIONS, INSTANCES nodes in the object tree for 
+  Oracle sessions weren't being populated with child nodes when the session is 
+  first started.
+- Added support for identifying Informix XPS, so that the Informix plugin can 
+  be used (Thanks to Dieter Engelhardt for the patch)
+- When treating dates like timestamps, simply use the DataTypeTimestamp class 
+  instead of trying to make the DataTypeDate class smart enough to interpret 
+  timestamps.  This fixes the issue where a Number format error was encountered
+  while editing DATEs when they are being interpreted as TIMESTAMPS.
+- Fixed NPE that is seen on startup when sessions are set to "Connect at Startup"
+- Fixed functions like Quote/Unquote SQL or Format SQL which were removing new lines.
+  (Now there is a separate function to remove newlines)
+- Caching of schemas (serializing to disc) failed. A NotSerializableException 
+  was thrown, due to development code introduced during version 2.5 development.
+- An error occurred when F5 (Refresh) was hit in a SQL Work Sheet or an Object Tree Window.
+
+1689040 (plugins prefs files saving) 
+	Now preferences for some plugins (DBCopy, MS SQL-Server, Oracle, SQLScript and 
+	Sybase ASE)  that were formerly stored in the program plugin directory, are now 
+	stored in the user's settings directory.  This means that preferences for these 
+	plugins should now be preserved when re-installing SQuirreL to a new location.  
+	To migrate existing settings, command-line arguments can be given: 
+	
+	-DmigratePreferences=true -DoldSQuirreLInstallDir=<old location>
+	
+	This will result in migrating newer prefs.xml files that are located in
+	the program plugin directory 
+	
+	(e.g. <old location>/plugins/dbcopy/prefs.xml) 
+	
+	to the user's settings directory 
+	
+	(e.g. USER_HOME/.squirrel-sql/plugins/dbcopy/prefs.xml)
+	
+	You should edit the launch script to add these settings, start SQuirreL, 
+	stop SQuirreL gracefully, then remove these settings from the launch script.
+
+1682289 Schema browser won't show all schemas. 
+	    (Thanks to Robert Williams for the patch)
+
+1681202 Access to column metadata by name (that is, COLUMN_NAME) fails. This 
+        affected the SQLScripts and Graph Plugins for some versions of the DB2 
+        JDBC driver)
+
+1680919 failure to export cvs/excel on mac osx (incomplete ClassPath entry in
+        Info.plist)
+
+1679998 DOUBLE PRECISION is rounded with locale datatype setting
+
+1675787 Bad link in Online Help
+
+1672207 Create Data Script - PostgreSql.  PostgreSQL requires insert statement 
+		boolean values to be literal strings "true" or "false", instead of 1/0.
+
+1660412 Create insert script hangs on explicit Oracle DATE fields (A bug in the
+		the SQL parsing routine would hang the thread when the word "from" 
+		appeared in a column name in the select statement)
+
+1659412 TIMESTAMP WITH TIME ZONE shows as <Unknown (-101)> - Support was added
+        for rendering values of columns with this Oracle-specific type.
+
+1646886 (SQL Bookmarks: Duplicate parameters show as duplicates in the dialog box)
+        Now parameter that appear multiple times in an SQL statement do not 
+		result in multiple entry fields in the boolmark run dialog.
+
+1643307 Title is missing in Save-Dialog (When ending a session for file saves)
+
+1617839 Two new lines with white spaces in between do not separate SQLs when 
+        SQLs are executed without selection.
+
+1639680 Cannot export smallint and decimal to MS Excel
+
+1635259 Session menu has two items with mnemonic "T"
+
+1639662 Block comments can be ended prematurely
+        (Thanks to Sam Polak for the patch)
+
+1631392 (Dropping materialized views) - The 'Drop' menu item has been replaced
+        by a 'Drop Table(s)' menu item available with the Refactoring Plugin.  
+        The new menu item allows the user to specify whether or not to cascade 
+        constraints as well as being able to see the SQL that will be executed.
+
+1471672 Float numeric field precision loss in output (DBMS:Oracle)
+
+1447227 Object tree should refresh when changing object tree filters
+
+DBCopy Plugin 
+  - If the source/dest database is Oracle, and the type of column being copied 
+    is DATE, then treat it like a TIMESTAMP for reading or writing the value.  
+    Oracle stores a time component in date columns and this change prevents the 
+    time component value from being lost if the destination database can also 
+    store a time component in DATE columns.
+
+Derby Plugin  
+  - Transformed trigger source tab contents into valid SQL that can be used 
+    to re-create the trigger.  
+  - Fixed multiple bugs that occurred in the source tab when the same 
+    view/trigger name is used in multiple schemas.
+
+Informix Plugin 
+  - Fixed to work with IDS 9 - qualified references to all system views by 
+    prefixing them with the string 'informix.' (no quotes).
+  - Fixed ordering segements within the body of Stored Procedures.  
+  - Applied code formatting to triggers and view source.  
+  - Fixed erroneous inclusion of extra whitespace which for some definitions 
+    made the SQL invalid.
+
+Oracle Plugin
+  - Fixed a memory leak where the plugin was holding on to closed sessions
+
+Refactoring Plugin 
+  - 'Drop Column' action now properly delegates db-specific drop column command
+    to the appropriate dialect for the session.
+  - Now allows precision and scale for new or modified columns to be set to 0.
+  - The scrollbar in the column list dialog now appears, where previously it 
+    did not, making tables with many columns difficult to work with for 
+    Add/Modify/Drop column. 
+
+
+2.4 (12/31/2006)
+================
+
+    New Features/Enhancements:
+
+Note: This is the first release of SQuirreL that specifically requires JDK 1.5 
+or higher to compile and run. The build scripts and the installer now check for 
+at least 1.5 before proceeding.
+
+MS Excel export of displayed tables:
+  Besides the exporting tables displayed in SQuirreL to CSV files it is now 
+  possible to export to MS Excel files. Thanks to Andr� Schild for the patch.
+
+Graph Plugin: New right mouse menu item for tables: "View table in Object tree"
+
+Derby Plugin: A new plugin which allows the user to view source for triggers and
+views.  Also, detailed information about triggers is available.
+
+Informix Plugin: A new plugin which allows the user to view source for stored 
+procedure, trigger and view objects. Also provides Informix-specific details 
+for indexes and triggers.  Special thanks goes to Doug Lawry for help setting 
+up an Informix instance for developing the plugin, and providing the system 
+catalog queries necessary for the object information provided by this plugin.
+
+Refactoring Plugin: A new plugin which currently allows users to alter
+tables by adding, modifying and dropping columns as well as adding/dropping 
+Primary Keys.  Uses an extended Hibernate dialect framework to derive SQL which 
+is syntactically correct for the database being modified.
+
+Made SQuirreL work with hxtt drivers. See www.hxtt.com. Thanks to Yonghong Zhao 
+for patches.
+
+Oracle Plugin:
+   Windows for
+    - DB Output, 
+    - Session Info,
+    - SGA Trace,
+    - Invalid Objects
+   were changed in the following ways:
+   - Tool bar buttons are not in the main frame tool bar any more but in the 
+     Session tool bar.
+   - Each window has its own tool bar icon.
+   - All windows restore their last size and position.
+   - All windows provide a "Stay on top" check box.
+
+Syntax plugin: Corrections/Abreviations allow new lines. Use \n to create a 
+new line. Note: Bookmarks are more powerful than abreviations.
+
+SQuirreL paths (-home, -user) are shown in Global Preferences
+
+LAF Plugin: Added Napkin Look and Feel (JDK 1.5 only)
+
+Completion Popup (Code Completion ctrl+space, Tools Popup ctrl+t, 
+Bookmarks Popup ctrl+j): When the beginning/end of the pop up list is reached 
+another arrow up/down jumps to the last/first entry. 
+
+1015274: Provided better DB2/400 system naming support
+
+1602255: 'Interpret DATE columns as TIMESTAMP' also in SQL view.  When this 
+configuration item is checked, any SQL query result that contains a DATE column
+will show the DATE values as TIMESTAMP values (This is useful with Oracle where
+DATE columns also contain TIME components)
+
+Schema refresh on catalog combo box change:
+Schemas are refreshed automatically, when the user switches to another catalog.
+On systems that support Catalogs like Sybase or MSSQL, Schemas within a Catalog 
+only become accessible when the catalog combo box is switched to the their 
+Catalog. To make Schemas available in the Object Tree, Code completion etc. 
+after a Catalog switch Schemas are now automatically refreshed.
+(Thanks to Stan Berka for this patch)
+
+Graph Plugin:
+The Graph plugin now allows to save jpg images to files instead of printing them.
+The image files are an exact copy of what would be sent to a printer and
+can easily be used within other applications.
+(Feature requested by David Karr)
+
+DBCopy Plugin: Added support for Informix and HADB.  Relocated dialect framework
+to core to allow other plugins to use (Refactoring) - this version is now no 
+longer compatible or supported for previous versions of SQuirreL.
+
+Re-organized the table and view context menus so that the SQLScripts 
+plugin menu items now appear under the "Scripts" menu item and in the
+same order that they appear in the session menu "Scripts" menu item.
+
+Updated Spanish translation strings (Thanks to Diego Schulz)
+
+Added JDBC driver CLASSNAME and CLASSPATH to the Metadata tab so that
+it is not necessary to open the driver definition for the current session to 
+get this information.
+
+	Bug-Fixes:
+
+When reconnecting a Session with the current connection dead
+SQuirreL always switched to Autocommit = false state. Now the Sessions
+Autocommit state is preserved.
+
+
+MySQL Plugin: Fixed bug which caused the MySQL all of the tabs to appear with no
+content.
+
+SQL editor function "View Object at cursor in Object tree" (ctrl+B) now works
+for fully qualified object names with leading and trailing quotation marks and 
+slashes.
+
+Oracle plugin: Fixed the rendering of details/source tabs for indexes
+sequences and triggers.
+
+Added support for Informix way of referring to database objects within 
+catalog and schema as catalog:"schema".objectname.
+
+DBCopy plugin:
+  - Removed reflective code used for backward compatibility which was causing 
+  IllegalAccessExceptions when the keyword test was applied to column names.
+
+  - Fixed bug in copying FK constraints which left cursors open by not properly 
+  closing ResultSets when they were no longer needed.
+
+  - Fixed bug in copying FK constraints where the primary key table 
+  name wasn't fully qualified the schema of the destination database.  This was 
+  most noticeable when copying tables with FKs into a schema which was not the 
+  default schema for that session.
+
+  - Fixed bug where cancelling the copy operation during table data transfer 
+    did not also cancel the transfer of table constraints.
+
+1601610 - Bug while editing integer/long columns
+  
+1598162: Fixed the issue when using Java 6 you had to click the Connect button 
+twice when the app is first started.
+
+1597463: Maximized and multimonitor window size not saved
+
+1595913: Cannot select SQL dropdown under java 6.
+
+Added logic to prevent the MacOS X plugin from loading if not on the mac 
+platform.  It causes the Global Preferences menu item to disappear when it is 
+loaded and the platform isn't Mac
+
+Look and Feel Plugin: Plastic Look and Feels (JGoodies) weren't available anymore.
+
+"Make Editable" on single table SQL did not work when SELECT list contained new lines.
+
+1554175: (Aliases lost on close) 
+1532997: (NullPointerException when trying to save alias)
+1522229: (Error occurred saving Alias Definitions java.lang.NullPointer)
+Many people complained about this one.  At first we determined this was low 
+priority since it didn't seem to be reproducable on all jvms. We inadvertantly 
+changed the SQLDriverPropertyCollectionBeanInfo such that it no longer 
+accurately described the bean SQLDriverPropertyCollection.  in 1.4.2_05 this 
+triggered an NPE bug in the jvm code (Introspector.addPropertyDescriptor) which 
+caused the SQLAlias persistence to fail, leaving the user with no aliases.
+
+1584283: (DBCopy plugin - Copying LOBs from Oracle to Oracle fails)
+If destination column type is Types.OTHER (1111), try to get 
+the type name and map it to a valid java SQL type (such as 
+Types.BLOB or Types.CLOB).  This only works when the database column
+type name as reported by the JDBC driver is a standard type such as 
+BLOB, VARCHAR, CLOB, CHAR, etc... A mapping exception is thrown 
+otherwise.
+
+1584260: (DBCopy plugin - Fix for issue where the same table is found in 
+multiple schemas/catalogs that the user has access to.  Now we specify catalog 
+or schema if the driver claims to support them.)
+
+1577254: Trigger details tabs aren't rendered
+
+1532857: (DB2 on AS400 table list not shown) Incorporated Colin Bell's patch 
+to address this issue which causes SQuirreL to give '*ALLUSR' for the schema
+value when calling DatabaseMetaData.getTables.
+
+1520156: changed the function of the configurable ref actions checkboxes for 
+SQLScript plugin.  Now, they will override what is contained in the 
+DatabaseMetaData if checked.  If not checked, we now use whatever the database 
+tells us the ref action is (before we weren't bothering to check the with 
+the database.  Now we do, by default)
+
+1508503: (Double entry for each column fields): Don't add the column to the 
+list if it is already there - uses the fully qualified version of the column, 
+so may still see duplicate columns with different types.
+
+Bug Fix: Editing data in multiple tables would sometimes fail erroneously with
+an error message like "This row in the Database has changed since you 
+refreshed the data. No rows will be updated by this operation".
+
+Bug Fix: Solved issue where tables were not appearing in the object tree for
+Sun HADB (High-Availability Database).  Special thanks to Lars Heill of Sun
+Microsystems, Inc. for technical assistance with installing/configuring HADB.
+
+2.3 Final
+=========
+
+Enhancements:
+
+An Italian translation of SQuirreL labels/messages is now available in the 
+installer (Thanks to Ivo Neri)
+
+Bug Fixes:
+
+1563613: Alias property window dies when URL is malformed.
+
+1563610: (Only connection specified DB schema loaded regardless)
+         Enhanced the catalog selection so that changing the catalog 
+		 updates the schema info and expands the TABLES node in the tree
+		 for the selected catalog.
+
+1563603: ORA-01830 error: Date format
+
+1561293: Show Loaded Drivers Only" does not work in "Add Alias" dialog.
+
+1558509: 'create sequence' rejected as invalid SQL
+
+1520156: (Reverse Engineering Foreign Key Cascade Missing).  Added 
+		 configuration for referential actions clause of FK constraints.
+
+1426012: PLAN_TABLE not found - look for PLAN_TABLE in other schemas and allow
+         user to choose one.
+
+1371587: Not possible to edit data after SQL query
+         
+1250855: (Oracle DATE does not display correctly) Added a new configuration
+         item to Global Preferences -> Date Type Controls -> Date Section
+		 which allows the user to "Interpret DATE columns as TIMESTAMP".
+
+Bug Fix: Fix for issue where the SGA Trace view wasn't displaying data in the 
+	     "Buffer Gets per Row" column.
+
+2.3 rc2
+=========
+
+    New Features/Enhancements:
+
+Feature Request #1556226: New menu items in the right mouse menu of tables -
+   "Adopt all column widths" - Adopts all columns widths of current table to 
+                               header/data.
+   "Always adopt all column widths" (check box) - Widths are automatically 
+                                                  adopted for all tables opened 
+                                                  in the future.
+
+New menu-item "Export CSV" in context menu of table contents spreadsheet allows 
+the user to choose whether to use formatting from Global Prefs or default 
+formatting.
+
+SQL result tabs offer to rerun their SQL query to update their data.
+
+Text limit line of Netbeans editor can now be positioned or switched off in 
+Session Properties.
+
+    Bug Fixes:
+
+1448738: (JDK 6.0 regression) This appeared to be a bug in the Java 6 SE, but it
+         turned out that we weren't using the correct method to load classes from
+         the ClassLoader.  Sun "fixed" the method (ClassLoader.loadClass) that 
+         we were using previously so that it no longer worked as it did in 1.4 
+         and 1.5.  For details see:
+         http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6446627
+         We rectified the problem in SQuirreL by following Sun's suggestions 
+         regarding which API methods are being called.
+
+1544447: (Generated SQL script Table names are not fully Qualified, it should
+		 be "SCHEMA"."TABLE_NAME")  Added a new global preference panel and 
+		 checkbox to make this alternative behavior configurable.  The default
+		 now is to qualify table names with their schema name.
+
+1541154: (ArrayIndexOutOfBoundsException in DataTypeDouble)
+
+1533824: (NPE when loading keywords from DatabaseMetaData) Check the values
+         returned for null before attempting to parse and store them 
+         (DB2 driver returns null for getCatalogTerm())
+
+Bug fix: When doing a complete refresh (F5) or a refresh item in the Object tree 
+         (see right mouse menu) code completion was not refreshed. 
+
+Bug fix: In Oracle Plugin - Avoided open cursors when viewing database output 
+						    ( dbms_output.put_line() ).
+
+Bug fix: Stored procedures where not shown in Object Tree when the 
+         Oracle Plugin was used.
+
+Bug fix: When a Schema was created and the Object Tree was refreshed the new 
+         Schema was not shown. 
+
+Bug fix: In Alias properties for Oracle - 
+  Note: This bug took effect when default Alias properties were used.
+        So this fix probably increases Session startup performance for Oracle 
+        users who use the Oracle plugin but do not care for Alias properties.
+  Bug: When an Alias was configured to load all Schemas and cache non
+       but the Oracle Alias properties didn't allow to load all schemas
+       SQuirreL still did load all tables and procedures from the database.
+       Though the unallowed tables and procedures did not show up in the Object 
+       tree they still caused bad startup perfomance.
+  Fix: Now only tables and procedures for allowed schemas are loaded.
+
+Bug fix: Object tree table tab titles were not being internationalized as 
+         their values were hard-coded and not available in 
+         I18NStrings.properties files.  Now they are.
+
+    Installer Changes:
+
+Three new translations were added to the installer:
+	Simplified Chinese (Thanks to xpdz)
+	French (Thanks to Erwan Duroselle)
+	German (Thanks to Andreas Oswald)
+
+Added new optional plugin (DBCopy) to the installer which allows database tables
+and their content to be copied from one session to another inside of SQuirreL
+using Copy/Paste menu items.
+
+
+2.3 rc1
+=========
+
+
+If an Alias is configured to Auto Logon but has wrong user name/password
+  on connecting the user gets an error dialog and has to correct user name/password.
+  For convenience the corrected data now is written back to the Alias.
+  Note: The Writing back is only done when the Alias is configured to Auto Logon.  
+
+
+Session startup performance
+  General: New Alias properties allow to configure loading and caching of Schemas.
+  Oracle: When the Oracle Plugin ist used an Oracle tab in Alias properties enables you
+          to allow an Alias's Sessions only to see Schemas the user has access to.
+
+
+Fixed bug #1504123: Oracle hints losts
+  By default SQuirreL treads /*...*/ as comments and removes them before sending a SQL to a database.
+  This default may now be changed in the (New) Session Properties. See Menu File --> New Session Properties --> Tab SQL.
+
+
+Added toolbar button to toggle auto commit
+
+Bug fixes in Oracle Plugin:
+  - Explain Plan not visible in Results tab
+  - Object tree: Sessions, Users and Instances and nodes sometimes not visible
+  - Object tree: SYS Schema displayed twice for certain user rights
+  - Fixed Memory Leak (Session were not garbage collected when Oracle Plugin was used)
+
+
+Fixed bug #984527: Right mouse popup menu is now available in empty table. 
+
+Feature request #1446675 Output tables to CSV files
+  All tables' right mouse menus have an 'Export CVS ...' item.
+  In the export dialog you may provide an application (like OpenOffice calc or MS Excel)
+  to open the CSV file immediately after creation.
+
+New toolbar button: Select current SQL (control Shift S)
+ This function is based on SQuirreL's concept of 'current SQL': If there is no selected text the current SQL
+ is the text between the empty line in fornt of cursor position and the empty line after cursor position.
+ Any function that deals with SQL is aware of this concept.
+
+Installer now includes the following optional translation packages:
+- Brazilian Portuguese (contributed by Francis Martin)
+- Czech (contributed by Jan Kostrhun)
+- Bulgarian (contributed by Ivan Dimov)
+
+Feature request #1441787 Quickly adopt column widths to column values
+  when table header is double clicked while the resize mouse pointer (<-->) is visible. (MS Excel like)  
+
+Enhancements of the Bookmarks Plugin
+ - Bookmark preferences can be opened by the "Edit Bookmarks" button in the Session toolbar.
+ - Bookmarks can be run from within the Bookmark Preferences.
+ - Lots of "SQuirreL Bookmarks" which are templates for many common SQL/DDL statements.
+ - User can decide if he wants to see "SQuirreL Bookmarks" in the Bookmarks selection popup of the SQL Editor (ctrl j).
+
+Fixed bugs in error and syntax highlighting:
+ - Error highlighting for "ALTER TABLE ADD CONSTRAINT ..."
+ - Error highlighting for "CREATE VIEW ..."
+ - Error and syntax highlighting for "CASE [...] WHEN ... THEN ... ELSE .. END"
+
+
+Centralized Database Meta Data caching. This brings along the following improvements:
+- When a DDL statement is run the Object Tree is updated immediately to reflect the change.
+  This works as long as standard DDL statements are used.
+- Syntax coloring and code completion for newly created tables, views, columns, procedures is available
+  right after a DDL statement was run. This works as long as standard DDL statements are used.
+- The Refresh button updates the Object tree as well as syntax highlighting and code completion.
+
+
+Make the status message for rows affected by executing an SQL statement in the SQL panel
+take into account the type of SQL query issued.
+
+Fixed Bug #1472398: Content tab filters didn't work with views.
+
+
+Fixed Bug #1465707: Programm slow with big Databases because reading Database Meta Data twice.
+                    Technical detail: The SchemaInfo class has become SQuirreL's central meta data cache. 
+
+Fixed Bug: SQuirreL crashed during building output of SQL results when errors occurred in number-type or date-type fields.
+
+Fixed Bug in Graph Plugin: In zoomed graphs lines with folding points could not be selected.
+
+
+2.2 Final
+=========
+
+
+- Fixed Bug #1467671: Session Properties / General / Appearance: "SQL Results Tabs" overwrites
+                     "SQL Execution Tabs" setting.
+
+- Fixed Bug #1464361: Windows bat file is location specific (Thanks to Bill Wallace)
+
+- Fixed Bug #1456423: Cannot cancel a query. Changed to allow the cancel operation to interrupt the
+                     fetching of results.  While resolving the "hanging" of a long-running this also
+                     allows results that have been fetched so far to be displayed.
+                     This can help the user determine why the query was taking a long time to execute.
+- Fixed Bug #1447231: ESCAPE key should close dialogs
+
+- Fixed Bug #1457811: Autocomplete does not work for views when tables and view names match.
+
+- Fixed Bug for Teradata not showing SQL results. (Thanks to Matthew Dahlman)
+
+- Fixed Bug #1456463: update to allow the user to override the closing of a session in the event that
+                    there are unsaved edits and they decide not to save them right away.  They can
+                    always choose to not save and discard, closing the session immediately. This
+                    change will make it so that if they choose to not discard, and something happens
+                    during the save that causes the edits not to get saved, the session will not be
+                    closed.  Added independently configurable options to warn when closing a session
+                    if there are any unsaved edits (optional for File or Buffer).  If the
+                    "Confirm Session Close" option is turned off, these can still be enabled so that
+                    unsaved edits are never lost merely by closing a session.  Previously it was very
+                    easy to lose changes made in the SQL edit tab when the session was closed.  This
+                    previous behavior, if desired, is still available via Global Preferences.
+
+- Fixed Bug #1441169: error in removing a deleted row more than once.
+
+- Fixed Bug #1250514: Mysql Error: Cannot edit table.
+
+2.2 RC1
+=======
+
+- There is now a printer icon in each SQL entry panel which will allow 
+  the current sql script to be send to a printer.  Syntax highlighting
+  is preserved.  SQL entry panel size is used to scale the font.
+
+- Feature request #1441563 Query script generation:
+  New entry for tables and views in the Objects tree's right mouse menu to create SELECT statements.  
+
+- Added menu item and supporting capability to the SQLScripts plugin to 
+  create a drop table script from the selected tables in the object tree.
+
+- Added new property for drivers - website url - and a new menu item for 
+  drivers to launch the system default web browser and load the driver 
+  website url.
+
+- When adding a new driver definition, SQuirreL will now look at the default 
+  driver list and determine if any driver defs are missing from the user's
+  personal list.  If so, SQuirreL will prompt the user to add them.
+
+- MSSQL plugin: Scripting of procedures now works on MSSQL 2005
+
+- Improved performance of the Session window when connecting to a database
+  over a slow link (especially Oracle).  Instead of freezing the window, now
+  SQuirreL indicates the progress of the session connection in the session
+  frame status bar and allows the user to perform other tasks in parallel.
+  Note: The session frame close button is temporarily ignored when the session
+        is still loading and therefore not in a safe state to be closed. Once
+        the session has been loaded, the close button will be re-enabled.
+
+- Keyboard short cuts are shown in tool bar tool tips.
+
+- Navigation through SQLs in SQL Editor by tool bar or Alt up/down keys.
+  Note: The concept of an SQL in SQuirreL is the text between two empty lines. Many 
+        functions in SQuirreL use this concept.  This way the user often doesn't 
+        need to mark the text he wants to execute a function on.
+        The concept is especially convenient for the Run SQL function (control Enter).
+
+- Introduced Oracle specific code to allow editing of tables in Oracle that contain Date columns.
+  Oracle stores time information in java.sql.Types.DATE columns. The where clauses that SQuirreL
+  used to create to update data after editing only contained the Date part of those columns. That's why
+  the where clause didn't match the database row and editing failed.
+
+- SQL Editor: ctrl+backspace deletes word behind cursor.
+
+- SQL Editor: To upper/lower case function available in tools pop up or by short cut ctrl+shift+u/l
+
+- Row numbers in SQL result and Object Tree tables tables:
+  Use the right mouse menu in SQL result tables or Object Tree tables to switch on row numbering.
+
+- Improved handling of detached result windows:
+  * By default result windows stay on top. A check box in the result window allows to change the default.
+  * Result windows show up in the window list of the Windows menu and can be navigated to by Alt+left/right arrow.
+
+- Added New, Close and Append icons/actions to allow the SQL Panel to function more
+  like an editor.
+
+- Added "Delete Records" menu item to the context menu for tables to delete all records
+  in one or more selected tables.
+
+- Installer now includes an optional Spanish translation package which provides native
+  labels and messages for use in a Spanish locale.
+
+- Cleaned up copying from tables:
+  1. Control+c and copy in the right mouse menu now do the same: They copy data without column headers.
+  2. A new right mouse menu entry ('Copy with headers') provides the ability to copy data including
+     column headers
+- Fixed bug #1450856: The "new" button has no icon  
+- Fixed bug #1448345: Canceling "Save As... " option (overwrites file anyway)
+- Fixed bug #1424828: Not possible to clear Non-nullable fields using backspace
+- Fixed bug #1423029: Session window will not close for Postgresql
+- Fixed bug #1409055: Copy as HTML in results tab does not set correct mime type
+- Fixed bug #1403462: MS SQLServer Plugin throws NPE
+- Fixed bug #1401672: NullPointerException when selecting Row IDs tab
+- Fixed bug #1399254: Missing i18n strings
+- Fixed bug #1370186: SQL Editor discards changes when session is closed
+- Fixed bug #1385270: Dropping multiple selected tables produces exceptions
+- Fixed bug #1256021: Refresh item on a table showing the row number does not update the row count
+- Fixed bug #1230126: ClassCastException when editing table data for tables with short and long column
+- Fixed bugs #1043604 and #1043599: Unlocalized decimal separator caused problems when data was pasted
+                      for example to Open Office Calc. In the Global preferences the user is now able
+                      to chose the Java default format for floating point values or the localized form.
+- Fixed bug # 863673: cannot DROP TABLE
+- Fixed bug # 887525: When Object Tree Nodes are the selected by keystrokes the selected node is scrolled
+                      to visible.
+- Fixed bug # 763347: Alias and Datasource loss on crash. Files are now written to a temp file first and
+                      then renamed.
+
+- Fixed bug: In Code Completion, the database-dependent keywords where missing
+- Fixed bug: In code completion, columns weren't shown correctly when the same table alias name was used
+             in different statements for different tables (Thanks to Abhishek Gupta)
+
+
+2.1 final
+=========
+
+- Fixed bug #757354 Aliases not reordering on change: Introduced sort button in Alias window tool bar.
+- Fixed bug #732696: Dump application success window title and Dump application file filter.
+- SQuirreL is ready for internationalization. The new I18n plugin supports translations.
+  Put the Plugin in your Plugin path, restart SQuirreL and open the Global Preferences dialog.
+  There you'll find a new tab named I18n. Follow the instructions there.
+- Fixed bug #1386916 (Informix 3.0 JC3 is considered "not JDBC 2.1 compliant) The
+  algorithm for detecting non-compliance incorrectly concluded non-compliance if the
+  database doesn't support save points.
+- Oracle Plugin: Added access to SYS schema in the object tree for non-privileged
+  users since this is where the user-oriented DDL information tables and views are located.
+- Fixed bug #1377304: Ant-built distributions do not preserve file permissions
+  (Thanks to Charles Albrecht)
+- Fixed bug #1376981: SQL Scripts plugin fails to create table script for Axion DB.
+- Fixed *ugly* bug in editing SQL results:
+  To reproduce the bug you had to have two editable SQLs for different tables. Execute the first
+  and edit some results. Close the result tab. Execute the second SQL. Editing of this
+  result would fail. The reason was that SQuirreL reuses result tabs but did not properly initialize
+  them before reuse. Because of this editing could feel terribly instable when some results had been closed
+  and SQuirreL began to reuse tabs.
+- Sizes of Properies and Preferences windows are restored.
+- Made Syntax highlighting work for: Data Types, Functions, Operators, Identifiers, White Spaces
+- Fixed bug #1276957: Oracle protocol violation.
+- Oracle Plugin (v0.15) - If the user doesn't have the DBA privilege, then only loads the
+  schemas in the object tree to which the user has been granted access.
+
+2.1 rc2
+=======
+
+- Bug fix: If SQLs are saved to a file the Session window's title bar displayed an error message instead of
+  the alias and file name.
+
+- Bug fix: If two Sessions are open and one is closed the one left open lost key bindings
+  which means that for example arrow navigation keys don't work anymore.
+
+
+2.1 rc1
+=======
+
+- Selecting a code completion with tab (instead of enter) will delete the string between the carret position and the next white space.
+- New Session properties to configure code completion for functions. Examples: {call myFun(<IN Integer myParam>} or plain myFun()
+
+- Fixed memory leaks. The memory panel in the status bar now tells which Session are garbage collected.
+  Use JDK 1.5.x for better memory behavior.
+
+- Fixed several problems when reconnecting an open Session. (See menu Session --> reconnect)
+
+- Improved Exception handling and new Log panel in Status bar:
+  SQuirreL's: exception/log handling had two problems:
+  i. Exceptions could easily occur without being logged.
+  ii. It was hard for users to get aware of logs. The only way was to regularly open the logs window.
+
+  It is taken care now that all exceptions are logged. The user is notified that a log was produced by the
+  new Log panel in SQuirreL's status bar. A traffic lights color of the last log is displayed on one of the
+  Log panel's buttons.  The last log color is displayed for 5 seconds and is then turned bag to white.
+  This allows the user to have an eye an the logs without much disturbance.
+  The buttons of the Log panel allow the user to view the last Log and to open the logs window.
+
+- New Memory panel in Status bar.
+- Cleaned up SQuirreL logs
+- Made Swingset's Aqua Look and Feel available
+- Fixed bug: No line counter label on SQL Worksheet (opened by ctrl+n)
+- Fixed the following Exception on Sybase when the Object tab was used:
+  java.sql.SQLException: "..."."dbo"."..." not found
+  (Thanks to Gupta, Abhishek)
+- Added "cut/copy SQL to be executed" function to the editor. Since SQuirreL knows the concept
+  of SQL text without selection (from caret position between previous and next empty line),
+  these functions are short hands for the usual copy and cut which only work on selected text.
+- Fixed deleting rows from editable SQL result and from contents tab (ArrayIndexOutOfBounds)
+- Fixed bug #1331445: Line comments could change SQLs.
+- Patch #1326472 - Oracle plugin is smarter about accessing restricted tables as an unprivileged user
+  (Thanks to Alexander Buloichik)
+- Bug fix: Limited rows/SQL - hints on top of a result tab could be corrupted (for example multi lined) because of missing HTML escaping.
+- Improved messaging for driver definition.
+- Bug fix: Driver Icon did not update when driver was changed.
+- Added IBM DB2 Net driver to default drivers.
+- The source SQL statement used to create a view is now available via the MS SQLServer plugin.
+- Patch #1324774 The source SQL statement used to create a view is now available via the
+  Oracle Plugin (Thanks to Alexander Buloichik)
+- Added Session Property "load columns in background". This option might help people who feel that the SQL editor
+  hangs because they use databases with a lot of objects and/or use low data transfer rates.
+- Configurable warning for JDBC API version mismatch between the JVM and JDBC driver
+- Fixed bug #1316903 (SQL Panel hangs when Ctrl-B on whitespace)
+- Added comment/uncomment functions to the SQL editor.
+- Made auto corrections and duplicate line available outside the Netbeans editor.
+- Bug fix: Code completion did not work when object was directly preceded by =,> or <. Example: Table1.col1=Tab...
+- Enabled code completion when a ' or a " is on front of the name to complete (RFE 1305802)
+- Fixed bug #1288519 (Postgres: editing boolean fields)
+- Fixed for table and tree row height for large fonts. (Thanks to Mitch Skinner)
+- User may define an Object tree filter through the Session Properties. Useful for large databases. (Thanks to Oliver Jehle)
+
+
+2.0 final
+=========
+- Fix for not shown SQL result on derby DB
+- Right Mouse Menu on SQL result tabs (Not working on JDK 1.4 with scrollable tabbed panes due to Bug #4465870.)
+  Functions also available in tools popup
+- Session property: Limit SQL result tabs.
+  By default limiting is switched on and set to 15 tabs.
+- Fixed Bug #1234642 (Missing query numbers in message panel)
+- When executing a SQL batch (several SQL's separated by statement separator)
+  in case of an error the errornous SQL is printed to the message panel.
+- From within the SQL Editor one can jump to the Object at cursor in the Object tree.
+  To do so use the ctrl+B shortcut or the right mouse menu or the tools popup (ctrl+T)
+- New Session property: 'Write SQL Execution Errors to log file'.
+  The execution errors of an SQL statement shown in the message panel
+  may now also be written to the squirrel-sql.log file
+- Fixed bug #1244287 (white space after statement)
+- Fixed bug #1217765 (Editing table data for tables with BIT column type)
+- Mnemonics for Main Tabbed Pain
+- Fixes in editing SQL Results:
+  Editing didn't work when a column was in the select list twice
+  Editing didn't work when a column was when the statement was like 'SELECT * FROM MyTable ORDER BY MyID'
+- Added new Global Preference to show the plugin files being loaded in Splash Screen on startup
+
+
+
+2.0rc1
+======
+Most important changes:
+-Multiple Session Windows: User may open extra Object Tree or SQL Window
+-Tools popup in SQL Editor (Ctrl+T)
+Standard and Base installation. Standard bundled with the following Plugins (See help for further details):
+-Code Completion: Offers code completion the same way as modern IDEs do.
+-Syntax: Syntax highlighting.
+-Edit Extras: Auxiliary functions to work with SQL code for example formatting
+-Graph: Create a chart of the tables and foreign-key relationships between them
+-SQL Script: Generation of SQL and DDL scripts
+-SQL Bookmarks: Managing SQL code templates
+-Look and Feel: Switching the look and feel
+
+-Saving/Loading files integrated in SQuirreL's core
+-Selected tab and slider location on the SQL tab are remembered
+-Copy as SQL IN Statement function in tables
+-Display text reminding the user if the results of a query have been limited to X rows
+
+
+
+1.2beta7
+========
+
+Enhancements
+------------
+- Arguments passed to both the shell script and the batch file will be passed
+  on to SQuirreL.
+- Replace newlines with <BR> when doing a "Copy as HTML" from the results of a
+  query.
+- Display text reminding the user if the results of a query have been limted to
+  X rows.
+- Prompt for confirmation before closing a session.
+- Display the catalog in the session title.
+- Display a welcome screen the first time SQuirreL is run.
+- When sorting columns in a table use a non-case sensitive but locale aware
+  method.
+- If you close the aliases and drivers windows this is remembered when you
+  restart SQuirreL.
+
+Bug Fixes
+---------
+- Allow for nulls when displayng Date, Time, and Tmestamp columns.
+- Remove <CTRL><SHIFT>L from Display Logs menu item as it is used by another
+  menu item.
+- Remove the Filter option from the popup menu in the object tree as this
+  functionality hasn't been implemented.
+- Bring the main window to the front when it is first displayed. Required with
+  some JREs on Linux.
+- Fixed logging config argument in shell script.
+- Fix displaying of clob columns. The display would appear to lockup.
+- List Drivers button now works when a JDBC driver spans multiple jar files.
+- Don't list abstract classes (I.E. JDBC drivers that can't be loaded) when the
+  List Drivers button pressed.
+- Allow for DB2 not returning all possible schema names.
+- Make sure popup dialogs aren't positioned off screen.
+- The data displayed within the Contents tab was lost when a session sheet was
+  deactivated and then activated.
+- Use default Look and Feel for the installer as the Kunststoff Look and Feel
+  didn't display correctly on OSX.
+- On Linux the $JAVA_HOME variable in the squirrel-sql.sh script was replaced
+  with the actual value during the install which caused problems if a new
+  version of Java was later installed.
+- Fix ClassCastException thrown by the parser (Gerd Wagner).
+- Fix Bug #981490 OutOfMemoryException partly caused by the parser (Gerd
+  Wagner).
+
+Other
+-----
+- Allow for JDBC drivers that return null for Driver.getPropertyInfo(...)
+  instead of an empty array.
+
+
+1.2beta6
+========
+
+Enhancements
+------------
+- Added "Reformat XML" popup menu option to show formatted XML in a column
+  (Gerd Wagner).
+- User may identify specific columns to use in WHERE clause when editing
+  cells in table by using the "Limit cell edit WHERE clause size" entry in
+  the Session menu (Glenn Griffin).
+- All tables may be printed.  Use right mouse click, "print".  Large tables
+  are automatically split across multiple pages both horizontally and
+  vertically (Glenn Griffin).
+- The "Session Properties"->"Format" screen has been moved to "Global
+  Preferences"->"Data Type Controls", and many new controls have been added
+  to adjust how specific data types are used or displayed. (Glenn Griffin)
+  Examples:
+	- Some DBs do not allow LONGVARCHAR to be used in the WHERE clause, so this
+	  may now be disabled
+	- Dates, Times and Timestamps may be displayed and entered in a
+	  user-selected format
+	- Strings containing newlines may display the newlines as "\n" or not show
+	  them as selected by the user.
+
+
+Bug Fixes
+---------
+- Close metadata result sets once they are no longer required.
+- Fixed bug where inserting/updating and deleting rows in the SQL tab would
+  loop (Gerd Wagner).
+- Fixed bug where setting the statement separator to an empty string then
+  wouldn't allow you to change it to anything else (Gerd Wagner).
+- Fixed bug where minimized session windows weren't restored correctly (Gerd
+  Wagner).
+- Improved Undo handing (Gerd Wagner).
+- Fix NullPointerException when starting an Oracle 8.1.7.4 session (Gerd
+  Wagner).
+- Fix bug under Linux where sometimes the SQL history combobox would fill the
+  entire window (Gerd Wagner).
+- Fix for multiple result set handling under the Cache DBMS from Intersystems
+  (Gerd Wagner).
+- Fixed incorrect handling of the "log-config-file" argument (Kevin Gilpin)
+- Tables with many columns should now allow editing by using the "Limit cell
+  edit WHERE clause size" session tool (Glenn Griffin).
+
+
+1.2beta5
+========
+
+Enhancements
+------------
+- added the 'IS NULL' and 'IS NOT NULL' to the choices for operator in
+  the Where Clause panel (Maury Hammel).
+- When the 'add' button is pressed to put a Where Clause construct into
+  the text area, the 'Value' text area is cleared (Maury Hammel).
+- Enabled wrapping and added JScrollPanes to the Where Clause and Order
+  By Clause text areas, so Panels behave better where large values are put
+  in them (Maury Hammel).
+- You can now specify whether JDBC logging uses the deprecated output stream or
+  the new writer (Neville Rowe).
+- You can now filter the catalogs displayed in the object tree (Keith
+  Mashinter).
+- You can now specify whether to load schemas/catalogs in the object tree
+  (Keith Mashinter).
+- You can now specify whether to load result set metadata when executing an SQL
+  (Keith Mashinter).
+- You can Import/Export cell data to/from files and operate on that data with
+  external commands (e.g. VI, etc) (Glenn Griffin)
+- BLOBs and CLOBs are now fully editable, as are all of the most common SQL
+  types (Glenn Griffin).
+- Data that can be edited only in the Popup (ie. not in the cell) is now shown
+  with a Cyan background to tell the user that it can be edited, but only in
+  the Popup (Glenn Griffin).
+- Data containing newlines now shows the newlines explicitly in the in-cell
+  view, i.e. as "\n" (Glenn Griffin).
+- User may select specific columns to use in the WHERE clause when editing
+  a specific table.
+- A new row can be inserted into an empty table using the Contents tab
+  by using the right mouse button on the (empty) panel.
+
+Bug Fixes
+---------
+- SQL that returns multiple result sets is now handled correctly (Neville
+  Rowe).
+- Fix manifest file so the the squirrel-sql.jar file is again executable (Denis
+  Lundberg).
+- Fix resource strings (Dennis Lundberg).
+- Do a better job of handling MS SQL server catalog names that contain periods.
+- Strings (VARCHAR and CLOB) fields containing newlines would loose those
+  newlines if edited within the cell.  In-cell editing of that data is now
+  blocked (Glenn Griffin).
+- SQL problem with WHERE clause being too long (table has too many columns)
+  fixed by allowing user to select specific columns to use in WHERE.
+
+Other
+-----
+- New API ISession.addToToolbar(Action action) added (Gerd Wagner).
+- Don't default to displaying the Contents Tab for a table. This can cause
+  performance issues when looking at SQL Views (Gerd Wagner).
+
+
+1.2beta4
+========
+
+Enhancements
+------------
+- Add "Get Last SQL" button to SQL entry area.
+- Show tooltip in sql history combo when combo collapsed.
+- You can now filter the schemas displayed in the object tree (Keith
+  Mashinter).
+- Show the position of the caret from the SQL entry area caret in a new label
+  in status bar.
+- Added a statusbar to the Help Viewer.
+- New session property "Abort On Error".
+- Data in the Popup (from double-clicking a cell in ContentsTab) is now
+  editable (Glenn Griffin).
+- Data in individual cells may be imported, exported, or operated on by an
+  external program from the Popup window (double-click on cell in ContentsTab)
+  (Glenn Griffin).
+
+
+Bug Fixes
+--------
+- Fixed NullPointerException thrown by the Syntax plugin.
+- The title from the wrong column was used in the popup window for a columns
+  data if the columns in the table had been resequenced (Joseph Boyd).
+- Allow for SQLException thrown by HSQLDB 1.7.1 on ResultSetmetaData.isSigned.
+- If the columns in a table were resequenced and then the data was copied to
+  the clipboard then the column headings in the clipboard were in the wrong
+  order (Joseph Boyd).
+- Entries in the catalogs dropdown are now sorted.
+
+Other
+-----
+- Move DataCache class to fw classes.
+- Add StringManager class to allow strings to be stored in property
+  files rather than hardcoded. Once this is used throughout the
+  application it will mean that SQuirreL can be internationalized.
+- Add jGoodies Forms library for building GUIs.
+- Use Apache CLI library for processing command line arguments.
+- New method in SQL execution listener 'allStatementsExecuting'.
+- New API allowing plugins to add/remove items from the status bars.
+
+
+1.2beta3
+========
+
+Enhancements
+------------
+- Contents tab has been made the default when first displaying table in
+  Object view (Glenn Griffin).
+
+Bug Fixes
+---------
+- Fix for selecting which SQL gets executed. When the cursor is on a line in
+  the SQL entry that contains at least part of aan SQL statement then only that
+  SQL statment should be executed.
+- Don't save duplicates in SQL history.
+- Only load SQL history once.
+
+
+1.2beta2
+========
+
+Enhancements
+------------
+- Change the background of the contents tab when in "edit mode" (Glenn
+  Griffin)
+- Put quotes around character data in the contents tab Filter (Maury Hammel).
+- Column names in the Contents Tab Filter are now sorted (Maury Hammel).
+- The IN operator has been added to the Contents Tab Filter (Maury
+  Hammel).
+- New application setting allows you to specify whether the coloured icons are
+  shown in toolbars (Bai Yuhong).
+
+Bug Fixes
+---------
+- Fix data corruption issue if you change the selected table in the
+  object tree while editing data (Glenn Griffin)
+
+
+1.2beta1
+========
+
+Enhancements
+------------
+- Enhanced the highlighting in the message panel (Victor Ott).
+- Can now filter the data on the Contents tab (Maury Hammel).
+- Add Firebird Jaybird to the list of default drivers.
+- Allow for bug in Opta2000 driver which limits the number of rows
+  modified by an UPDATE statement to that specified by setMaxRows()
+  (Gerd Wagner).
+- Display warnings issued by SQL connections and statements in the
+  message panel.
+- Can now specify session sheets to be opened maximized.
+- Show as much as possible of the SQL statement in the SQL history
+  dropdown and show it all in the tooltip.
+- Put focus to SQL entry area when SQL tab selected (Gerd Wagner).
+- The SQL separator character can now be a multiple character string
+  (Gerd Wagner).
+- New application argument -useNativeLAF which will make SQuirreL use
+  the native Look and Feel rather than the Java one.
+- Data can now be maintained in the Contents tab (Glenn Griffin).
+- Orientation of tabs can now be specified in session properties.
+- Remove the plugin Help menu options and display their help in the main
+  help window.
+- Display error message if no SQL selected for execution.
+- Cache database metadata information.
+- Refresh catalogs dropdown when object tree refreshed
+- Make Plugins Summary dialog modeless.
+- Allow queries to be cancelled when they are "building output".
+- Driver properties can now be specified on the alias.
+- You can now "word wrap" data in the Column Data popup window.
+- Text Popup menu can now be displayed in the Column Data popup window.
+- Show chained SQL exceptions in error dialog.
+- Add "Copy" menu options to the popup menu in the object tree.
+- Add the MySQL driver to the default list of drivers. Update the jTDS
+  URL for the latest version of jTDS (Dennis Lundberg).
+- You can now specify that an Alias will connect when SQuirreL starts
+  up.
+- Allow user to define an Alias to logon automatically without prompting
+  for user and password (Gerd Wagner).
+- Allow user to store a password in the Alias definition (Gerd Wagner).
+- You can now display only loaded JDBC drivers in the Drivers list.
+- You can now limit the size of the SQL history combobox.
+- Allow SQL history to be persistent and shareable between different
+  sessions (Lynn Pye).
+- Added Next and Previous Session commands to the menu system (Gerd
+  Wagner).
+- Do a better job of handling schemas and/or catalogs when building the
+  object tree for DBMS's/drivers that misreport catalog/schema
+  information (Gerd Wagner).
+- Allow for multiple result sets returned from an SQL statement.
+- Add "Goto Next Result Tab" and "Goto Previous Result Tab" options to
+  Session menu.
+- Remember the selected alias and driver between restarts.
+- Added SQL execution statistics to the Info tab on the SQL output
+  panel.
+- Better positioning of the Column Details popup (Maury Hammel)
+- Added JavaDoc target to build file (Johnathan James).
+- When clearing the message panel the background is reset to white
+  (Maury Hammel).
+- Display column header as a tooltip if the table column isn't wide
+  enough to display it (Stephen Straub).
+- Add the ability to "Tile Vertically" and "Tile Horizontally" (Rick
+  Strickland).
+
+Bug Fixes
+---------
+- Show all errors in the driver maintenance dialog.
+- Fix to be able to display data in PostgreSQL UDT columns.
+- Fix for single character separator at end of line/document
+- Fix NullPointer exception when updating caret position in statusbar.
+- Clear all metadata result sets when finished with them.
+- Default catalogs dropdown to the correct catalog when session opened.
+- Remove Clear option from standard text popup menu.
+- Retrieve time as well as date for Oracle Date type columns.
+- Hide password contents on Proxy settings panel.
+- Put correct default port in the MM MySQL driver (Dennis Lundberg).
+- Allow for drivers that return null for getTableTypes().
+- Clear data in output tabs before writing. This stops the problem of
+  seeing data related to the previously selected object in the object
+  tree if you are not authorised to the newly selected object in the
+  tree.
+- Fix bug where sorting by clicking in the column header for a table
+  wouldn't work correctly when the columns had been resequenced by
+  dragging (Johnathan James).
+
+Other
+-----
+- Use smaller icons to indicate sort sequence in tables.
+- Cleanup handling of the SQL entry area.
+- No longer print error message in the log if a JDBC driver isn't
+  available.
+
+
+1.1final1
+========
+
+Bug Fixes
+---------
+- Fix for error when displaying catalogs/schemas when
+  using jTDS 4 and above.
+- Fix column privileges for MySQL.
+
+
+1.1final
+========
+
+Enhancements
+------------
+- Allow retrieval of all data types from SQL
+  results.
+- Allow for JDBC drivers that return null
+  for DatabaseMetaData.getTableTypes().
+
+Bug Fixes
+---------
+- Fix bug where the "Start of Line Comment"
+  characters weren't recognized when executing
+  multiple SQL statements.
+- When the "ResultSet Output Type" is changed
+  for a session don't attempt to change the output
+  type for existing ResultSet output panels in
+  that session.
+- When "New Session" settings are changed don't
+  change settings for existing sessions.
+
+
+1.1rc2
+======
+
+Enhancements
+------------
+- Add default catalog selection to popup menu
+- Add plugin class path to application dump.
+- Allow for some drivers that don't return 'guest'
+  as a schema for Microsoft SQL and Sybase.
+- Catalogs and Schemas tabs added to the session
+  node.
+- Catalogs and schemas added to session dump.
+- Drivers and Aliases windows can now be closed.
+
+Bug Fixes
+---------
+- Fix shell script to work with Cygwin.
+- Fix NullPointerException when changing output
+  type for result sets in New Session Properties
+  dialog.
+- Fix Copy cmd in tables so that if only a single
+  column selected it doesn't put all the rows on one
+  line.
+- Make tree node refresh work.
+- Fix line wrapping in multiple line labels.
+- Allow for spaces in %CLASSPATH% in
+  squirrel-sql.bat (again).
+- Save and restore current catalog, transaction
+  isolation and auto-commit settings when
+  executing the Session/Reconnect commmand.
+
+
+1.1rc1
+======
+
+Enhancements
+------------
+- Information windows (such as Help) can now be moved
+  outside of the main window.
+- Add home toolbar button to the HTML Viewer.
+- Fix Refresh in HtmlViewer.
+- Change icons for commit/rollback. The old icons were
+  too similar and confused people.
+- Add Proxy settings to Application Preferences.
+- Add file sizes into SQuirreL Logs dropdown.
+- Sort the driver names in dropdown box in a
+  case-insensitive manner.
+- Make all windows resizeable.
+- Add Refresh button to HTLM Viewer toolbar.
+- Add FAQ to the Help menu.
+- Added "Install Default Drivers" menu option which will
+  copy driver definitions from the default drivers file to
+  the drivers list.
+- Add SAPDB, DB2 and PointBase to default drivers.
+- Add HSQL to list of default drivers (Glenn Griffin).
+- Cleanup example URLs for many of the default drivers (Glenn Griffin).
+- Add toolbar to HTML Viewer with back, forward and close buttons.
+- Documentation updated.
+- Allow Squirrel to be run from directories other than the current
+  directory (Tim Shadel).
+- Treat Types.OTHER columns as strings when displaying data.
+- Add plugins location to plugin summary dialog.
+- Add plugins location to application dump.
+- Create Windows shortcut in installer.
+- Make shell script executable in installer.
+- Add icons for program shortcuts (Greg Mackness).
+- Add an icon to the main window (Greg Mackness).
+- The name of the item selected in the object tree will
+  be displayed in the statusbar.
+- Remove unnecessary borders on UI components.
+- Add jTDS to list of default drivers.
+- The "Start of line comment" characters can now be
+  specified in preferences instead of just using '--'.
+
+Bug Fixes
+---------
+- Reload Metal Look and Feel when first loading
+  SQuirreL so that the "Blue" theme is used.
+- Position focus to the text area when first displaying
+  the HTML viewer window.
+- Stop driver maintenance window from resizing when jars
+  added/removed.
+- Improve error handling when loading drivers and aliases.
+- Incorrect error message was displayed in View Help
+  command (Glenn Griffin).
+- Fix Nullpointer exception in HTML viewer under JDK1.3.
+- CLOB/BLOB columns weren't handled correctly on metadata and
+  Content tabs.
+- The line/column number displayed for the SQL entry area
+  now starts from 1,1 not 0,0
+- Make multiple line label use the same font as static text controls not
+  editable text controls.
+- Links in the Help file now work (Victor Ott).
+- Fix deadlock when viewing logs.
+- Add missing "contributors" file for About Box.
+
+Plugin API
+----------
+- Move metadata methods to metadata classes.
+
+Other
+-----
+- Add build directory to source distribution.
+- Don't display icons in menus.
+- Cleanup ResultSetMetaData handling.
+- Make the installation window resizeable.
+
+
+1.1beta6
+========
+
+Enhancements
+------------
+- Run View Logs in a thread.
+- Doubleclick in the memory status panel will now run garbage collection.
+- Add Mckoi and Think SQL drivers to the default drivers.
+- Add menu item allowing reconnection to the database.
+- Add a "Row Count" tab to the Tables tabbed folder.
+- Add a "Status" tab to the database node in the object tree.
+- Can now select directories as well as jars in the extra class path tab
+  in driver maintenance.
+- Errors are now displayed in the sessions message panel in red (Victor Ott).
+- Rewrite of the object tree code.
+- Show both schemas and catalogs in the object tree for databases that
+  support both.
+- Added "Help", "Change Log" and "Licence" options to Help menu for SQuirreL
+  and for plugins.
+- Documentation updated.
+- Allow for errors in ResultSet.getBoolean() implementation.
+- Axion and Mimer added to default drivers
+- Added "Dump Application" and "Dump Session" options to menus to aid in
+  debugging issues with different drivers and databases.
+
+Bug Fixes
+---------
+- Fix bug where closing the "New Session" properties dialog would make the
+  object tree tabbed panel change back to the first tab.
+- Fix "too tall" About Box under the first beta of JDK1.4.1
+- When output type (text or table) is changed all existing panels are now updated.
+- Expand first level of object tree for JDBC/ODBC bridge when session
+  first started.
+- Handle sorting by different data types in tables.
+- Fix XMLBeanWriter to transparently handle arrays of strings.
+- Fix error handling in data types display.
+
+Plugin API
+----------
+- Add ability to load jars in a plugins lib directory.
+- Move APIs from ISession to their own classes.
+- Add API to add nodes to the object tree.
+- Add API to add tabs to the object tree details panel.
+- Add API to add options to the object tree popup menu.
+
+
+1.1beta5
+========
+
+Enhancements
+------------
+- Added keyboard accelerators to "Close all SQL Result Tabs" and
+  "Close all SQL Result Windows" menu options.
+- Display more information about the executing query on the
+  execution panel.
+- Split query execution times into "sql execution" and "building
+- Add handling of blob, clob, binary, varbinary and longvarbinary
+  columns.
+- Allow for some combinations of the JDBC/ODBC bridge and MSSQL
+  that give duplicate table types from the database metadata.
+- Add "Close Session" option to Session menu.
+- Add "View Logs" item to the Windows menu.
+- Set maximum allowed width for the Window menu.
+- Added Sunopsis XML JDBC driver and Microsoft MSSQL JDBC driver (Ken Arway)
+  to default drivers.
+- Display session name in Session Properties Dialog to
+  differentiate it from another sessions dialog.
+- Log any error other than an SQL error to the logger
+  when user executes SQL.
+- Consolidated the plethora of "meta data" output type settings into a
+  single setting.
+- Main window toolbar is now floatable.
+- Using icons from the Eclipse (http://www.eclipse.org) project.
+
+Bug Fixes
+---------
+- Fix bug where changing "autocommit" during a session wasn't
+  recognized.
+- Limit rows checkbox wasn't updated when session properties
+  changed.
+- Fix incorrect row count in Info tab for a table.
+- Add error handling to result set metadata displays.
+- Don't show closed property dialogs in Windows menu.
+- Directory list combo boxes now only show required file types.
+- Fix option in Windows batch file not to show command window.
+- Show decimal positions in column data when required.
+- Show <null> when column data is null instead of an empty string.
+- Fixed metadata problems with the JDBC/ODBC bridge.
+
+
+1.1beta4
+========
+
+Bug Fixes
+---------
+- Correctly size the java Classpath listbox.
+- Indicate whether driver can be loaded whenever the driver classpath is changed
+- Add missing batch file (addpath.bat) to distribution.
+
+
+1.1beta3
+========
+
+Enhancements
+------------
+- Add Sybase drivers to list of default drivers.
+- Windows batch file now uses Java in %JAVAHOME% if it is defined else
+  uses the current path.
+- Windows batch file now loads all jars from /lib directory.
+- Unix shell script now uses Java in $JAVAHOME if it is defined else
+  uses the current path (Sergio Ballestrero).
+- Unix shell script now loads all jars from /lib
+  directory (Sergio Ballestrero)
+- Commit/Rollback options added to the session menu.
+- Session Sheet can show/hide its toolbar.
+- Aliases and Drivers can show/hide their toolbars.
+- Aliases and Drivers windows can now be resized.
+- The toolbar in the main window can now be hidden.
+- Multiple jars can now be specified for an SQL driver.
+- You can now search a jar in the classpath for a JDBC driver.
+- Row count is only shown on the Table Info tab if "Show Row Count"
+  is specified in session properties.
+- New "Refresh Row Count" button on the Table Information tab.
+- Updated to use Apache log4j 1.2.
+- The log file is now rotated.
+- Log files are now written to the logs subirectory within user home.
+- When resizing a session window the SQL results now gets any extra space.
+- Error Dialog controls have better sizing.
+- The default Metal Look and Feel now has a blue theme (Karsten Lentzsch)
+- Error message dialog can now show the stack trace if available.
+- New status bar in main window.
+- SQL settings moved from the General tab in the Global Preferences
+  dialog to its own SQL tab.
+- Nullable, Searchable and boolean columns in Data Types display
+  now show meaningful text.
+- The squirrel-sql.jar file is now executable.
+- Function and keyword lists moved out of the main metadata tab and
+  placed in their own tabs (David MacLean).
+- The DATA_TYPE column in the metadata tab now has a descriptive entry
+  as well as the numeric code (David MacLean).
+- Now shows catalogs in object tree for more DBMS's.
+- Can now select the current catalog via a dropdown for those DBMS's
+  that support catalogs.
+- Now shows table hierarchies if the JDBC driver supports them (Henner Zeller).
+
+Bug Fixes
+---------
+- Show main window scrollbars at startup if tool windows are offscreen.
+- Don't show error dialog until it is properly positioned.
+- All SQL statements now get saved into the history.
+- Load images correctly in framework classes.
+- Use correct background color in Splash Screen and About Box to match
+  the graphic.
+
+
+1.1beta2
+========
+
+Bug Fixes
+---------
+- Windows batch file now allows for spaces in the classpath (Bruno Haas).
+- Windows batch file now passes the -classic flag to the VM to stop
+  plugins looking for files in the "Colin Bell" or "Johan Compagner"
+  directories instead of the plugins private directory.
+- "Torn off" SQL results windows are now closed when the session is
+  closed.
+- Unix shell script now has correct line terminators.
+- QueryTokenizer improperly parsed strings with quotes on multiple lines
+  and caused SQLException (Todd Larsen).
+- Application Settings dialog now has a more sensible width under JDK1.4.
+- If no alises defined then the Alises dropdown has a sensible width
+  under JDK1.4.
+- If Aliases dropdown is empty when adding the first one to it then make
+  the new one the selected one.
+- When adding aliases/drivers then select the newly added one in the list.
+- When deleting aliases/drivers then ensure that another one selected
+  in the list.
+- longvarchars will now be displayed instead of <null> (Johan Compagner)
+- JDBC drivers reloaded when they have been modified through the
+  maintenance window.
+- Keeping the state when refreshing the tree works now (Johan Compagner)
+
+Enhancements
+------------
+- Now showing all columns in meta data displays.
+- Drop table menu item on the ObjectTree (Johan Compagner)
+- Full column data can be displayed in a popup window if you double click on
+  it (Johan Compagner)
+- If only one cell selected in table when pressing copy then no header
+  will be appended. (Johan Compagner)
+- Icon shown for drivers that are loaded or not (Johan Compagner/Henner Zeller)
+- TableSorting by clicking column headers (Johan Compagner)
+- Escape now cancels Connection Dialog.
+
+Other
+-----
+- Licence for the client application changed from GPL to LGPL.
+- JDK1.4 specific code now called through reflection so application
+  can be compiled using JDK1.3.
+
+
+1.1beta1
+========
+- Plugin architecture added.
+- Now under JDK1.4 have option to scroll tabbed pane tabs
+  rather than wrap them.
+- Look and Feel functionality moved to a plugin.
+- The results of queries can be displayed in multiple tabs and these tabs
+  can be "torn off" (Johan Compagner).
+- Can now enter execute multiple SQL statements (Johan Compagner).
+- The message panel is now resizable (Johan Compagner).
+- New "Info" tab on SQL query results.
+- No longer try to load blob fields from SQL Result set.
+- View SQL data entry caret line/column in status bar
+- Removed control characters from SQL Result tab headings.
+- The characters -- at the beginning of a line of SQL will turn it into a comment.
+- Properties windows are now modeless.
+- Driver and Alias maintenance windows are now modeless.
+- Aliaes and Drivers tool window now resized when Look and Feel changed (if required).
+- Now displaying SQL Error Code and State when an SQL error occurs.
+- Can now select the Font for the SQL entry area.
+- New "Show Native SQL" item in Session menu.
+- "New Session" options moved from Global Prefernces dialog to new Session Properties dialog.
+- New options on the session menu - Close all result tabs and close all Result windows.
+- New option on the Windows menu - Close all sessions.
+- Bring aliases/driver window to front if action requested.
+- New application argument -noplugins which will run SQuirreL without
+  any plugins being loaded.
+- Undo/redo support now added to the SQL entry area (Johan Compagner).
+- Copying SQL results now includes the column headings (Johan Compagner).
+- New "Copy as HTML" option for SQL results (Johan Compagner).
+- Bug fixed in About Box where the thread that updates the memory status
+  continued updating when the About Box was not being displayed.
+- Dialogs have been cleaned up.
+- Apache log4j is used for the logging subsystem.
+- JDBC debug can be specified in the global preferences.
+- New application argument allows you to override the user settings
+  directory. E.G. -settingsdir=c:\my-squirrel-settings
+- Stored proc column information now available.
+- Connection window is now modeless.
+- SQL execution and object tree expansion now run in a separate thread so
+  that the user interface is still responsive (Johan Compagner).
+- Row count is now available on the Info tab for a table.
+- Meta data is available for the results of SQL execution.
+- Replaced the JDOM library with NanoXML.
+
+
+1.0 final2
+===============================
+
+Bug Fixes
+---------
+- Put up a new splash screen that worked with JDK1.4
+
+The following fixes were actually done in 1.0final1 but I forget
+to update this file.
+
+- Removed wrong path separator used in the install script for
+  <instdir>\plugins\lafs and <instdir>\plugins\skins which
+  didn't work under Unix.
+- Got working with Sybase/jConnect.
+
+
+1.0 final
+===============================
+
+Bug Fixes
+------------
+- Handle gracefully the errors caused by JDBC drivers that require a more
+  recent version of the JDK than the one that Squirrel SQL is being run on.
+- Popup menus are now correctly positioned under JDK1.2
+
+Enhancements
+------------
+- I'm now using the IzPack Java installer from
+  http://www.izforge.com/izpack
+- Thanks to Greg Mackness, Squirrel SQL now has a decent splash screen.
+
+
+1.0 beta7
+===============================
+
+Bug Fixes
+------------
+- Allow for AbstractMethodErrors in DatabaseMetaData function calls.
+- Allow for null ResultSet objects to be returned from DatabaseMetaData
+  function calls.
+
+Enhancements
+------------
+- Add edit popup menu to tablular output.
+- Make main window area scrollable.
+- Now uses version 1.1 of the Skin Look and Feel.
+- Added PostgreSQL JDBC Driver to default drivers file.
+
+Changes
+-------
+- A lot of code cleanup.
+
+
+1.0 beta6
+===============================
+
+Bug Fixes
+------------
+- New sessions didn't take into account the "SQL Limit Rows"
+  setting from the "New Session" Application Settings tab. It
+  always defaulted to true.
+- The hourglass cursor was shown after the main window was created.
+- If the preferences positioned the main window (or aliases/drivers
+  tool windows) to a position on the screen only visible under a
+  high resolution (EG 1024X768) and you then changed the display
+  resolution to one under which the window could not be seen then
+  when Squirrel-SQL was started the window could not be seen.
+- If you tried to maintain a driver with a Driver JAR file that
+  didn't exist an error dialog that couldn't be dismissed was
+  displayed.
+- Errors that occurred for metadata information (such as data types) didn't
+  always display in the message area.
+- Errors in SQL Driver Maintenance weren't always displayed.
+- If invalid data for the data type in a column (E.G. blanks in a numeric)
+  were found in metadata information (such as data types) then no further
+  information was displayed.
+
+Enhancements
+------------
+- User name now displayed in the title for a session window.
+- Logging is now done to a text file (squirrel-sql.log) in the user
+  perferences directory instead of to standard output.
+- You can now drop a Look and Feel implementation (see www.javatoo.com
+  for examples of Look and Feel implementations) into the /plugins/lafs
+  directory within the application directory and have it selectable from
+  the "Look and Feel" dropdown on the General tab of the Global
+  Preferences dialog.
+
+Changes
+-------
+- Global Preferences option is now on the File menu.
+
+
+1.0 beta5
+===============================
+
+Bug Fixes
+------------
+- If a connection failed to open the error wasn't always displayed.
+- If an image couldn't be found for an Action the application wouldn't load.
+- Changing the class name of a driver wouldn't always take effect until
+  Squirrel-SQL was restarted.
+- The session properties dialog is now correctly positioned on screen.
+- The Class Loader used for the JDBC drivers wasn't searching for classes
+  correctly.
+
+Enhancements
+------------
+- The number of rows in a table can be displayed in the object tree. This
+  is controlled by a new session setting.
+- The Aliases and Drivers lists are now in their own windows.
+- A "Connect To" dropdown has been added to the toolbar.
+- The SQL tab in the Application Preferences dialog has been split into
+  two tabs; global settings that apply to all open sessions and a Default
+  tab that applies to new sessions.
+- If the Look and Feel is changed it is not shown until the application
+  is restarted. Not all components are rendered correctly if the Look and
+  Feel is changed on the fly.
+- The System Status dialog has been merged with the About Box.
+- New global property - Show Tooltips.
+
+
+1.0 beta4
+===============================
+
+Bug Fixes
+---------
+- When changing an existing alias the default URL from the driver was
+  displayed rather than the URL associated with the alias.
+- Resolved inconsistent handling of catalogs and schemas.
+
+Enhancements
+------------
+- Now supports Skin Look and Feel Themes from http://www.L2FProd.com.
+- Merged the Driver Class dropdown and text field on the Driver Maintenance
+  dialog into one dropdown control.
+- Drivers dropdown in Alias Maintenance dialog is now sorted.
+
+
+1.0 beta3
+===============================
+
+Bug Fixes
+---------
+- Only issue rollback/commit when closing a session if AutoCommit is false.
+- Fixed bug where incorrect alias/driver selected in listbox if an
+  alias/driver had its name changed or one was deleted.
+
+Changes
+-------
+- JDBC driver jar files can now be specified dynamically.
+- Can now specify commit/rollback when closing session. Previously
+  defaulted to rollback.
+- Added UDT information to object tree.
+- If text is selected in the SQL entry field then only that text
+  is executed as SQL.
+- Width of the panel holding the aliases and drivers is now saved and
+  restored.
+- Display the name of the driver in the connection dialog rather than
+  the class name of the driver.
+- Added MMMySQL JDBC Driver to default drivers file.
+- Row type output (such as the metadata or the SQL results panels) now
+  defaults to a JTable instead of the text output.
+- Doubleclicking in drivers listbox will maintain the currently selected driver.
+- Doubleclicking in aliases listbox will open the currently selected alias.
+- Added Commit and Rollback menu and toolbar options.
+
+
+1.0 beta2
+===============================
+- Modified to allow for DBMS's that don't support either catalogues or
+  schemas.
+- Modified to get around issue with InstantDB (3.13) returning "TABLES" for
+  MetaData.getTableTypes instead of "TABLE" and "SYSTEM TABLE".
+- Added InstantDB Driver to default drivers file.
+- When retrieving information about a tables privileges an incorrect
+  index into a resultset was being used.
+- When lines were added to the message panel no new line character was
+  added to the end of a line.
+- Fixed bug where only SQL statements that generated a ResultSet were
+  written to the history dropdown.
+- Added System Status dialog to the Help menu.
+- Fixed Cascade option on Windows menu.
+
+
+1.0beta1
+===============================
+- First beta release.

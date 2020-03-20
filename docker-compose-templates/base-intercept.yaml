@@ -12,6 +12,11 @@ services:
        file: base.yaml
        service: peer-base
 
+  couchdb-base:
+     extends:
+       file: base.yaml
+       service: couchdb-base
+
   cli-base:
     extends:
       file: base.yaml
@@ -22,6 +27,18 @@ services:
     extends:
       file: base.yaml
       service: api-base
+
+
+  # explorer-database:
+  #   extends:
+  #     file: base.yaml
+  #     service: explorer_database-base
+
+
+  # explorer:
+  #   extends:
+  #     file: base.yaml
+  #     service: explorer-base
 
   www-base:
     extends:

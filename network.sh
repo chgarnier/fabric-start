@@ -12,13 +12,13 @@ artifactsTemplatesFolder="artifact-templates"
 : ${GENERATED_DOCKER_COMPOSE_FOLDER:=./dockercompose}
 
 : ${DOMAIN:="myrmica.com"}
-: ${IP_ORDERER:="54.234.201.67"}
-: ${ORG1:="catie"}
-: ${ORG2:="happyledger"}
-: ${ORG3:="medapp"}
-: ${IP1:="54.86.191.160"}
-: ${IP2:="54.243.0.168"}
-: ${IP3:="54.211.142.174"}
+: ${IP_ORDERER:="20.188.39.7"}
+: ${ORG1:="adeo"}
+: ${ORG2:="shoyo"}
+: ${ORG3:="aucoffre"}
+: ${IP1:="20.188.37.77"}
+: ${IP2:="40.89.187.109"}
+: ${IP3:="52.143.174.104"}
 
 echo "Use Fabric-Starter home: $FABRIC_STARTER_HOME"
 echo "Use docker compose template folder: $TEMPLATES_DOCKER_COMPOSE_FOLDER"
@@ -51,13 +51,15 @@ DEFAULT_PEER0_PORT=7051
 DEFAULT_PEER0_EVENT_PORT=7053
 DEFAULT_PEER1_PORT=7056
 DEFAULT_PEER1_EVENT_PORT=7058
+DEFAULT_COUCHDB_PORT=5984
 
-DEFAULT_PEER_EXTRA_HOSTS="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER"
+DEFAULT_PEER_EXTRA_HOSTS1="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER[newline]      - couchdb.$ORG1.$DOMAIN:$IP1[newline]"
+DEFAULT_PEER_EXTRA_HOSTS2="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER[newline]      - couchdb.$ORG2.$DOMAIN:$IP2[newline]"
+DEFAULT_PEER_EXTRA_HOSTS3="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER[newline]      - couchdb.$ORG3.$DOMAIN:$IP3[newline]"
 DEFAULT_CLI_EXTRA_HOSTS="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER[newline]      - www.$DOMAIN:$IP_ORDERER[newline]      - www.$ORG1.$DOMAIN:$IP1[newline]      - www.$ORG2.$DOMAIN:$IP2[newline]      - www.$ORG3.$DOMAIN:$IP3"
-DEFAULT_API_EXTRA_HOSTS1="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER[newline]      - peer0.$ORG2.$DOMAIN:$IP2[newline]      - peer0.$ORG3.$DOMAIN:$IP3"
-DEFAULT_API_EXTRA_HOSTS2="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER[newline]      - peer0.$ORG1.$DOMAIN:$IP1[newline]      - peer0.$ORG3.$DOMAIN:$IP3"
-DEFAULT_API_EXTRA_HOSTS3="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER[newline]      - peer0.$ORG1.$DOMAIN:$IP1[newline]      - peer0.$ORG2.$DOMAIN:$IP2"
-
+DEFAULT_API_EXTRA_HOSTS1="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER[newline]      - peer0.$ORG2.$DOMAIN:$IP2[newline]      - peer0.$ORG3.$DOMAIN:$IP3[newline]      - couchdb.$ORG1.$DOMAIN:$IP1[newline]"
+DEFAULT_API_EXTRA_HOSTS2="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER[newline]      - peer0.$ORG1.$DOMAIN:$IP1[newline]      - peer0.$ORG3.$DOMAIN:$IP3[newline]      - couchdb.$ORG2.$DOMAIN:$IP2[newline]"
+DEFAULT_API_EXTRA_HOSTS3="extra_hosts:[newline]      - orderer.$DOMAIN:$IP_ORDERER[newline]      - peer0.$ORG1.$DOMAIN:$IP1[newline]      - peer0.$ORG2.$DOMAIN:$IP2[newline]      - couchdb.$ORG3.$DOMAIN:$IP3[newline]"
 GID=$(id -g)
 
 function removeUnwantedContainers() {
@@ -251,13 +253,16 @@ function generatePeerArtifacts() {
 
     if [ ${#} == 1 ]; then
       # if no port args are passed assume generating for multi host deployment
-      peer_extra_hosts=${DEFAULT_PEER_EXTRA_HOSTS}
+
       cli_extra_hosts=${DEFAULT_CLI_EXTRA_HOSTS}
       if [ ${org} == ${ORG1} ]; then
+        peer_extra_hosts=${DEFAULT_PEER_EXTRA_HOSTS1}
         api_extra_hosts=${DEFAULT_API_EXTRA_HOSTS1}
       elif [ ${org} == ${ORG2} ]; then
+        peer_extra_hosts=${DEFAULT_PEER_EXTRA_HOSTS2}
         api_extra_hosts=${DEFAULT_API_EXTRA_HOSTS2}
       elif [ ${org} == ${ORG3} ]; then
+        peer_extra_hosts=${DEFAULT_PEER_EXTRA_HOSTS3}
         api_extra_hosts=${DEFAULT_API_EXTRA_HOSTS3}
       fi
     fi
@@ -269,6 +274,7 @@ function generatePeerArtifacts() {
     peer0_event_port=$6
     peer1_port=$7
     peer1_event_port=$8
+    couchdb_port=$9
 
     : ${api_port:=${DEFAULT_API_PORT}}
     : ${www_port:=${DEFAULT_WWW_PORT}}
@@ -277,8 +283,9 @@ function generatePeerArtifacts() {
     : ${peer0_event_port:=${DEFAULT_PEER0_EVENT_PORT}}
     : ${peer1_port:=${DEFAULT_PEER1_PORT}}
     : ${peer1_event_port:=${DEFAULT_PEER1_EVENT_PORT}}
+    : ${couchdb_port:=${DEFAULT_COUCHDB_PORT}}
 
-    echo "Creating peer yaml files with $DOMAIN, $org, $api_port, $www_port, $ca_port, $peer0_port, $peer0_event_port, $peer1_port, $peer1_event_port"
+    echo "Creating peer yaml files with $DOMAIN, $org, $api_port, $www_port, $ca_port, $peer0_port, $peer0_event_port, $peer1_port, $peer1_event_port, $couchdb_port"
 
     compose_template=$TEMPLATES_DOCKER_COMPOSE_FOLDER/docker-composetemplate-peer.yaml
     if [ -n "$MAIN_ORG" ]; then
@@ -291,7 +298,7 @@ function generatePeerArtifacts() {
     sed -e "s/DOMAIN/$DOMAIN/g" -e "s/ORG/$org/g" $TEMPLATES_ARTIFACTS_FOLDER/cryptogentemplate-peer.yaml > $GENERATED_ARTIFACTS_FOLDER/"cryptogen-$org.yaml"
 
     # docker-compose yaml
-    sed -e "s/PEER_EXTRA_HOSTS/$peer_extra_hosts/g" -e "s/CLI_EXTRA_HOSTS/$cli_extra_hosts/g" -e "s/API_EXTRA_HOSTS/$api_extra_hosts/g" -e "s/DOMAIN/$DOMAIN/g" -e "s/\([^ ]\)ORG/\1$org/g" -e "s/API_PORT/$api_port/g" -e "s/WWW_PORT/$www_port/g" -e "s/CA_PORT/$ca_port/g" -e "s/PEER0_PORT/$peer0_port/g" -e "s/PEER0_EVENT_PORT/$peer0_event_port/g" -e "s/PEER1_PORT/$peer1_port/g" -e "s/PEER1_EVENT_PORT/$peer1_event_port/g" ${compose_template} | awk '{gsub(/\[newline\]/, "\n")}1' > ${f}
+    sed -e "s/PEER_EXTRA_HOSTS/$peer_extra_hosts/g" -e "s/CLI_EXTRA_HOSTS/$cli_extra_hosts/g" -e "s/API_EXTRA_HOSTS/$api_extra_hosts/g" -e "s/DOMAIN/$DOMAIN/g" -e "s/\([^ ]\)ORG/\1$org/g" -e "s/API_PORT/$api_port/g" -e "s/WWW_PORT/$www_port/g" -e "s/CA_PORT/$ca_port/g" -e "s/PEER0_PORT/$peer0_port/g" -e "s/PEER0_EVENT_PORT/$peer0_event_port/g" -e "s/PEER1_PORT/$peer1_port/g" -e "s/PEER1_EVENT_PORT/$peer1_event_port/g" -e "s/COUCHDB_PORT/$couchdb_port/g" ${compose_template}  | awk '{gsub(/\[newline\]/, "\n")}1' > ${f}
 
     # fabric-ca-server-config yaml
     sed -e "s/ORG/$org/g" $TEMPLATES_ARTIFACTS_FOLDER/fabric-ca-server-configtemplate.yaml > $GENERATED_ARTIFACTS_FOLDER/"fabric-ca-server-config-$org.yaml"
@@ -742,7 +749,7 @@ function addOrg() {
   rm -f $GENERATED_ARTIFACTS_FOLDER/newOrgMSP.json $GENERATED_ARTIFACTS_FOLDER/config.* $GENERATED_ARTIFACTS_FOLDER/update.* $GENERATED_ARTIFACTS_FOLDER/updated_config.* $GENERATED_ARTIFACTS_FOLDER/update_in_envelope.*
 
   # ex. generatePeerArtifacts foo 4005 8086 1254 1251 1253 1256 1258
-  generatePeerArtifacts ${org} ${API_PORT} ${WWW_PORT} ${CA_PORT} ${PEER0_PORT} ${PEER0_EVENT_PORT} ${PEER1_PORT} ${PEER1_EVENT_PORT}
+  generatePeerArtifacts ${org} ${API_PORT} ${WWW_PORT} ${CA_PORT} ${PEER0_PORT} ${PEER0_EVENT_PORT} ${PEER1_PORT} ${PEER1_EVENT_PORT} ${COUCHDB_PORT}
 
   dockerComposeUp ${org}
 
@@ -1193,9 +1200,9 @@ elif [ "${MODE}" == "generate" ]; then
   clean
   removeArtifacts
 
-  generatePeerArtifacts ${ORG1} 4000 8081 7054 7051 7053 7056 7058
-  generatePeerArtifacts ${ORG2} 4001 8082 8054 8051 8053 8056 8058
-  generatePeerArtifacts ${ORG3} 4002 8083 9054 9051 9053 9056 9058
+  generatePeerArtifacts ${ORG1} 4000 8081 7054 7051 7053 7056 7058 5984
+  generatePeerArtifacts ${ORG2} 4001 8082 8054 8051 8053 8056 8058 6984
+  generatePeerArtifacts ${ORG3} 4002 8083 9054 9051 9053 9056 9058 7984
   generateOrdererDockerCompose ${ORG1}
   generateOrdererArtifacts
   #generateWait
@@ -1204,7 +1211,7 @@ elif [ "${MODE}" == "generate-orderer" ]; then  # params: -M ORG (optional)
   downloadArtifactsOrderer ${MAIN_ORG}
   generateOrdererArtifacts ${MAIN_ORG}
 elif [ "${MODE}" == "generate-peer" ]; then # params: -o ORG -R true(optional- REMOTE_ORG)
-  generatePeerArtifacts ${ORG} ${API_PORT} ${WWW_PORT} ${CA_PORT} ${PEER0_PORT} ${PEER0_EVENT_PORT} ${PEER1_PORT} ${PEER1_EVENT_PORT}
+  generatePeerArtifacts ${ORG} ${API_PORT} ${WWW_PORT} ${CA_PORT} ${PEER0_PORT} ${PEER0_EVENT_PORT} ${PEER1_PORT} ${PEER1_EVENT_PORT} ${COUCHDB_PORT}
   servePeerArtifacts ${ORG}
   if [ -n "$REMOTE_ORG" ]; then
     addOrgToCliHosts ${ORG} "orderer" ${IP_ORDERER}

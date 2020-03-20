@@ -6,7 +6,10 @@
 				"requests": "grpcs://peer0.ORG.DOMAIN:7051",
 				"events": 	"grpcs://peer0.ORG.DOMAIN:7053",
 				"server-hostname": "peer0.ORG.DOMAIN",
-				"tls_cacerts": "crypto-config/peerOrganizations/ORG.DOMAIN/peers/peer0.ORG.DOMAIN/tls/ca.crt"
+				"tls_cacerts": "crypto-config/peerOrganizations/ORG.DOMAIN/peers/peer0.ORG.DOMAIN/tls/ca.crt",
+                                "couchdb-ip-addr" : "http://couchdb.ORG.DOMAIN",
+                                "couchdb-port" : "5984",
+                                "key-value-store" : "fabric-client/lib/impl/CouchDBKeyValueStore.js"
 			},
 			"peer1": {
 				"requests": "grpcs://peer1.ORG.DOMAIN:7051",

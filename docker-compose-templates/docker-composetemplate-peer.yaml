@@ -1,7 +1,3 @@
-#
-# Copyright Altoros. All Rights Reserved.
-#
-
 version: '2'
 
 volumes:
@@ -12,7 +8,7 @@ services:
 
   ca.ORG.DOMAIN:
     container_name: ca.ORG.DOMAIN
-    image: hyperledger/fabric-ca:1.2.0
+    image: hyperledger/fabric-ca:1.4.0
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.ORG.DOMAIN-cert.pem
@@ -37,6 +33,15 @@ services:
       - CORE_PEER_ID=peer0.ORG.DOMAIN
       - CORE_PEER_LOCALMSPID=ORGMSP
       - CORE_PEER_ADDRESS=peer0.ORG.DOMAIN:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.ORG.DOMAIN:7052
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE:true
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.ORG.DOMAIN:5984
+# The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+# provide the credentials for ledger to connect to CouchDB.  The username and password must
+# match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
     ports:
       - PEER0_PORT:7051
       - PEER0_EVENT_PORT:7053
@@ -46,6 +51,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - ca.ORG.DOMAIN
+      - couchdb.ORG.DOMAIN
     PEER_EXTRA_HOSTS
 
   peer1.ORG.DOMAIN:
@@ -57,6 +63,15 @@ services:
       - CORE_PEER_ID=peer1.ORG.DOMAIN
       - CORE_PEER_LOCALMSPID=ORGMSP
       - CORE_PEER_ADDRESS=peer1.ORG.DOMAIN:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer1.ORG.DOMAIN:7052
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE:true
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.ORG.DOMAIN:5984
+# The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+# provide the credentials for ledger to connect to CouchDB.  The username and password must
+# match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
     ports:
       - PEER1_PORT:7051
       - PEER1_EVENT_PORT:7053
@@ -66,7 +81,22 @@ services:
       - peer1.ORG.DOMAIN:/var/hyperledger/production
     depends_on:
       - ca.ORG.DOMAIN
+      - couchdb.ORG.DOMAIN
     PEER_EXTRA_HOSTS
+
+# couchdb database
+  couchdb.ORG.DOMAIN:
+    extends: 
+      file: base-intercept.yaml
+      service: couchdb-base 
+    container_name: couchdb.ORG.DOMAIN
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - COUCHDB_PORT:5984
 
   # fabric-rest api server
   api.ORG.DOMAIN:
@@ -84,6 +114,34 @@ services:
       - peer1.ORG.DOMAIN
     API_EXTRA_HOSTS
 
+
+  # # explorer
+  # explorerDatabase.ORG.DOMAIN:
+  #   extends:
+  #     file: base-intercept.yaml
+  #     service: explorer-database
+  #   container_name: explorerDatabase.ORG.DOMAIN
+  #   environment:
+  #     - DATABASE_DATABASE=fabricexplorer
+  #     - DATABASE_USERNAME=hppoc
+  #     - DATABASE_PASSWD=password
+  #     - DATABASE_PORT=5432
+  #     - DATABASE_HOST=explorerDatabase.ORG.DOMAIN
+
+  # explorer.ORG.DOMAIN:
+  #   extends:
+  #     file: base-intercept.yaml
+  #     service: explorer
+  #   container_name: explorer.ORG.DOMAIN
+  #   environment:
+  #     - DATABASE_DATABASE=fabricexplorer
+  #     - DATABASE_USERNAME=hppoc
+  #     - DATABASE_PASSWORD=password
+  #     - DATABASE_PORT=5432
+  #     - DATABASE_HOST=explorerDatabase.ORG.DOMAIN
+  #   ports:
+  #     - EXPLORER_PORT:8080
+
   cli.DOMAIN:
     container_name: cli.DOMAIN
     extends:
@@ -100,7 +158,7 @@ services:
     environment:
       - CORE_PEER_LOCALMSPID=ORGMSP
     volumes:
-        - ../artifacts/crypto-config/peerOrganizations/ORG.DOMAIN/users/Admin@ORG.DOMAIN:/etc/hyperledger/crypto/peer
+      - ../artifacts/crypto-config/peerOrganizations/ORG.DOMAIN/users/Admin@ORG.DOMAIN:/etc/hyperledger/crypto/peer
     CLI_EXTRA_HOSTS
 
   # simple http server to disseminate certificates

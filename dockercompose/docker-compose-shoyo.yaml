@@ -1,0 +1,171 @@
+version: '2'
+
+volumes:
+  peer0.shoyo.myrmica.com:
+  peer1.shoyo.myrmica.com:
+
+services:
+
+  ca.shoyo.myrmica.com:
+    container_name: ca.shoyo.myrmica.com
+    image: hyperledger/fabric-ca:1.4.0
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.shoyo.myrmica.com-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/e6ba8a578e847c26f76c03217ce3a6d450313da43e64e729e1e1a7f2ee1e00bc_sk
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CA_NAME=ca.shoyo.myrmica.com
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.shoyo.myrmica.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/e6ba8a578e847c26f76c03217ce3a6d450313da43e64e729e1e1a7f2ee1e00bc_sk
+    ports:
+      - 8054:7054
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/shoyo.myrmica.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../artifacts/fabric-ca-server-config-shoyo.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+
+  peer0.shoyo.myrmica.com:
+    container_name: peer0.shoyo.myrmica.com
+    extends:
+      file: base-intercept.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.shoyo.myrmica.com
+      - CORE_PEER_LOCALMSPID=shoyoMSP
+      - CORE_PEER_ADDRESS=peer0.shoyo.myrmica.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.shoyo.myrmica.com:7052
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE:true
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.shoyo.myrmica.com:5984
+# The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+# provide the credentials for ledger to connect to CouchDB.  The username and password must
+# match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    ports:
+      - 8051:7051
+      - 8053:7053
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/shoyo.myrmica.com/peers/peer0.shoyo.myrmica.com/:/etc/hyperledger/crypto/peer
+      - peer0.shoyo.myrmica.com:/var/hyperledger/production
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - ca.shoyo.myrmica.com
+      - couchdb.shoyo.myrmica.com
+    
+
+  peer1.shoyo.myrmica.com:
+    container_name: peer1.shoyo.myrmica.com
+    extends:
+      file: base-intercept.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.shoyo.myrmica.com
+      - CORE_PEER_LOCALMSPID=shoyoMSP
+      - CORE_PEER_ADDRESS=peer1.shoyo.myrmica.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer1.shoyo.myrmica.com:7052
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE:true
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.shoyo.myrmica.com:5984
+# The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+# provide the credentials for ledger to connect to CouchDB.  The username and password must
+# match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    ports:
+      - 8056:7051
+      - 8058:7053
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
+      - ../artifacts/crypto-config/peerOrganizations/shoyo.myrmica.com/peers/peer1.shoyo.myrmica.com/:/etc/hyperledger/crypto/peer
+      - peer1.shoyo.myrmica.com:/var/hyperledger/production
+    depends_on:
+      - ca.shoyo.myrmica.com
+      - couchdb.shoyo.myrmica.com
+    
+
+# couchdb database
+  couchdb.shoyo.myrmica.com:
+    extends: 
+      file: base-intercept.yaml
+      service: couchdb-base 
+    container_name: couchdb.shoyo.myrmica.com
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 6984:5984
+
+  # fabric-rest api server
+  api.shoyo.myrmica.com:
+    extends:
+      file: base-intercept.yaml
+      service: api-base
+    container_name: api.shoyo.myrmica.com
+    ports:
+      - 4001:4000
+    environment:
+      - ORG=shoyo
+      - PORT=4000
+    depends_on:
+      - peer0.shoyo.myrmica.com
+      - peer1.shoyo.myrmica.com
+    
+
+
+  # # explorer
+  # explorerDatabase.shoyo.myrmica.com:
+  #   extends:
+  #     file: base-intercept.yaml
+  #     service: explorer-database
+  #   container_name: explorerDatabase.shoyo.myrmica.com
+  #   environment:
+  #     - DATABASE_DATABASE=fabricexplorer
+  #     - DATABASE_USERNAME=hppoc
+  #     - DATABASE_PASSWD=password
+  #     - DATABASE_PORT=5432
+  #     - DATABASE_HOST=explorerDatabase.shoyo.myrmica.com
+
+  # explorer.shoyo.myrmica.com:
+  #   extends:
+  #     file: base-intercept.yaml
+  #     service: explorer
+  #   container_name: explorer.shoyo.myrmica.com
+  #   environment:
+  #     - DATABASE_DATABASE=fabricexplorer
+  #     - DATABASE_USERNAME=hppoc
+  #     - DATABASE_PASSWORD=password
+  #     - DATABASE_PORT=5432
+  #     - DATABASE_HOST=explorerDatabase.shoyo.myrmica.com
+  #   ports:
+  #     - EXPLORER_PORT:8080
+
+  cli.myrmica.com:
+    container_name: cli.myrmica.com
+    extends:
+      file: base-intercept.yaml
+      service: cli-base
+    volumes:
+      - ../artifacts/crypto-config/ordererOrganizations/myrmica.com/orderers/orderer.myrmica.com/tls:/etc/hyperledger/crypto/orderer/tls
+    
+
+  cli.shoyo.myrmica.com:
+    container_name: cli.shoyo.myrmica.com
+    extends:
+      service: cli.myrmica.com
+    environment:
+      - CORE_PEER_LOCALMSPID=shoyoMSP
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/shoyo.myrmica.com/users/Admin@shoyo.myrmica.com:/etc/hyperledger/crypto/peer
+    
+
+  # simple http server to disseminate certificates
+  www.shoyo.myrmica.com:
+    extends:
+      file: base-intercept.yaml
+      service: www-base
+    container_name: www.shoyo.myrmica.com
+    ports:
+      - 8082:80

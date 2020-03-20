@@ -11,9 +11,10 @@ services:
 
   orderer.DOMAIN:
     container_name: orderer.DOMAIN
-    image: hyperledger/fabric-orderer:1.2.0
+    image: hyperledger/fabric-orderer:1.4.0
     environment:
       - ORDERER_GENERAL_LOGLEVEL=debug
+      - GODEBUG=netdns=go
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
