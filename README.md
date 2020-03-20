@@ -23,7 +23,7 @@ Most of the plumbing work is taken care of by this starter.
 
 Network consortium consists of:
 
-- Orderer organization `catie.com`
+- Orderer organization `orderer.com`
 - Peer organization org1 `a` 
 - Peer organization org2 `b` 
 - Peer organization org3 `c`
