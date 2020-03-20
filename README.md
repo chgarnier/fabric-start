@@ -1,4 +1,4 @@
-# Starter Application for Hyperledger Fabric 1.1
+# Starter Application for Hyperledger Fabric 1.4
 
 Create a network to jump start development of your decentralized application.
 
@@ -6,6 +6,7 @@ The network can be deployed to multiple docker containers on one host for develo
 or production.
 
 Scripts of this starter generate crypto material and config files, start the network and deploy your chaincodes. 
+
 Developers can use admin web app of 
 [REST API server](https://github.com/Altoros/fabric-rest/tree/master/server/www-admin) 
 to invoke and query chaincodes, explore blocks and transactions.
@@ -22,7 +23,7 @@ Most of the plumbing work is taken care of by this starter.
 
 Network consortium consists of:
 
-- Orderer organization `example.com`
+- Orderer organization `catie.com`
 - Peer organization org1 `a` 
 - Peer organization org2 `b` 
 - Peer organization org3 `c`
