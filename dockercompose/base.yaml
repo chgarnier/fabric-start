@@ -61,7 +61,7 @@ services:
     command: sh -c "npm start"
 
   couchdb-base:
-    image: hyperledger/fabric-couchdb:latest
+    image: hyperledger/fabric-couchdb:0.4.15
 
 
   # explorer_database-base:
