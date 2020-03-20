@@ -1,3 +1,5 @@
+Based on what have been done by https://github.com/olegabu/fabric-starter and adpated for the GouverNA blockchain project. 
+
 # Starter Application for Hyperledger Fabric 1.4
 
 Create a network to jump start development of your decentralized application.
