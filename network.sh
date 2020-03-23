@@ -13,7 +13,7 @@ artifactsTemplatesFolder="artifact-templates"
 
 : ${DOMAIN:="myrmica.com"}
 : ${IP_ORDERER:="20.188.39.7"}
-: ${ORG1:="adeo"}
+: ${ORG1:="addeo"}
 : ${ORG2:="shoyo"}
 : ${ORG3:="aucoffre"}
 : ${IP1:="20.188.37.77"}
