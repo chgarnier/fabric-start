@@ -13,6 +13,7 @@ docker-machine create --driver amazonec2 --amazonec2-region $AWS_REGION --amazon
  --amazonec2-open-port 7051\
  --amazonec2-open-port 8080\
  --amazonec2-open-port 8090\
+ --amazonec2-open-port 4000\
  myrmica-orderer
 # Then install docker-compose
 docker-machine ssh myrmica-orderer 'sudo usermod -aG docker $(whoami)'  # To run docker as non-root
@@ -30,6 +31,7 @@ docker-machine create --driver amazonec2 --amazonec2-region $AWS_REGION --amazon
  --amazonec2-open-port 7051\
  --amazonec2-open-port 8080\
  --amazonec2-open-port 8090\
+ --amazonec2-open-port 4000\
  myrmica-addeo
 # Then install docker-compose
 docker-machine ssh myrmica-addeo 'sudo usermod -aG docker $(whoami)'  # To run docker as non-root
@@ -47,6 +49,7 @@ docker-machine ssh myrmica-addeo 'sudo chmod +x /usr/local/bin/docker-compose'
  --amazonec2-open-port 7051\
  --amazonec2-open-port 8080\
  --amazonec2-open-port 8090\
+ --amazonec2-open-port 4000\
  myrmica-shoyo
  # Then install docker-compose
 docker-machine ssh myrmica-shoyo 'sudo usermod -aG docker $(whoami)'  # To run docker as non-root
@@ -64,6 +67,7 @@ docker-machine ssh myrmica-shoyo 'sudo chmod +x /usr/local/bin/docker-compose'
  --amazonec2-open-port 7051\
  --amazonec2-open-port 8080\
  --amazonec2-open-port 8090\
+ --amazonec2-open-port 4000\
  myrmica-aucoffre
 # Then install docker-compose
 docker-machine ssh myrmica-aucoffre 'sudo usermod -aG docker $(whoami)'  # To run docker as non-root
