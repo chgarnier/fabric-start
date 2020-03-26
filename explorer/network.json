@@ -1,0 +1,36 @@
+{
+	"name": "network",
+	"version": "1.0.0",
+	"client": {
+		"organization": "addeo"
+	},
+	"channels": {
+		"addeo-aucoffre": {
+			"peers": {
+				"peer0.addeo.myrmica.com": {}
+			}
+		}
+	},
+	"organizations": {
+		"addeo": {
+			"mspid": "addeoMSP",
+			"fullpath": true,
+			"adminPrivateKey": {
+				"path": "/c/Users/rquer/CATIE/Myrmica/fabric-start/artifacts/crypto-config/peerOrganizations/addeo.myrmica.com/users/Admin@addeo.myrmica.com/msp/keystore/77d1c287ac580486fe0c72c35954eb98aeb662eac55746185b6e581dd08a6f24_sk"
+			},
+			"signedCert": {
+				"path": "/c/Users/rquer/CATIE/Myrmica/fabric-start/artifacts/crypto-config/peerOrganizations/addeo.myrmica.com/users/Admin@addeo.myrmica.com/msp/signcerts/Admin@addeo.myrmica.com-cert.pem"
+			},
+			"peers":["peer0.org1.example.com:"]
+		}
+	},
+	"peers": {
+		"peer0.addeo.myrmica.com": {
+			"tlsCACerts": {
+				"path": "/c/Users/rquer/CATIE/Myrmica/fabric-start/artifacts/crypto-config/peerOrganizations/addeo.myrmica.com/peers/peer0.addeo.myrmica.com/tls/ca.crt"
+			},
+			"url": "grpcs://localhost:7051",
+			"eventUrl": "grpcs://localhost:7053"
+		}
+	}
+}
