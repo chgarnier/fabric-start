@@ -7,6 +7,7 @@ const Client = require('fabric-client');
     // console.log(channel.getChannelPeers())
     // console.log(await channel.getDiscoveryResults());
     console.log(channel.getOrganizations());
+    console.log(await channel.queryInstantiatedChaincodes(null, true));
     // console.log(channel.getPeers());
     // let peers = channel.getPeersForOrg("addeo")
     // for(let peer of peers){
