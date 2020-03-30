@@ -1,0 +1,36 @@
+{
+	"name": "network",
+	"version": "1.0.0",
+	"client": {
+		"organization": "addeo"
+	},
+	"channels": {
+		"addeo-aucoffre": {
+			"peers": {
+				"peer0.addeo.myrmica.com": {}
+			}
+		}
+	},
+	"organizations": {
+		"addeo": {
+			"mspid": "addeoMSP",
+			"fullpath": true,
+			"adminPrivateKey": {
+				"path": "{{adminPrivateKeyPath}}"
+			},
+			"signedCert": {
+				"path": "{{projectRoot}}/artifacts/crypto-config/peerOrganizations/addeo.myrmica.com/users/Admin@addeo.myrmica.com/msp/signcerts/Admin@addeo.myrmica.com-cert.pem"
+			},
+			"peers":["peer0.org1.example.com:"]
+		}
+	},
+	"peers": {
+		"peer0.addeo.myrmica.com": {
+			"tlsCACerts": {
+				"path": "{{projectRoot}}/artifacts/crypto-config/peerOrganizations/addeo.myrmica.com/peers/peer0.addeo.myrmica.com/tls/ca.crt"
+			},
+			"url": "grpcs://localhost:7051",
+			"eventUrl": "grpcs://localhost:7053"
+		}
+	}
+}

@@ -273,6 +273,40 @@ elif [ "${MODE}" == "upgrade-chaincode" ]; then
   [[ -z "${CHANNELS}" ]] && echo "missing required argument -k CHANNEL" && exit 1
   echo "Upgrading with endorsement policy: ${ENDORSEMENT_POLICY}"
   upgradeChaincode ${ORG} ${CHAINCODE} ${CHAINCODE_VERSION} ${CHAINCODE_INIT_ARG} ${CHANNELS} ${ENDORSEMENT_POLICY}
+elif [ "${MODE}" == "machine-create" ]; then
+  machineCreate
+elif [ "${MODE}" == "machine-push-env" ]; then
+  machinePushEnv
+elif [ "${MODE}" == "machine-generate-peer" ]; then
+  docker-machine ssh myrmica-$ORG\
+   "\
+   export IP_ORDERER=$IP_ORDERER IP1=$IP1 IP2=$IP2 IP3=$IP3 \
+   && cd ~/fabric-start \
+   && ./network.sh -m generate-peer -o ${ORG}\
+   "
+elif [ "${MODE}" == "machine-generate-orderer" ]; then
+  docker-machine ssh myrmica-$ORG\
+   "\
+   export IP_ORDERER=$IP_ORDERER IP1=$IP1 IP2=$IP2 IP3=$IP3 \
+   && cd ~/fabric-start \
+   && ./network.sh -m generate-orderer\
+   "
+elif [ "${MODE}" == "machine-up-peer" ]; then
+  number=$5
+  echo "Running && ./network.sh -m up-$number"
+  docker-machine ssh myrmica-$ORG \
+   "\
+   export IP_ORDERER=$IP_ORDERER IP1=$IP1 IP2=$IP2 IP3=$IP3 \
+   && cd ~/fabric-start \
+   && ./network.sh -m up-$number\
+   "
+elif [ "${MODE}" == "machine-up-orderer" ]; then
+  docker-machine ssh myrmica-$ORG \
+   "\
+   export IP_ORDERER=$IP_ORDERER IP1=$IP1 IP2=$IP2 IP3=$IP3 \
+   && cd ~/fabric-start \
+   && ./network.sh -m up-orderer\
+   "
 else
   printHelp
   exit 1
