@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-source ./scripts/env.sh
-source ./scripts/functions.sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+source $DIR/scripts/env.sh
+source $DIR/scripts/functions.sh
 
 # Parse commandline args
 while getopts "h?m:o:a:w:c:0:1:2:3:k:v:i:n:M:I:R:P:" opt; do
@@ -273,40 +275,6 @@ elif [ "${MODE}" == "upgrade-chaincode" ]; then
   [[ -z "${CHANNELS}" ]] && echo "missing required argument -k CHANNEL" && exit 1
   echo "Upgrading with endorsement policy: ${ENDORSEMENT_POLICY}"
   upgradeChaincode ${ORG} ${CHAINCODE} ${CHAINCODE_VERSION} ${CHAINCODE_INIT_ARG} ${CHANNELS} ${ENDORSEMENT_POLICY}
-elif [ "${MODE}" == "machine-create" ]; then
-  machineCreate
-elif [ "${MODE}" == "machine-push-env" ]; then
-  machinePushEnv
-elif [ "${MODE}" == "machine-generate-peer" ]; then
-  docker-machine ssh myrmica-$ORG\
-   "\
-   export IP_ORDERER=$IP_ORDERER IP1=$IP1 IP2=$IP2 IP3=$IP3 \
-   && cd ~/fabric-start \
-   && ./network.sh -m generate-peer -o ${ORG}\
-   "
-elif [ "${MODE}" == "machine-generate-orderer" ]; then
-  docker-machine ssh myrmica-$ORG\
-   "\
-   export IP_ORDERER=$IP_ORDERER IP1=$IP1 IP2=$IP2 IP3=$IP3 \
-   && cd ~/fabric-start \
-   && ./network.sh -m generate-orderer\
-   "
-elif [ "${MODE}" == "machine-up-peer" ]; then
-  number=$5
-  echo "Running && ./network.sh -m up-$number"
-  docker-machine ssh myrmica-$ORG \
-   "\
-   export IP_ORDERER=$IP_ORDERER IP1=$IP1 IP2=$IP2 IP3=$IP3 \
-   && cd ~/fabric-start \
-   && ./network.sh -m up-$number\
-   "
-elif [ "${MODE}" == "machine-up-orderer" ]; then
-  docker-machine ssh myrmica-$ORG \
-   "\
-   export IP_ORDERER=$IP_ORDERER IP1=$IP1 IP2=$IP2 IP3=$IP3 \
-   && cd ~/fabric-start \
-   && ./network.sh -m up-orderer\
-   "
 else
   printHelp
   exit 1

@@ -1,0 +1,50 @@
+[
+    {
+        "name": "orderer",
+        "isOrderer": true,
+        "legacyId": "orderer",
+        "peersOptions": [
+            {
+                "name": "machine.orderer.1",
+                "isMain": true,
+                "isOrderer": true
+            }
+        ]
+    },
+    {
+        "name": "addeo",
+        "legacyId": "1",
+        "isOrderer": false,
+        "peersOptions": [
+            {
+                "name": "machine.addeo.1",
+                "isMain": true,
+                "isOrderer": false
+            }
+        ]
+    },
+    {
+        "name": "aucoffre",
+        "legacyId": "2",
+        "isOrderer": false,
+        "peersOptions": [
+            {
+                "name": "machine.aucoffre.1",
+                "isMain": true,
+                "isOrderer": false
+            }
+        ]
+    },
+    {
+        "name": "shoyo",
+        "legacyId": "3",
+        "isOrderer": false,
+        "peersOptions": [
+            {
+                "name": "machine.shoyo.1",
+                "isMain": true,
+                "isOrderer": false
+            }
+        ]
+    }
+]

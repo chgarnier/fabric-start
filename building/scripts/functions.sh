@@ -1054,31 +1054,3 @@ function printHelp () {
   echo "	network.sh -m logs"
   echo "	network.sh -m down"
 }
-
-function machineCreate(){
-  # Create a docker-machine
-  docker-machine create --driver amazonec2 --amazonec2-region $AWS_REGION --amazonec2-instance-type "m5.large"\
-   --amazonec2-open-port 2377\
-   --amazonec2-open-port 7946\
-   --amazonec2-open-port 7946/udp\
-   --amazonec2-open-port 4789\
-   --amazonec2-open-port 4789/udp\
-   --amazonec2-open-port 9000\
-   --amazonec2-open-port 7050\
-   --amazonec2-open-port 7051\
-   --amazonec2-open-port 8080\
-   --amazonec2-open-port 8090\
-   --amazonec2-open-port 4000\
-   myrmica-$ORG
-  # Then install docker-compose
-  docker-machine ssh myrmica-$ORG 'sudo usermod -aG docker $(whoami)'  # To run docker as non-root
-  docker-machine ssh myrmica-$ORG 'sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'
-  docker-machine ssh myrmica-$ORG 'sudo chmod +x /usr/local/bin/docker-compose'
-}
-
-function machinePushEnv(){
-  # scp local repository to the docker-machine
-  tar -czf /tmp/fabric-start.tar.gz .
-  docker-machine scp /tmp/fabric-start.tar.gz myrmica-$ORG:/tmp/fabric-start.tar.gz
-  docker-machine ssh myrmica-$ORG "rm -rf ~/fabric-start/ && mkdir ~/fabric-start/ && tar -xvzf /tmp/fabric-start.tar.gz -C ~/fabric-start/"
-}

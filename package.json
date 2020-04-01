@@ -1,0 +1,29 @@
+{
+  "name": "fabric-start",
+  "version": "1.0.0",
+  "description": "Based on what have been done by https://github.com/olegabu/fabric-starter and adpated for the GouverNA blockchain project.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chgarnier/fabric-start.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chgarnier/fabric-start/issues"
+  },
+  "homepage": "https://github.com/chgarnier/fabric-start#readme",
+  "dependencies": {
+    "docker-machine": "^3.0.1",
+    "dotenv": "^8.2.0",
+    "glob": "^7.1.6",
+    "spawn-promise": "^0.1.8",
+    "template-file": "^3.1.0"
+  }
+}
