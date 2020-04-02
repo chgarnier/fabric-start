@@ -1,5 +1,8 @@
 const MyrmicaPeer = require("./MyrmicaPeer");
+const MyrmicaOrderer = require("./MyrmicaOrderer");
 var assert = require("assert");
+var util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 class MyrmicaOrganization {
 
@@ -29,11 +32,15 @@ class MyrmicaOrganization {
         this.ip = await this.getIp();
     }
 
-    async pushEnvironnement(peers){
-        await exec(`tar -czf /tmp/fabric-start.tar.gz ${process.env.PROJECT_ROOT}.`);
-        for(let peer of peers){
-            peer.pushEnvironnement();
+    async pushEnvironnement(){
+        let archivePath = `/tmp/fabric-start-${this.name}.tar.gz`;
+        await exec(`tar -czf ${archivePath} -C ${process.cwd()} .`, {maxBuffer: Infinity});
+
+        let promises = [];
+        for(let peer of this.peers){
+            promises.push(peer.pushEnvironnement(archivePath));
         }
+        await Promise.all(promises);
     }
 
     async getIp(){
@@ -43,22 +50,29 @@ class MyrmicaOrganization {
     }
 
     async exportOthersOrgsIps(){
+        let promises = [];
         for(let peer of this.peers){
-            await peer.exportOthersOrgsIps(this.otherOrgsIps)
+            promises.push(peer.exportOthersOrgsIps(this.otherOrgsIps));
         }
+        await Promise.all(promises);
     }
 
     async _generate(){
-        //TODO Récuperer le generate qui est pour l'instant délégué aux peers. Là on va certainement générer tous les certificats et les docker-compose sur cet host et les distribuer ensuite sur chacune des peers.
+        return;//TODO Récuperer le generate qui est pour l'instant délégué aux peers. Là on va certainement générer tous les certificats et les docker-compose sur cet host et les distribuer ensuite sur chacune des peers.
     }
 
     async generateAndUp(){
+        let promisesGenerate = [];
         for(let peer of this.peers){  //TODO En fait, puisqu'on va avoir plusieurs peers par organization, c'est l'organization qui génère les certificats et qui les distribue aux peers. Et pas les peers qui génèrent leurs propres certificats.
-            await peer.generate();
+            promisesGenerate.push(peer.generate());
         }
+        await Promise.all(promisesGenerate);
+
+        let promisesUp = [];
         for(let peer of this.peers){
-            await peer.up(this.legacyId);
+            promisesUp.push(peer.up(this.legacyId));
         }
+        await Promise.all(promisesUp);
     }
 
 }

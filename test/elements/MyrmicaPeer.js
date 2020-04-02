@@ -1,5 +1,6 @@
 var util = require('util');
 const exec = util.promisify(require('child_process').exec);
+const spawn = require('child_process').spawn;
 
 class MyrmicaPeer {
 
@@ -42,19 +43,22 @@ class MyrmicaPeer {
             '--amazonec2-open-port', "4000",
             this.name
         ].join(" ")
-        await exec(cmd);
+        await exec(cmd, {maxBuffer: Infinity});
         await this.ssh(`'sudo usermod -aG docker $(whoami)'`);  // To run docker as non-root
         await this.ssh(`'sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose'`);
         await this.ssh(`'sudo chmod +x /usr/local/bin/docker-compose'`);
     }
 
-    async pushEnvironnement(){
-        await exec(`docker-machine scp /tmp/fabric-start.tar.gz ${this.name}:/tmp/fabric-start.tar.gz`);
-        await exec(`docker-machine ssh ${this.name} "rm -rf ~/fabric-start/ && mkdir ~/fabric-start/ && tar -xvzf /tmp/fabric-start.tar.gz -C ~/fabric-start/"`);
+    async pushEnvironnement(archivePath){
+        console.log(`${this.name} scping...`);
+        await exec(`docker-machine scp ${archivePath} ${this.name}:/tmp/fabric-start.tar.gz`);
+        console.log(`${this.name} scping... done, untaring...`);
+        await exec(`docker-machine ssh ${this.name} "sudo rm -rf ~/fabric-start/ && mkdir ~/fabric-start/ && tar -xvzf /tmp/fabric-start.tar.gz -C ~/fabric-start/"`);
+        console.log(`${this.name} scping... done, untaring... done`);
     }
 
     async getIp(){
-        const { stdout, stderr } = await exec(`docker-machine ip ${this.name}`);
+        const { stdout, stderr } = await exec(`docker-machine ip ${this.name}`, {maxBuffer: Infinity});
         if(stderr){
             throw Error(stderr);
         }
@@ -64,27 +68,38 @@ class MyrmicaPeer {
     }
 
     async ssh(cmd){
-        await exec(`docker-machine ssh ${this.name} ${cmd}`);
+        const { stdout, stderr } = await exec(`docker-machine ssh ${this.name} ${cmd}`, {timeout: 120000, maxBuffer: Infinity})
+            .catch(e => {
+                console.error(`Error with code ${e.code} and signal ${e.signal} on MyrmicaPeer ${this.name} with cmd ${cmd}`);
+                throw new Error(e.stack);
+            });
+        // if(stderr){
+        //     console.error(`Command ${cmd} has stderr:\n${stderr}`);
+        // }
     }
 
     async exportOthersOrgsIps(otherOrgsIps){
-        for(otherOrgIp of otherOrgsIps){
-            await this.ssh(`'"export ${otherOrgIp.key}=${otherOrgIp.value}" >> ~/.bashrc'`);
+        for(let otherOrgIp of otherOrgsIps){
+            await exec(`docker-machine ssh ${this.name} 'echo "export ${otherOrgIp.key}=${otherOrgIp.value}" >> ~/.bashrc'`);
         }
     }
 
-    async generate(){
+    async generate(){ // TODO This is to be replaced by peer name when 
+        console.log(`==> ${this.name} generating...`);
         await this.ssh(`'\
             cd ~/fabric-start/building \
-            && ./network.sh -m generate-peer -o ${this.name}\
+            && ./network.sh -m generate-peer -o ${this.orgName}\
         '`)
+        console.log(`==> ${this.name} generating... done`);
     }
 
     async up(legacyId){
+        console.log(`==> ${this.name} uping...`);
         await this.ssh(`'\
             cd ~/fabric-start/building \
             && ./network.sh -m up-${legacyId}\
         '`)
+        console.log(`==> ${this.name} uping... done`);
     }
 
 }

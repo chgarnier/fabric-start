@@ -6,7 +6,7 @@ class MyrmicaConsortium {
         this.name = name;
         this.orgs = []
         for(let orgOptions of orgsOptions){
-            this.orgs.push(new MyrmicaOrganization(orgOptions.name, orgsOptions.isOrderer, orgOptions.peersOptions));
+            this.orgs.push(new MyrmicaOrganization(orgOptions.name, orgOptions.legacyId, orgOptions.isOrderer, orgOptions.peersOptions));
         }
         
     }
@@ -19,8 +19,16 @@ class MyrmicaConsortium {
         await Promise.all(promises);
     }
 
+    async pushEnvironnement(){
+        let promises = [];
+        for(let org of this.orgs){
+            promises.push(org.pushEnvironnement());
+        }
+        await Promise.all(promises);
+    }
+
     async shareOrgsIps(){
-        ips = [];
+        let ips = [];
         for(let org of this.orgs){
             if(org.isOrderer){
                 ips.push({key: 'IP_ORDERER', value:org.ip});
@@ -29,16 +37,20 @@ class MyrmicaConsortium {
                 ips.push({key: `IP${org.legacyId}`, value:org.ip});
             }
         }
+        let promises = [];
         for(let org of this.orgs){
             org.otherOrgsIps = ips;
-            org.exportOthersOrgsIps();
+            promises.push(org.exportOthersOrgsIps());
         }
+        await Promise.all(promises);
     }
 
     async generateAndUp(){
+        let promises = [];
         for(let org of this.orgs){
-            await org.generateAndUp();
+            promises.push(org.generateAndUp());
         }
+        await Promise.all(promises);
     }
 
 }

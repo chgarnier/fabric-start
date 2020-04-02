@@ -182,6 +182,13 @@ function generateOrdererArtifacts() {
     docker-compose --file ${f} run --rm "cli.$DOMAIN" bash -c "chown -R $UID:$GID ."
 }
 
+function generateOrgArtifacts(){
+  org=$1
+  [[ ${#} == 0 ]] && echo "missing required argument -o ORG" && exit 1
+
+  
+}
+
 function generatePeerArtifacts() {
     org=$1
 
