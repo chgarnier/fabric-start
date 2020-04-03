@@ -1,11 +1,11 @@
-const MyrmicaPeer = require("./MyrmicaPeer");
-const MyrmicaOrderer = require("./MyrmicaOrderer");
+const PeerManager = require("./PeerManager");
+const OrdererManager = require("./OrdererManager");
 const Monitor = require("../monitoring/Monitor");
 var assert = require("assert");
 var util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-class MyrmicaOrganization {
+class OrganizationManager {
 
     constructor(name, legacyId, rootDirectory, isOrderer, peersOptions){
         this.name = name;
@@ -15,10 +15,10 @@ class MyrmicaOrganization {
         this.peers = [];
         for(let peerOptions of peersOptions){
             if(peerOptions.isOrderer){
-                this.peers.push(new MyrmicaOrderer(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
+                this.peers.push(new OrdererManager(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
             }
             else{
-                this.peers.push(new MyrmicaPeer(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
+                this.peers.push(new PeerManager(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
             }
         }
         this.ip = null;
@@ -59,14 +59,14 @@ class MyrmicaOrganization {
         await Promise.all(promises);
     }
 
-    async _generate(){
+    async generate(){  //TODO Impossible de faire avec ça, parce que en fait il faut splitter le generate-peer qui est fait sur chaque peer
         let cmd = `'\
             cd ${this.rootDirectory} \
             && ./network.sh -m generate-peer -o ${this.name}\
         '`
         await exec(cmd, {timeout: 120000, maxBuffer: Infinity})
             .catch(e => {
-                console.error(`Error with code ${e.code} and signal ${e.signal} on MyrmicaOrganization ${this.name} with cmd ${cmd}`);
+                console.error(`Error with code ${e.code} and signal ${e.signal} on OrganizationManager ${this.name} with cmd ${cmd}`);
                 throw new Error(e.stack);
             });
         
@@ -90,6 +90,29 @@ class MyrmicaOrganization {
         await Monitor.run();
     }
 
+    async _generateCryptogen(){
+        cliExtraHosts = {  //TODO Auto-generer en fonction des orgas
+            "orderer.myrmica.com": this.otherOrgsIps.filter(e => e.key=="orderer")[0].value,
+            "www.myrmica.com": this.otherOrgsIps.filter(e => e.key=="orderer")[0].value,
+            "www.addeo.myrmica.com": this.otherOrgsIps.filter(e => e.key=="addeo")[0].value,
+            "www.aucoffre.myrmica.com": this.otherOrgsIps.filter(e => e.key=="aucoffre")[0].value,
+            "www.shoyo.myrmica.com": this.otherOrgsIps.filter(e => e.key=="shoyo")[0].value
+        }
+        peerExtraHosts = {
+            "orderer.myrmica.com": this.otherOrgsIps.filter(e => e.key=="orderer")[0].value,
+            `couchdb.${this.name}.myrmica.com`: this.ip
+        }
+        apiExtraHosts = {  //TODO Remplacer tous les peer0 par les noms dynamiques des main-peers des autres orgas
+            "orderer.myrmica.com": this.otherOrgsIps.filter(e => e.key=="orderer")[0].value,
+            "peer0.myrmica.com": this.otherOrgsIps.filter(e => e.key=="orderer")[0].value,
+            "peer0.addeo.myrmica.com": this.otherOrgsIps.filter(e => e.key=="addeo")[0].value,
+            "peer0.aucoffre.myrmica.com": this.otherOrgsIps.filter(e => e.key=="aucoffre")[0].value,
+            "peer0.shoyo.myrmica.com": this.otherOrgsIps.filter(e => e.key=="shoyo")[0].value,
+            `couchdb.${this.name}.myrmica.com`: this.ip
+        }
+        //TODO Générer les fichiers (un cryptogen pour l'orga, un docker-composer par peer de l'orga) et ensuite il faudra les distribuer aux différentes peers.
+    }
+
 }
 
-module.exports = MyrmicaOrganization;
+module.exports = OrganizationManager;

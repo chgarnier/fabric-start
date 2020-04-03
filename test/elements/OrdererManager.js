@@ -1,6 +1,6 @@
-const MyrmicaPeer = require("./MyrmicaPeer");
+const PeerManager = require("./PeerManager");
 
-class MyrmicaOrderer extends MyrmicaPeer {
+class OrdererManager extends PeerManager {
 
     async generate(){
         console.log(`==> ${this.name} generating...`);
@@ -13,4 +13,4 @@ class MyrmicaOrderer extends MyrmicaPeer {
 
 }
 
-module.exports = MyrmicaOrderer;
+module.exports = OrdererManager;

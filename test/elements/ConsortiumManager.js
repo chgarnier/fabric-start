@@ -1,14 +1,14 @@
-const MyrmicaOrganization = require("./MyrmicaOrganization");
+const OrganizationManager = require("./OrganizationManager");
 var fs = require("fs-extra");
 var rimraf = require("rimraf");
 
-class MyrmicaConsortium {
+class ConsortiumManager {
 
     constructor(name, orgsOptions){
         this.name = name;
         this.orgs = []
         for(let orgOptions of orgsOptions){
-            this.orgs.push(new MyrmicaOrganization(orgOptions.name, orgOptions.legacyId, orgOptions.rootDirectory, orgOptions.isOrderer, orgOptions.peersOptions));
+            this.orgs.push(new OrganizationManager(orgOptions.name, orgOptions.legacyId, orgOptions.rootDirectory, orgOptions.isOrderer, orgOptions.peersOptions));
         }
     }
 
@@ -72,4 +72,4 @@ class MyrmicaConsortium {
 
 }
 
-module.exports = MyrmicaConsortium;
+module.exports = ConsortiumManager;

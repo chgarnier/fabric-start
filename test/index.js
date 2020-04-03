@@ -1,11 +1,11 @@
-const MyrmicaConsortium = require("./elements/MyrmicaConsortium");
+const ConsortiumManager = require("./elements/ConsortiumManager");
 const fs = require('fs');
 require('dotenv').config();
 
 (async () => {
     let conf = JSON.parse(fs.readFileSync(`${process.cwd()}/test/conf.json`));
     console.log(conf);
-    let consortium = new MyrmicaConsortium("myrmica", conf);
+    let consortium = new ConsortiumManager("myrmica", conf);
     console.log("Consortium: init");
     await consortium.init();
     console.log("Consortium: pushEnvironment");

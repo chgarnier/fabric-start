@@ -1,7 +1,7 @@
 var util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-class MyrmicaPeer {
+class PeerManager {
 
     constructor(name, orgName, isMain, ec2Type){
         this.name = name;
@@ -70,7 +70,7 @@ class MyrmicaPeer {
     async ssh(cmd){
         const { stdout, stderr } = await exec(`docker-machine ssh ${this.name} ${cmd}`, {timeout: 120000, maxBuffer: Infinity})
             .catch(e => {
-                console.error(`Error with code ${e.code} and signal ${e.signal} on MyrmicaPeer ${this.name} with cmd ${cmd}`);
+                console.error(`Error with code ${e.code} and signal ${e.signal} on PeerManager ${this.name} with cmd ${cmd}`);
                 throw new Error(e.stack);
             });
         // if(stderr){
@@ -104,4 +104,4 @@ class MyrmicaPeer {
 
 }
 
-module.exports = MyrmicaPeer;
+module.exports = PeerManager;
