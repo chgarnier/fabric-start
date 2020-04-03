@@ -3,9 +3,11 @@
         "name": "orderer",
         "isOrderer": true,
         "legacyId": "orderer",
+        "rootDirectory": "/tmp/fabric-start-orderer",
         "peersOptions": [
             {
                 "name": "machine.orderer.1",
+                "ec2Type": "m5.large",
                 "isMain": true,
                 "isOrderer": true
             }
@@ -15,10 +17,18 @@
         "name": "addeo",
         "legacyId": "1",
         "isOrderer": false,
+        "rootDirectory": "/tmp/fabric-start-addeo",
         "peersOptions": [
             {
                 "name": "machine.addeo.1",
+                "ec2Type": "t2.medium",
                 "isMain": true,
+                "isOrderer": false
+            },
+            {
+                "name": "machine.addeo.2",
+                "ec2Type": "t2.medium",
+                "isMain": false,
                 "isOrderer": false
             }
         ]
@@ -27,10 +37,18 @@
         "name": "aucoffre",
         "legacyId": "2",
         "isOrderer": false,
+        "rootDirectory": "/tmp/fabric-start-aucoffre",
         "peersOptions": [
             {
                 "name": "machine.aucoffre.1",
+                "ec2Type": "t2.medium",
                 "isMain": true,
+                "isOrderer": false
+            },
+            {
+                "name": "machine.aucoffre.2",
+                "ec2Type": "t2.medium",
+                "isMain": false,
                 "isOrderer": false
             }
         ]
@@ -39,10 +57,18 @@
         "name": "shoyo",
         "legacyId": "3",
         "isOrderer": false,
+        "rootDirectory": "/tmp/fabric-start-shoyo",
         "peersOptions": [
             {
                 "name": "machine.shoyo.1",
+                "ec2Type": "t2.medium",
                 "isMain": true,
+                "isOrderer": false
+            },
+            {
+                "name": "machine.shoyo.2",
+                "ec2Type": "t2.medium",
+                "isMain": false,
                 "isOrderer": false
             }
         ]

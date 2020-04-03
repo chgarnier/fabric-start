@@ -1,0 +1,139 @@
+version: '2'
+
+volumes:
+  PEER_NAME.ORG.DOMAIN:
+
+services:
+
+  ca.ORG.DOMAIN:
+    container_name: ca.ORG.DOMAIN
+    image: hyperledger/fabric-ca:1.4.0
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.ORG.DOMAIN-cert.pem
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA_PRIVATE_KEY
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CA_NAME=ca.ORG.DOMAIN
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.ORG.DOMAIN-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA_PRIVATE_KEY
+    ports:
+      - CA_PORT:7054
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/ORG.DOMAIN/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ../artifacts/fabric-ca-server-config-ORG.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+
+  PEER_NAME.ORG.DOMAIN:
+    container_name: PEER_NAME.ORG.DOMAIN
+    extends:
+      file: base-intercept.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=PEER_NAME.ORG.DOMAIN
+      - CORE_PEER_LOCALMSPID=ORGMSP
+      - CORE_PEER_ADDRESS=PEER_NAME.ORG.DOMAIN:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=PEER_NAME.ORG.DOMAIN:7052
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE:true
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.ORG.DOMAIN:5984
+# The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+# provide the credentials for ledger to connect to CouchDB.  The username and password must
+# match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    ports:
+      - PEER0_PORT:7051
+      - PEER0_EVENT_PORT:7053
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/ORG.DOMAIN/peers/PEER_NAME.ORG.DOMAIN/:/etc/hyperledger/crypto/peer
+      - PEER_NAME.ORG.DOMAIN:/var/hyperledger/production
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - ca.ORG.DOMAIN
+      - couchdb.ORG.DOMAIN
+    PEER_EXTRA_HOSTS
+
+# couchdb database
+  couchdb.ORG.DOMAIN:
+    extends: 
+      file: base-intercept.yaml
+      service: couchdb-base 
+    container_name: couchdb.ORG.DOMAIN
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - COUCHDB_PORT:5984
+
+  # fabric-rest api server
+  api.ORG.DOMAIN:
+    extends:
+      file: base-intercept.yaml
+      service: api-base
+    container_name: api.ORG.DOMAIN
+    ports:
+      - API_PORT:4000
+    environment:
+      - ORG=ORG
+      - PORT=4000
+    depends_on:
+      - peer0.ORG.DOMAIN
+    API_EXTRA_HOSTS
+
+
+  # # explorer
+  # explorerDatabase.ORG.DOMAIN:
+  #   extends:
+  #     file: base-intercept.yaml
+  #     service: explorer-database
+  #   container_name: explorerDatabase.ORG.DOMAIN
+  #   environment:
+  #     - DATABASE_DATABASE=fabricexplorer
+  #     - DATABASE_USERNAME=hppoc
+  #     - DATABASE_PASSWD=password
+  #     - DATABASE_PORT=5432
+  #     - DATABASE_HOST=explorerDatabase.ORG.DOMAIN
+
+  # explorer.ORG.DOMAIN:
+  #   extends:
+  #     file: base-intercept.yaml
+  #     service: explorer
+  #   container_name: explorer.ORG.DOMAIN
+  #   environment:
+  #     - DATABASE_DATABASE=fabricexplorer
+  #     - DATABASE_USERNAME=hppoc
+  #     - DATABASE_PASSWORD=password
+  #     - DATABASE_PORT=5432
+  #     - DATABASE_HOST=explorerDatabase.ORG.DOMAIN
+  #   ports:
+  #     - EXPLORER_PORT:8080
+
+  cli.DOMAIN:
+    container_name: cli.DOMAIN
+    extends:
+      file: base-intercept.yaml
+      service: cli-base
+    volumes:
+      - ../artifacts/crypto-config/ordererOrganizations/DOMAIN/orderers/orderer.DOMAIN/tls:/etc/hyperledger/crypto/orderer/tls
+    CLI_EXTRA_HOSTS
+
+  cli.ORG.DOMAIN:
+    container_name: cli.ORG.DOMAIN
+    extends:
+      service: cli.DOMAIN
+    environment:
+      - CORE_PEER_LOCALMSPID=ORGMSP
+    volumes:
+      - ../artifacts/crypto-config/peerOrganizations/ORG.DOMAIN/users/Admin@ORG.DOMAIN:/etc/hyperledger/crypto/peer
+    CLI_EXTRA_HOSTS
+
+  # simple http server to disseminate certificates
+  www.ORG.DOMAIN:
+    extends:
+      file: base-intercept.yaml
+      service: www-base
+    container_name: www.ORG.DOMAIN
+    ports:
+      - WWW_PORT:80

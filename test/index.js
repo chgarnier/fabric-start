@@ -15,4 +15,6 @@ require('dotenv').config();
     console.log("Consortium: generateAndUp");
     await consortium.generateAndUp();
     console.log("Consortium: done");
+
+    // await consortium.orgs[1].monitor();  //TODO Not working yet, as it's still the peers that generate their certificates
 })();

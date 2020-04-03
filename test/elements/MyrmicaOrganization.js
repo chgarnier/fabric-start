@@ -1,22 +1,24 @@
 const MyrmicaPeer = require("./MyrmicaPeer");
 const MyrmicaOrderer = require("./MyrmicaOrderer");
+const Monitor = require("../monitoring/Monitor");
 var assert = require("assert");
 var util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
 class MyrmicaOrganization {
 
-    constructor(name, legacyId, isOrderer, peersOptions){
+    constructor(name, legacyId, rootDirectory, isOrderer, peersOptions){
         this.name = name;
         this.legacyId = legacyId;
+        this.rootDirectory = rootDirectory;
         this.isOrderer = isOrderer;
         this.peers = [];
         for(let peerOptions of peersOptions){
             if(peerOptions.isOrderer){
-                this.peers.push(new MyrmicaOrderer(peerOptions.name, this.name, peerOptions.isMain));
+                this.peers.push(new MyrmicaOrderer(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
             }
             else{
-                this.peers.push(new MyrmicaPeer(peerOptions.name, this.name, peerOptions.isMain));
+                this.peers.push(new MyrmicaPeer(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
             }
         }
         this.ip = null;
@@ -34,7 +36,7 @@ class MyrmicaOrganization {
 
     async pushEnvironnement(){
         let archivePath = `/tmp/fabric-start-${this.name}.tar.gz`;
-        await exec(`tar -czf ${archivePath} -C ${process.cwd()} .`, {maxBuffer: Infinity});
+        await exec(`tar -czf ${archivePath} -C ${this.rootDirectory} .`, {maxBuffer: Infinity});
 
         let promises = [];
         for(let peer of this.peers){
@@ -58,7 +60,16 @@ class MyrmicaOrganization {
     }
 
     async _generate(){
-        return;//TODO Récuperer le generate qui est pour l'instant délégué aux peers. Là on va certainement générer tous les certificats et les docker-compose sur cet host et les distribuer ensuite sur chacune des peers.
+        let cmd = `'\
+            cd ${this.rootDirectory} \
+            && ./network.sh -m generate-peer -o ${this.name}\
+        '`
+        await exec(cmd, {timeout: 120000, maxBuffer: Infinity})
+            .catch(e => {
+                console.error(`Error with code ${e.code} and signal ${e.signal} on MyrmicaOrganization ${this.name} with cmd ${cmd}`);
+                throw new Error(e.stack);
+            });
+        
     }
 
     async generateAndUp(){
@@ -73,6 +84,10 @@ class MyrmicaOrganization {
             promisesUp.push(peer.up(this.legacyId));
         }
         await Promise.all(promisesUp);
+    }
+
+    async monitor(){
+        await Monitor.run();
     }
 
 }

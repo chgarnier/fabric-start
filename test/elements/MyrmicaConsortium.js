@@ -1,4 +1,6 @@
 const MyrmicaOrganization = require("./MyrmicaOrganization");
+var fs = require("fs-extra");
+var rimraf = require("rimraf");
 
 class MyrmicaConsortium {
 
@@ -6,17 +8,32 @@ class MyrmicaConsortium {
         this.name = name;
         this.orgs = []
         for(let orgOptions of orgsOptions){
-            this.orgs.push(new MyrmicaOrganization(orgOptions.name, orgOptions.legacyId, orgOptions.isOrderer, orgOptions.peersOptions));
+            this.orgs.push(new MyrmicaOrganization(orgOptions.name, orgOptions.legacyId, orgOptions.rootDirectory, orgOptions.isOrderer, orgOptions.peersOptions));
         }
-        
     }
 
     async init(){
-        let promises = [];
+        let rootDirPromises = []
         for(let org of this.orgs){
-            promises.push(org.init());
+            rootDirPromises.push(this.createOrganizationRootDirectory(org));
         }
-        await Promise.all(promises);
+        await Promise.all(rootDirPromises);
+
+        let orgInitPromises = [];
+        for(let org of this.orgs){
+            orgInitPromises.push(org.init());
+        }
+        await Promise.all(orgInitPromises);
+    }
+
+    async createOrganizationRootDirectory(org){
+        if(fs.existsSync(org.rootDirectory)){
+            rimraf.sync(org.rootDirectory);  // As fs recursive option is experimental and doesn't seem to work in my case, rimraf seems to be an alternative
+            //fs.rmdirSync(org.rootDirectory, {recursive: true});
+        }
+        console.log(`Consortium copying files for ${org.name}...`);
+        fs.copySync(process.cwd(), org.rootDirectory);
+        console.log(`Consortium copying files for ${org.name}... done`);
     }
 
     async pushEnvironnement(){
