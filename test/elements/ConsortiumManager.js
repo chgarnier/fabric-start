@@ -8,7 +8,7 @@ class ConsortiumManager {
         this.name = name;
         this.orgs = []
         for(let orgOptions of orgsOptions){
-            this.orgs.push(new OrganizationManager(orgOptions.name, orgOptions.legacyId, orgOptions.rootDirectory, orgOptions.isOrderer, orgOptions.peersOptions));
+            this.orgs.push(new OrganizationManager(orgOptions.name, `${this.name}.com`, orgOptions.legacyId, orgOptions.rootDirectory, orgOptions.isOrderer, orgOptions.peersOptions));
         }
     }
 
@@ -44,20 +44,21 @@ class ConsortiumManager {
         await Promise.all(promises);
     }
 
-    async shareOrgsIps(){
-        let ips = [];
+    async shareOtherOrgs(){
+        let otherOrgs = [];
         for(let org of this.orgs){
-            if(org.isOrderer){
-                ips.push({key: 'IP_ORDERER', value:org.ip});
-            }
-            else{
-                ips.push({key: `IP${org.legacyId}`, value:org.ip});
-            }
+            otherOrgs.push({
+                ip: org.ip,
+                ipLegacyEnvName: org.isOrderer?'IP_ORDERER':`IP${org.legacyId}`,
+                name: org.name,
+                mainPeerName: org.peers.filter(p => p.isMain)[0].name,
+                isOrderer: org.isOrderer
+            })
         }
         let promises = [];
         for(let org of this.orgs){
-            org.otherOrgsIps = ips;
-            promises.push(org.exportOthersOrgsIps());
+            org.otherOrgs = otherOrgs;
+            promises.push(org.exportOthersOrgs());
         }
         await Promise.all(promises);
     }

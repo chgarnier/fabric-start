@@ -78,9 +78,9 @@ class PeerManager {
         // }
     }
 
-    async exportOthersOrgsIps(otherOrgsIps){
-        for(let otherOrgIp of otherOrgsIps){
-            await exec(`docker-machine ssh ${this.name} 'echo "export ${otherOrgIp.key}=${otherOrgIp.value}" >> ~/.bashrc'`, {maxBuffer: Infinity});
+    async exportOthersOrgs(otherOrgs){
+        for(let otherOrg of otherOrgs){
+            await exec(`docker-machine ssh ${this.name} 'echo "export ${otherOrg.ipLegacyEnvName}=${otherOrg.ip}" >> ~/.bashrc'`, {maxBuffer: Infinity});
         }
     }
 

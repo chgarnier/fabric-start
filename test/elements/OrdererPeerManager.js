@@ -1,6 +1,6 @@
 const PeerManager = require("./PeerManager");
 
-class OrdererManager extends PeerManager {
+class OrdererPeerManager extends PeerManager {
 
     async generate(){
         console.log(`==> ${this.name} generating...`);
@@ -13,4 +13,4 @@ class OrdererManager extends PeerManager {
 
 }
 
-module.exports = OrdererManager;
+module.exports = OrdererPeerManager;
