@@ -1,4 +1,5 @@
-const fs = require('fs');
+const fs = require('fs-extra');
+yaml = require('js-yaml');
 
 class CryptoconfigGenerator {
 
@@ -17,14 +18,16 @@ class CryptoconfigGenerator {
                 },
                 Template: {
                     Count: this.organizationManager.peers.length,
-                    SANS: "localhost"
+                    SANS: ["localhost"]
                 },
                 Users: {
                     Count: 1
                 }
             }]
         }
-        fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/artifacts/cryptogen-${this.organizationManager.name}.yaml`, cryptoconfig);
+        console.log(`Writing cryptogen file for ${this.organizationManager.name} ...`);
+        await fs.writeFile(`${this.organizationManager.rootDirectory}/building/artifacts/cryptogen-${this.organizationManager.name}.yaml`, yaml.safeDump(cryptoconfig));
+        console.log(`Writing cryptogen file for ${this.organizationManager.name} ... done`);
     }
 
 }

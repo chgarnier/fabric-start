@@ -1,4 +1,5 @@
 const fs = require('fs');
+yaml = require('js-yaml');
 
 class CaserverconfigGenerator{
 
@@ -145,7 +146,7 @@ class CaserverconfigGenerator{
                 }
             }
         }
-        fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/artifacts/fabric-ca-server-config-${this.organizationManager.name}.yaml`, config);
+        fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/artifacts/fabric-ca-server-config-${this.organizationManager.name}.yaml`, yaml.safeDump(config));
     }
 
 }

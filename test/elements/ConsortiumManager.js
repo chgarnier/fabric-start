@@ -1,5 +1,6 @@
 const OrganizationManager = require("./OrganizationManager");
 var fs = require("fs-extra");
+// const fs = require('fs').promises;
 var rimraf = require("rimraf");
 
 class ConsortiumManager {
@@ -27,12 +28,12 @@ class ConsortiumManager {
     }
 
     async createOrganizationRootDirectory(org){
-        if(fs.existsSync(org.rootDirectory)){
+        console.log(`Consortium copying files for ${org.name}...`);
+        if(await fs.exists(org.rootDirectory)){
             rimraf.sync(org.rootDirectory);  // As fs recursive option is experimental and doesn't seem to work in my case, rimraf seems to be an alternative
             //fs.rmdirSync(org.rootDirectory, {recursive: true});
         }
-        console.log(`Consortium copying files for ${org.name}...`);
-        fs.copySync(process.cwd(), org.rootDirectory);
+        await fs.copy(process.cwd(), org.rootDirectory);
         console.log(`Consortium copying files for ${org.name}... done`);
     }
 

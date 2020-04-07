@@ -41,6 +41,18 @@ class OrganizationManager {
         this.ip = await this.getIp();
     }
 
+    async _execute(cmd){
+        let {stdout, stderr} = await exec(cmd, {timeout: 120000, maxBuffer: Infinity})
+            .catch(e => {
+                console.error(`Error with code ${e.code} and signal ${e.signal} on OrganizationManager ${this.name} with cmd ${cmd}`);
+                throw new Error(e);
+            });
+        return {
+            stdout: stdout,
+            stderr: stderr
+        }
+    }
+
     async pushEnvironnement(){
         let archivePath = `/tmp/fabric-start-${this.name}.tar.gz`;
         await exec(`tar -czf ${archivePath} -C ${this.rootDirectory} .`, {maxBuffer: Infinity});
@@ -72,45 +84,48 @@ class OrganizationManager {
 
     async _generate(){  //TODO Impossible de faire avec ça, parce que en fait il faut splitter le generate-peer qui est fait sur chaque peer
         // Generating crypto material with cryptogen"
-        await CryptoconfigGenerator(this).generate();
-        let uid = await exec("echo $UID");
-        let gid = await exec("echo $GID");
-        await exec(`\
-            docker run --rm -v ${this.rootDirectory/artifacts}:/etc/hyperledger/artifacts -w /etc/hyperledger/artifacts hyperledger/fabric-tools:1.4.2\
-             cryptogen generate --config=./crypto-config.yaml --output=crypto-temp\
+        await (new CryptoconfigGenerator(this).generate());
+        let uid = (await this._execute("echo $(id -u)")).stdout.trim();
+        let gid = (await this._execute("echo $(id -g)")).stdout.trim();
+        await this._execute(`\
+            docker run --rm -v ${this.rootDirectory}/building/artifacts:/etc/hyperledger/artifacts -w /etc/hyperledger/artifacts hyperledger/fabric-tools:1.4.2\
+             /bin/bash -c "cryptogen generate --config=./cryptogen-${this.name}.yaml --output=crypto-temp\
              &&  cp -r -f crypto-temp/. crypto-config\
-             && chown -R ${uid}:${gid} .\
-        `, {maxBuffer: Infinity});
+             && chown -R ${uid}:${gid} ."\
+        `);
 
         //Copying files
-        fs.copySync(`${this.rootDirectory}/artifacts-templates/default_hosts`, `${this.rootDirectory}/artifacts/hosts/${this.name}/api_hosts`);
-        fs.copySync(`${this.rootDirectory}/artifacts-templates/default_hosts`, `${this.rootDirectory}/artifacts/hosts/${this.name}/cli_hosts`);
+        fs.copySync(`${this.rootDirectory}/building/artifact-templates/default_hosts`, `${this.rootDirectory}/building/artifacts/hosts/${this.name}/api_hosts`);
+        fs.copySync(`${this.rootDirectory}/building/artifact-templates/default_hosts`, `${this.rootDirectory}/building/artifacts/hosts/${this.name}/cli_hosts`);
 
         //Generating docker-compose files for peers  //TODO Push the files to the peers
-        await DockercomposeGenerator(this).generate();
+        await (new DockercomposeGenerator(this).generate());
 
         //Generating the configuration for Fabric CA Server
-        await CaserverconfigGenerator(this).generate();
+        await (new CaserverconfigGenerator(this).generate());
 
         //Generating configtx and config.json files
-        await ConfigTxGenerator(this).generate();
-        await exec(`\
-            docker run --rm -v ${this.rootDirectory/artifacts}:/etc/hyperledger/artifacts -w /etc/hyperledger/artifacts hyperledger/fabric-tools:1.4.2\
-             bash -c "FABRIC_CFG_PATH=./ configtxgen  -printOrg ${this.name}MSP > ${this.name}Config.json"\
-        `, {maxBuffer: Infinity});
+        await (new ConfigTxGenerator(this).generate());
+        await this._execute(`\
+            docker run --rm -v ${this.rootDirectory}/building/artifacts:/etc/hyperledger/artifacts -w /etc/hyperledger/artifacts hyperledger/fabric-tools:1.4.2\
+             /bin/bash -c "FABRIC_CFG_PATH=./ configtxgen  -printOrg ${this.name}MSP > ${this.name}Config.json"\
+        `);
 
-        //Serve files to WWW
+        //Distribute files to organization peers
+        //TODO 
+
+        //Serve files to www of peers by action of the peers
         //TODO Continue here
     }
 
     async generateAndUp(){
         await this._generate();
 
-        let promisesUp = [];
-        for(let peer of this.peers){
-            promisesUp.push(peer.up(this.legacyId));
-        }
-        await Promise.all(promisesUp);
+        // let promisesUp = [];
+        // for(let peer of this.peers){
+        //     promisesUp.push(peer.up(this.legacyId));
+        // }
+        // await Promise.all(promisesUp);
     }
 
     async monitor(){

@@ -1,4 +1,5 @@
 const fs = require('fs');
+yaml = require('js-yaml');
 
 class ConfigTxGenerator {
 
@@ -22,7 +23,7 @@ class ConfigTxGenerator {
                 }
             ]
         }
-        fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/artifacts/configtx.yaml`, config);
+        fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/artifacts/configtx.yaml`, yaml.safeDump(config));
     }
 
     // async getOrganizationsBlock(){  //TODO It is needed to retrieve all orgs certificates beforehand. But how was it achieved in the first version of fabric-start ?

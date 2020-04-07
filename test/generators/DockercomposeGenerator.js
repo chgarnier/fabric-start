@@ -1,5 +1,8 @@
+var util = require('util');
 const glob = util.promisify(require('glob'));
 const fs = require('fs');
+yaml = require('js-yaml');
+var path = require('path');
 
 class DockercomposeGenerator{
 
@@ -13,14 +16,14 @@ class DockercomposeGenerator{
     async generate(){
         for(let peer of this.organizationManager.peers){  //TODO The generate should on wether the peer is the main for the org or not
             let config = await this.generateForPeer(peer);
-            fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/dockercompose/docker-compose-${this.organizationManager.name}-${peer.name}.yaml`, config);
+            fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/dockercompose/docker-compose-${this.organizationManager.name}-${peer.name}.yaml`, yaml.safeDump(config));
         }
     }
 
     async generateForPeer(peer){
         let config = {
             version: 2,
-            volumes: await this.getVolumeBlock(),
+            volumes: await this.getVolumeBlock(peer),
             services: [
                 await this.getCaServiceBlock(),
                 await this.getPeerServiceBlock(peer),
@@ -34,16 +37,16 @@ class DockercomposeGenerator{
         return config;
     }
 
-    async getVolumeBlock(){
-        let volumeBlock = {};
-        for(let peer of this.peers){
-            volumeBlock[peer.name] = null;  //TODO Check that peer.name is the complete path peer0.org.domain
-        }
+    async getVolumeBlock(peer){
+        let volumeBlock = {
+            [`${peer.name}`]: null
+        };
         return volumeBlock;
     }
 
     async getCaServiceBlock(){
-        let files = await glob(`${this.organizationManager.rootDirectory}/building/artifacts/crypto-config/peerOrganizations/${this.orgExtension}/ca/*_sk`, {absolute: true});  //TODO Check that it returns the correct filename
+        let globString = `${this.organizationManager.rootDirectory}/building/artifacts/crypto-config/peerOrganizations/${this.organizationManager.domainName}/ca/*_sk`;
+        let files = await glob(globString, {absolute: true});  //TODO Check that it returns the correct filename
         let caPrivateKeyName = path.basename(files[0]);
 
         let block = {
