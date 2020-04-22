@@ -33,7 +33,9 @@ class ConsortiumManager {
             rimraf.sync(org.rootDirectory);  // As fs recursive option is experimental and doesn't seem to work in my case, rimraf seems to be an alternative
             //fs.rmdirSync(org.rootDirectory, {recursive: true});
         }
-        await fs.copy(process.cwd(), org.rootDirectory);
+        await fs.copy(process.cwd(), org.rootDirectory, {filter: (src, dest)=>{
+           return !src.includes("node_modules");  //TODO Should filter .gitignore files
+        }});
         console.log(`Consortium copying files for ${org.name}... done`);
     }
 

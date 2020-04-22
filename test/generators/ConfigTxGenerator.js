@@ -13,17 +13,18 @@ class ConfigTxGenerator {
                 {
                     "Name": `${this.organizationManager.name}MSP`,
                     "ID": `${this.organizationManager.name}MSP`,
-                    "MSPDir": `crypto-config/peerOrganizations/${$this.organizationManager.name}.${this.organizationManager.domainName}/msp`,
+                    "MSPDir": `crypto-config/peerOrganizations/${this.organizationManager.name}.${this.organizationManager.domainName}/msp`,
                     "AnchorPeers": [
                         {
-                            "Host": await this.organizationManager.getMainPeer(),
+                            "Host": (await this.organizationManager.getMainPeer()).ip,  //TODO Should be anchor peer directly, but in order to do this, the peer needs to be resolvable on the extra_hosts, or reachable via DNS or via its IP addresse directly
                             "Port": 7051
                         }
                     ]
                 }
             ]
         }
-        fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/artifacts/configtx.yaml`, yaml.safeDump(config));
+        let yamlData = yaml.safeDump(config);
+        fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/artifacts/configtx.yaml`, yamlData);
     }
 
     // async getOrganizationsBlock(){  //TODO It is needed to retrieve all orgs certificates beforehand. But how was it achieved in the first version of fabric-start ?

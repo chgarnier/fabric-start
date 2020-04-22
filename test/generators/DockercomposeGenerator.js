@@ -112,7 +112,7 @@ class DockercomposeGenerator{
                     `couchdb.${this.orgExtension}`
                 ],
                 "extra_hosts": [
-                        `orderer.${this.orgExtension}": ${this.organizationManager.OtherOrgs.filter(e => e.key=="orderer")[0].value}`,  //TODO Change with orderer full adress
+                        `orderer.${this.orgExtension}": ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].value}`,  //TODO Change with orderer full adress
                         `couchdb.${this.orgExtension}: ${this.organizationManager.ip}`  //TODO Ici on suppose que couchDB tourne sur la mainPeer
                 ]
             }
@@ -159,7 +159,7 @@ class DockercomposeGenerator{
                     "PORT=4000"
                 ],
                 "depends_on": [
-                    this.peer.name
+                    peer.name
                 ],
                 "extra_hosts": [
                     `couchdb.${this.orgExtension}: ${this.organizationManager.ip}`
@@ -184,11 +184,11 @@ class DockercomposeGenerator{
                     `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.domainName}/orderers/orderer.${this.organizationManager.domainName}/tls:/etc/hyperledger/crypto/orderer/tls`
                 ],
                 "extra_hosts": [  //TODO This needs to be dynamically set
-                    `orderer.myrmica.com: ${this.ordererOrganizations.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
-                    `www.myrmica.com: ${this.ordererOrganizations.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
-                    `www.addeo.myrmica.com: ${this.ordererOrganizations.otherOrgs.filter(e => e.name=="addeo")[0].ip}`,
-                    `www.aucoffre.myrmica.com: ${this.ordererOrganizations.otherOrgs.filter(e => e.name=="aucoffre")[0].ip}`,
-                    `www.shoyo.myrmica.com: ${this.ordererOrganizations.otherOrgs.filter(e => e.name=="shoyo")[0].ip}`
+                    `orderer.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
+                    `www.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
+                    `www.addeo.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="addeo")[0].ip}`,
+                    `www.aucoffre.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="aucoffre")[0].ip}`,
+                    `www.shoyo.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="shoyo")[0].ip}`
                 ]
             }
         }
@@ -209,11 +209,11 @@ class DockercomposeGenerator{
                     `../artifacts/crypto-config/peerOrganizations/${this.orgExtension}/users/Admin@${this.orgExtension}:/etc/hyperledger/crypto/peer`
                 ],
                 "extra_hosts": [  //TODO This needs to be dynamically set
-                    `orderer.myrmica.com: ${this.ordererOrganizations.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
-                    `www.myrmica.com: ${this.ordererOrganizations.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
-                    `www.addeo.myrmica.com: ${this.ordererOrganizations.otherOrgs.filter(e => e.name=="addeo")[0].ip}`,
-                    `www.aucoffre.myrmica.com: ${this.ordererOrganizations.otherOrgs.filter(e => e.name=="aucoffre")[0].ip}`,
-                    `www.shoyo.myrmica.com: ${this.ordererOrganizations.otherOrgs.filter(e => e.name=="shoyo")[0].ip}`
+                    `orderer.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
+                    `www.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
+                    `www.addeo.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="addeo")[0].ip}`,
+                    `www.aucoffre.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="aucoffre")[0].ip}`,
+                    `www.shoyo.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="shoyo")[0].ip}`
                 ]
             }
         }

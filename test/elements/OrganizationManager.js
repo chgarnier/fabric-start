@@ -9,22 +9,21 @@ var assert = require("assert");
 var util = require('util');
 const exec = util.promisify(require('child_process').exec);
 var fs = require("fs-extra");
-const yaml = require("js-yaml");
 
 class OrganizationManager {
 
-    constructor(name, domainName, legacyId, rootDirectory, isOrderer, peersOptions){
+    constructor(name, domainName, legacyId, rootDirectory, isOrderer, peersOptions) {
         this.name = name;
         this.domainName = domainName;
         this.legacyId = legacyId;
         this.rootDirectory = rootDirectory;
         this.isOrderer = isOrderer;
         this.peers = [];
-        for(let peerOptions of peersOptions){
-            if(peerOptions.isOrderer){
+        for (let peerOptions of peersOptions) {
+            if (peerOptions.isOrderer) {
                 this.peers.push(new OrdererPeerManager(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
             }
-            else{
+            else {
                 this.peers.push(new PeerManager(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
             }
         }
@@ -32,17 +31,17 @@ class OrganizationManager {
         this.otherOrgs = []
     }
 
-    async init(){
+    async init() {
         let promises = [];
-        for(let peer of this.peers){
+        for (let peer of this.peers) {
             promises.push(peer.init());
         }
         await Promise.all(promises);
         this.ip = await this.getIp();
     }
 
-    async _execute(cmd){
-        let {stdout, stderr} = await exec(cmd, {timeout: 120000, maxBuffer: Infinity})
+    async _execute(cmd) {
+        let { stdout, stderr } = await exec(cmd, { timeout: 120000, maxBuffer: Infinity })
             .catch(e => {
                 console.error(`Error with code ${e.code} and signal ${e.signal} on OrganizationManager ${this.name} with cmd ${cmd}`);
                 throw new Error(e);
@@ -53,36 +52,36 @@ class OrganizationManager {
         }
     }
 
-    async pushEnvironnement(){
+    async pushEnvironnement() {
         let archivePath = `/tmp/fabric-start-${this.name}.tar.gz`;
-        await exec(`tar -czf ${archivePath} -C ${this.rootDirectory} .`, {maxBuffer: Infinity});
+        await exec(`tar -czf ${archivePath} -C ${this.rootDirectory} .`, { maxBuffer: Infinity });
 
         let promises = [];
-        for(let peer of this.peers){
+        for (let peer of this.peers) {
             promises.push(peer.pushEnvironnement(archivePath));
         }
         await Promise.all(promises);
     }
 
-    async getIp(){
+    async getIp() {
         let mainPeers = this.peers.filter(peer => peer.isMain);
         assert(mainPeers.length == 1);
         return mainPeers[0].ip;
     }
 
-    async exportOthersOrgs(){  //TODO Chaque orga devrait pouvoir générer un object "sharable" aux autres orgas
+    async exportOthersOrgs() {  //TODO Chaque orga devrait pouvoir générer un object "sharable" aux autres orgas
         let promises = [];
-        for(let peer of this.peers){
+        for (let peer of this.peers) {
             promises.push(peer.exportOthersOrgs(this.otherOrgs));
         }
         await Promise.all(promises);
     }
 
-    async getMainPeer(){
+    async getMainPeer() {
         return this.peers.filter(p => p.isMain)[0];
     }
 
-    async _generate(){  //TODO Impossible de faire avec ça, parce que en fait il faut splitter le generate-peer qui est fait sur chaque peer
+    async _generate() {  //TODO Impossible de faire avec ça, parce que en fait il faut splitter le generate-peer qui est fait sur chaque peer
         // Generating crypto material with cryptogen"
         await (new CryptoconfigGenerator(this).generate());
         let uid = (await this._execute("echo $(id -u)")).stdout.trim();
@@ -99,17 +98,33 @@ class OrganizationManager {
         fs.copySync(`${this.rootDirectory}/building/artifact-templates/default_hosts`, `${this.rootDirectory}/building/artifacts/hosts/${this.name}/cli_hosts`);
 
         //Generating docker-compose files for peers  //TODO Push the files to the peers
-        await (new DockercomposeGenerator(this).generate());
+        await new DockercomposeGenerator(this).generate()
+            .catch(e => {
+                console.error(`Error while generating docker-compose for ${this.name}`);
+                throw new Error(e.stack);
+            });
 
         //Generating the configuration for Fabric CA Server
-        await (new CaserverconfigGenerator(this).generate());
+        await new CaserverconfigGenerator(this).generate()
+            .catch(e => {
+                console.error(`Error while generating CA server config for ${this.name}`);
+                throw new Error(e.stack);
+            });
 
         //Generating configtx and config.json files
-        await (new ConfigTxGenerator(this).generate());
+        await new ConfigTxGenerator(this).generate()
+            .catch(e => {
+                console.error(`Error while generating configtx for ${this.name}`);
+                throw new Error(e.stack);
+            });
+
         await this._execute(`\
-            docker run --rm -v ${this.rootDirectory}/building/artifacts:/etc/hyperledger/artifacts -w /etc/hyperledger/artifacts hyperledger/fabric-tools:1.4.2\
-             /bin/bash -c "FABRIC_CFG_PATH=./ configtxgen  -printOrg ${this.name}MSP > ${this.name}Config.json"\
-        `);
+            docker run --rm -v ${this.rootDirectory}/building/artifacts:/etc/hyperledger/artifacts -w /etc/hyperledger/artifacts hyperledger/fabric-tools:1.4.2 \
+            /bin/bash -c "FABRIC_CFG_PATH=./ configtxgen  -printOrg ${this.name}MSP > ${this.name}Config.json"\
+        `).catch(e => {
+            console.error(`Error while generating configtx for ${this.name}`);
+            throw new Error(e.stack);
+        });
 
         //Distribute files to organization peers
         //TODO 
@@ -118,7 +133,7 @@ class OrganizationManager {
         //TODO Continue here
     }
 
-    async generateAndUp(){
+    async generateAndUp() {
         await this._generate();
 
         // let promisesUp = [];
@@ -128,11 +143,11 @@ class OrganizationManager {
         // await Promise.all(promisesUp);
     }
 
-    async monitor(){
+    async monitor() {
         await Monitor.run();
     }
 
-    
+
 
 }
 
