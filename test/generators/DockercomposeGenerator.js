@@ -14,7 +14,7 @@ class DockercomposeGenerator{
     }
 
     async generate(){
-        for(let peer of this.organizationManager.peers){  //TODO The generate should on wether the peer is the main for the org or not
+        for(let peer of this.organizationManager.peers){  //TODO The generate should on wether the peer is the main for the org or not, and wether it is an orderer or not (and also if orderer AND main org ?)
             let config = await this.generateForPeer(peer);
             fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/dockercompose/docker-compose-${this.organizationManager.name}-${peer.name}.yaml`, yaml.safeDump(config));
         }
@@ -24,15 +24,21 @@ class DockercomposeGenerator{
         let config = {
             version: 2,
             volumes: await this.getVolumeBlock(peer),
-            services: [
-                await this.getCaServiceBlock(),
-                await this.getPeerServiceBlock(peer),
-                await this.getCouchdbServiceBlock(),
-                await this.getApiServiceBlock(peer),
-                await this.getCliDomainServiceBlock(),
-                await this.getCliServiceBlock(),
-                await this.getWwwServiceBlock()
-            ]
+            services: []
+        }
+        if(peer.isOrderer){
+            config.services.push(await this.getOrdererServiceBlock(peer));
+            config.services.push(await this.getCliServiceBlock());
+            config.services.push(await this.getWwwServiceBlock());
+        }
+        else{
+            config.services.push(await this.getCaServiceBlock());
+            config.services.push(await this.getPeerServiceBlock(peer));
+            config.services.push(await this.getCouchdbServiceBlock());
+            config.services.push(await this.getApiServiceBlock(peer));
+            config.services.push(await this.getCliDomainServiceBlock());
+            config.services.push(await this.getCliServiceBlock());
+            config.services.push(await this.getWwwServiceBlock());
         }
         return config;
     }
@@ -44,8 +50,11 @@ class DockercomposeGenerator{
         return volumeBlock;
     }
 
+    /**
+     * Only called for a peer and not an orderer
+     */
     async getCaServiceBlock(){
-        let globString = `${this.organizationManager.rootDirectory}/building/artifacts/crypto-config/peerOrganizations/${this.organizationManager.domainName}/ca/*_sk`;
+        let globString = `${this.organizationManager.rootDirectory}/building/artifacts/crypto-config/peerOrganizations/${this.orgExtension}/ca/*_sk`;
         let files = await glob(globString, {absolute: true});  //TODO Check that it returns the correct filename
         let caPrivateKeyName = path.basename(files[0]);
 
@@ -69,6 +78,38 @@ class DockercomposeGenerator{
                 "volumes": [
                     `../artifacts/crypto-config/peerOrganizations/${this.orgExtension}/ca/:/etc/hyperledger/fabric-ca-server-config`,
                     `../artifacts/fabric-ca-server-config-${this.organizationManager.name}.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml`
+                ]
+            }
+        }
+        return block;
+    }
+
+    async getOrdererServiceBlock(orderer){
+        let block = {
+            [peer.name]: {
+                "container_name": peer.name,
+                "image": "hyperledger/fabric-orderer:1.4.0",
+                "environment": [
+                    "ORDERER_GENERAL_LOGLEVEL=debug",
+                    "ORDERER_GENERAL_LISTENADDRESS=0.0.0.0",
+                    "ORDERER_GENERAL_GENESISMETHOD=file",
+                    "ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block",
+                    `ORDERER_GENERAL_LOCALMSPID=${this.organizationManager.name}MSP`,
+                    `ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/crypto/${this.organizationManager.name}/msp`,  //TODO Should it be organization name or "orderer" ?
+                    "ORDERER_GENERAL_TLS_ENABLED=true",
+                    `ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/crypto/${this.organizationManager.name}/tls/server.key`,
+                    `ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/crypto/${this.organizationManager.name}/tls/server.crt`,
+                    `ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/crypto/${this.organizationManager.name}/tls/ca.crt]`
+                ],
+                "working_dir": "/etc/hyperledger",
+                "command": "orderer",
+                "ports": [
+                    "ORDERER_PORT:7050"
+                ],
+                "volumes": [
+                    "../artifacts/channel:/etc/hyperledger/configtx",
+                    `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.domainName}/orderers/${peer.name}/:/etc/hyperledger/crypto/orderer`,
+                    "orderer.DOMAIN:/var/hyperledger/production/orderer"
                 ]
             }
         }
@@ -181,7 +222,7 @@ class DockercomposeGenerator{
                     "service": "cli-base"
                 },
                 "volumes": [
-                    `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.domainName}/orderers/orderer.${this.organizationManager.domainName}/tls:/etc/hyperledger/crypto/orderer/tls`
+                    `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.domainName}/orderers/${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].mainPeerName}/tls:/etc/hyperledger/crypto/orderer/tls`
                 ],
                 "extra_hosts": [  //TODO This needs to be dynamically set
                     `orderer.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,

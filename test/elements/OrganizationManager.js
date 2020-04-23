@@ -12,12 +12,13 @@ var fs = require("fs-extra");
 
 class OrganizationManager {
 
-    constructor(name, domainName, legacyId, rootDirectory, isOrderer, peersOptions) {
+    constructor(name, domainName, legacyId, rootDirectory, isOrderer, isMain, peersOptions) {
         this.name = name;
         this.domainName = domainName;
         this.legacyId = legacyId;
         this.rootDirectory = rootDirectory;
         this.isOrderer = isOrderer;
+        this.isMain = isMain;
         this.peers = [];
         for (let peerOptions of peersOptions) {
             if (peerOptions.isOrderer) {
@@ -25,6 +26,9 @@ class OrganizationManager {
             }
             else {
                 this.peers.push(new PeerManager(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
+            }
+            if(peerOptions.isMain){  //TODO Should be useless if otherOrgs and Organization are linked somehow (with inheritance or something)
+                this.mainPeerName = peerOptions.name;
             }
         }
         this.ip = null;
@@ -118,6 +122,7 @@ class OrganizationManager {
                 throw new Error(e.stack);
             });
 
+        //TODO The orderer should have retrieved all other orgs certificates before running that
         await this._execute(`\
             docker run --rm -v ${this.rootDirectory}/building/artifacts:/etc/hyperledger/artifacts -w /etc/hyperledger/artifacts hyperledger/fabric-tools:1.4.2 \
             /bin/bash -c "FABRIC_CFG_PATH=./ configtxgen  -printOrg ${this.name}MSP > ${this.name}Config.json"\
@@ -125,6 +130,7 @@ class OrganizationManager {
             console.error(`Error while generating configtx for ${this.name}`);
             throw new Error(e.stack);
         });
+        
 
         //Distribute files to organization peers
         //TODO 

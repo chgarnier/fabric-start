@@ -2,6 +2,7 @@
     {
         "name": "orderer",
         "isOrderer": true,
+        "isMain": true,
         "legacyId": "orderer",
         "rootDirectory": "/tmp/fabric-start-orderer",
         "peersOptions": [
@@ -17,6 +18,7 @@
         "name": "addeo",
         "legacyId": "1",
         "isOrderer": false,
+        "isMain": false,
         "rootDirectory": "/tmp/fabric-start-addeo",
         "peersOptions": [
             {
@@ -37,6 +39,7 @@
         "name": "aucoffre",
         "legacyId": "2",
         "isOrderer": false,
+        "isMain": false,
         "rootDirectory": "/tmp/fabric-start-aucoffre",
         "peersOptions": [
             {
@@ -57,6 +60,7 @@
         "name": "shoyo",
         "legacyId": "3",
         "isOrderer": false,
+        "isMain": false,
         "rootDirectory": "/tmp/fabric-start-shoyo",
         "peersOptions": [
             {

@@ -9,10 +9,17 @@ class CryptoconfigGenerator {
 
     async generate(){
         //TODO Générer les fichiers (un cryptogen pour l'orga, un docker-composer par peer de l'orga) et ensuite il faudra les distribuer aux différentes peers.
-        let cryptoconfig = {
+        let cryptoconfig = await this.getPeerConfig();
+        console.log(`Writing cryptogen file for ${this.organizationManager.name} ...`);
+        await fs.writeFile(`${this.organizationManager.rootDirectory}/building/artifacts/cryptogen-${this.organizationManager.name}.yaml`, yaml.safeDump(cryptoconfig));
+        console.log(`Writing cryptogen file for ${this.organizationManager.name} ... done`);
+    }
+
+    async getPeerConfig(){
+        return {
             PeerOrgs: [{
                 Name: this.organizationManager.name,
-                Domain: this.organizationManager.domainName,
+                Domain: `${this.organizationManager.name}.${this.organizationManager.domainName}`,
                 CA: {
                     Hostname: "ca"
                 },
@@ -25,9 +32,22 @@ class CryptoconfigGenerator {
                 }
             }]
         }
-        console.log(`Writing cryptogen file for ${this.organizationManager.name} ...`);
-        await fs.writeFile(`${this.organizationManager.rootDirectory}/building/artifacts/cryptogen-${this.organizationManager.name}.yaml`, yaml.safeDump(cryptoconfig));
-        console.log(`Writing cryptogen file for ${this.organizationManager.name} ... done`);
+    }
+
+    async getOrdererConfig(){
+        return {
+            "OrdererOrgs": [
+                {
+                    "Name": this.organizationManager.name,  // Initially, it was "Orderer" with a capital O
+                    "Domain": this.organizationManager.domainName,
+                    "Specs": [
+                        {
+                            "Hostname": this.organizationManager.name  // Initially, it was "orderer"
+                        }
+                    ]
+                }
+            ]
+        }
     }
 
 }

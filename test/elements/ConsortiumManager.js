@@ -9,7 +9,8 @@ class ConsortiumManager {
         this.name = name;
         this.orgs = []
         for(let orgOptions of orgsOptions){
-            this.orgs.push(new OrganizationManager(orgOptions.name, `${this.name}.com`, orgOptions.legacyId, orgOptions.rootDirectory, orgOptions.isOrderer, orgOptions.peersOptions));
+            this.orgs.push(new OrganizationManager(orgOptions.name, `${this.name}.com`, orgOptions.legacyId, orgOptions.rootDirectory, orgOptions.isOrderer
+            , orgOptions.isMain, orgOptions.peersOptions));
         }
     }
 
@@ -54,6 +55,7 @@ class ConsortiumManager {
                 ip: org.ip,
                 ipLegacyEnvName: org.isOrderer?'IP_ORDERER':`IP${org.legacyId}`,
                 name: org.name,
+                domainName: org.domainName,
                 mainPeerName: org.peers.filter(p => p.isMain)[0].name,
                 isOrderer: org.isOrderer
             })
