@@ -22,10 +22,10 @@ class OrganizationManager {
         this.peers = [];
         for (let peerOptions of peersOptions) {
             if (peerOptions.isOrderer) {
-                this.peers.push(new OrdererPeerManager(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
+                this.peers.push(new OrdererPeerManager(peerOptions.name, this.name, this.domainName, peerOptions.isMain, peerOptions.ec2Type));
             }
             else {
-                this.peers.push(new PeerManager(peerOptions.name, this.name, peerOptions.isMain, peerOptions.ec2Type));
+                this.peers.push(new PeerManager(peerOptions.name, this.name, this.domainName, peerOptions.isMain, peerOptions.ec2Type));
             }
             if(peerOptions.isMain){  //TODO Should be useless if otherOrgs and Organization are linked somehow (with inheritance or something)
                 this.mainPeerName = peerOptions.name;
@@ -130,18 +130,38 @@ class OrganizationManager {
             console.error(`Error while generating configtx for ${this.name}`);
             throw new Error(e.stack);
         });
-        
+    }
 
-        //Distribute files to organization peers
-        //TODO 
+    async _servePeerArtifacts(){  // For peer only
+        for(let peer of this.peers){
+            await peer.scp(`${this.rootDirectory}/building/artifacts/crypto-config`, "/fabric-start/building/artifacts/crypto-config");  //TODO We shouldn't copy the whole dir, but only what is usefull for this specific peer
+            await peer.scp(`${this.rootDirectory}/building/dockercompose`, "/fabric-start/building/dockercompose");  //TODO Same as above, we should only copy files that we need and not the whole directory
 
-        //Serve files to www of peers by action of the peers
-        //TODO Continue here
+            //copyFilesToWWW
+            await peer.cp(`/fabric-start/building/artifacts/crypto-config/peerOrganizations/${this.name}.${this.domainName}/tls/ca.crt`, `/www/ca.crt`);
+            await peer.cp(`/fabric-start/building/artifacts/crypto-config/peerOrganizations/${this.name}.${this.domainName}/msp`, `/www`);
+            await peer.cp(`/fabric-start/building/artifacts/${this.name}Config.json`, `/www/${this.name}Config.json`);
+
+            //Up WWW server
+            await peer.dockerUp("www");
+
+            //Add orgs to hosts  //TODO From legacy files, do we have to keep this ?
+            let ordererOrg = otherOrgs.filter(e => e.name=="orderer")[0];
+            await peer.addOrgsToHosts(ordererOrg.domainName, ordererOrg.ip);
+        }
     }
 
     async generateAndUp() {
+        //Organization host generate artifacts for himself and its peers
         await this._generatePeerArtifacts();
 
+        // Organization host distribute files to its peers
+        // And Each peer serve its files via www  //TODO
+        if(!this.isOrderer){
+            await this._servePeerArtifacts();
+        }
+
+        //TODO Each peer should up himself
         // let promisesUp = [];
         // for(let peer of this.peers){
         //     promisesUp.push(peer.up(this.legacyId));

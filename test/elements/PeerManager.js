@@ -3,9 +3,10 @@ const exec = util.promisify(require('child_process').exec);
 
 class PeerManager {
 
-    constructor(name, orgName, isMain, ec2Type){
+    constructor(name, orgName, orgDomain, isMain, ec2Type){
         this.name = name;
-        this.orgName = orgName;
+        this.orgName = orgName;  //TODO Reference organizationManager object instead ?
+        this.orgDomain = orgDomain;
         this.isMain = isMain;
         this.ec2Type = ec2Type;
         this.ip = null;
@@ -55,6 +56,25 @@ class PeerManager {
         console.log(`${this.name} scping... done, untaring...`);
         await exec(`docker-machine ssh ${this.name} "sudo rm -rf ~/fabric-start/ && mkdir ~/fabric-start/ && tar -xvzf /tmp/fabric-start.tar.gz -C ~/fabric-start/"`, {maxBuffer: Infinity});
         console.log(`${this.name} scping... done, untaring... done`);
+    }
+
+    async scp(src, dst){  //TODO Use this instead of the pushEnvironnement ?
+        await exec(`docker-machine scp ${src} ${this.name}:${dst}`, {maxBuffer: Infinity});
+    }
+
+    async copyFileToWww(src, dst){
+        await exec(`docker-machine ssh ${this.name} "cp -r ${src} ${dst}"`, {maxBuffer: Infinity});
+    }
+
+    async dockerUp(){
+        await exec(`docker-machine ssh ${this.name} "docker-compose --file /fabric-start/building/dockercompose/docker-compose-${this.orgName}-${this.name}.yaml up -d \"www.${this.orgName}.${this.orgDomain}\""`);  //TODO Check that it actually start with all that quotes  //TODO Also check that because we are multiple peers with all the same orgname.orgdomain it doesn't mess up
+    }
+
+    //From legacy addOrgToCliHosts
+    async addOrgsToHosts(ordererDomain, ordererIp){  //TODO Is that usefull ?
+        await exec(`docker-machine ssh ${this.name} "echo \"${ordererIp} orderer.${ordererDomain}\" >> /fabric-start/building/artifacts/hosts/${this.orgName}/cli_hosts"`);
+        await exec(`docker-machine ssh ${this.name} "echo \"${ordererIp} www.${ordererDomain}\" >> /fabric-start/building/artifacts/hosts/${this.orgName}/cli_hosts"`);
+        await exec(`docker-machine ssh ${this.name} "echo \"${ordererIp} orderer.${ordererDomain}\" >> /fabric-start/building/artifacts/hosts/${this.orgName}/api_hosts"`);
     }
 
     async getIp(){
