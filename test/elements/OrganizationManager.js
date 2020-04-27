@@ -85,7 +85,7 @@ class OrganizationManager {
         return this.peers.filter(p => p.isMain)[0];
     }
 
-    async _generate() {  //TODO Impossible de faire avec ça, parce que en fait il faut splitter le generate-peer qui est fait sur chaque peer
+    async _generatePeerArtifacts() {  //TODO Impossible de faire avec ça, parce que en fait il faut splitter le generate-peer qui est fait sur chaque peer
         // Generating crypto material with cryptogen"
         await (new CryptoconfigGenerator(this).generate());
         let uid = (await this._execute("echo $(id -u)")).stdout.trim();
@@ -140,7 +140,7 @@ class OrganizationManager {
     }
 
     async generateAndUp() {
-        await this._generate();
+        await this._generatePeerArtifacts();
 
         // let promisesUp = [];
         // for(let peer of this.peers){

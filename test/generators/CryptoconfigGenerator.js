@@ -9,7 +9,7 @@ class CryptoconfigGenerator {
 
     async generate(){
         //TODO Générer les fichiers (un cryptogen pour l'orga, un docker-composer par peer de l'orga) et ensuite il faudra les distribuer aux différentes peers.
-        let cryptoconfig = await this.getPeerConfig();
+        let cryptoconfig = this.organizationManager.isOrderer?await this.getOrdererConfig():await this.getPeerConfig();
         console.log(`Writing cryptogen file for ${this.organizationManager.name} ...`);
         await fs.writeFile(`${this.organizationManager.rootDirectory}/building/artifacts/cryptogen-${this.organizationManager.name}.yaml`, yaml.safeDump(cryptoconfig));
         console.log(`Writing cryptogen file for ${this.organizationManager.name} ... done`);

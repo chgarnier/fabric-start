@@ -15,9 +15,21 @@ class DockercomposeGenerator{
 
     async generate(){
         for(let peer of this.organizationManager.peers){  //TODO The generate should on wether the peer is the main for the org or not, and wether it is an orderer or not (and also if orderer AND main org ?)
-            let config = await this.generateForPeer(peer);
+            let config = this.organizationManager.isOrderer?await this.generateForOrdererPeer(peer):await this.generateForPeer(peer);
             fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/dockercompose/docker-compose-${this.organizationManager.name}-${peer.name}.yaml`, yaml.safeDump(config));
         }
+    }
+
+    async generateForOrdererPeer(peer){
+        let config = {
+            version: 2,
+            volumes: await this.getVolumeBlock(peer),
+            services: []
+        }
+        config.services.push(await this.getOrdererServiceBlock(peer));
+        config.services.push(await this.getCliServiceBlock());
+        config.services.push(await this.getWwwServiceBlock());
+        return config;
     }
 
     async generateForPeer(peer){
@@ -26,20 +38,13 @@ class DockercomposeGenerator{
             volumes: await this.getVolumeBlock(peer),
             services: []
         }
-        if(peer.isOrderer){
-            config.services.push(await this.getOrdererServiceBlock(peer));
-            config.services.push(await this.getCliServiceBlock());
-            config.services.push(await this.getWwwServiceBlock());
-        }
-        else{
-            config.services.push(await this.getCaServiceBlock());
-            config.services.push(await this.getPeerServiceBlock(peer));
-            config.services.push(await this.getCouchdbServiceBlock());
-            config.services.push(await this.getApiServiceBlock(peer));
-            config.services.push(await this.getCliDomainServiceBlock());
-            config.services.push(await this.getCliServiceBlock());
-            config.services.push(await this.getWwwServiceBlock());
-        }
+        config.services.push(await this.getCaServiceBlock());
+        config.services.push(await this.getPeerServiceBlock(peer));
+        config.services.push(await this.getCouchdbServiceBlock());
+        config.services.push(await this.getApiServiceBlock(peer));
+        config.services.push(await this.getCliDomainServiceBlock());
+        config.services.push(await this.getCliServiceBlock());
+        config.services.push(await this.getWwwServiceBlock());
         return config;
     }
 
@@ -84,7 +89,7 @@ class DockercomposeGenerator{
         return block;
     }
 
-    async getOrdererServiceBlock(orderer){
+    async getOrdererServiceBlock(peer){
         let block = {
             [peer.name]: {
                 "container_name": peer.name,
