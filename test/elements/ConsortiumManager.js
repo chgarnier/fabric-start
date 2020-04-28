@@ -51,13 +51,19 @@ class ConsortiumManager {
     async shareOtherOrgs(){
         let otherOrgs = [];
         for(let org of this.orgs){
-            otherOrgs.push({
+            otherOrgs.push({  //TODO This should be a public purified version of the org object, without all the fonctionnalities (maybe only the attributes ?)  //TODO There should be a way to retrieve this info on an already running network
                 ip: org.ip,
                 ipLegacyEnvName: org.isOrderer?'IP_ORDERER':`IP${org.legacyId}`,
                 name: org.name,
                 domainName: org.domainName,
                 mainPeerName: org.peers.filter(p => p.isMain)[0].name,
-                isOrderer: org.isOrderer
+                isOrderer: org.isOrderer,
+                peers: org.peers.map(peer => {
+                    return {
+                        name: peer.name,
+                        ip: peer.ip
+                    }
+                })
             })
         }
         let promises = [];
@@ -68,12 +74,23 @@ class ConsortiumManager {
         await Promise.all(promises);
     }
 
-    async generateAndUp(){
+    async generate(){
+        //First we generate all standard orgs
         let promises = [];
-        for(let org of this.orgs){
-            promises.push(org.generateAndUp());
+        for(let org of this.orgs.filter(org => !org.isOrderer)){
+            promises.push(org.generate());
         }
         await Promise.all(promises);
+
+        //Then we generate the orderer org //TODO For now, there can only be one orderer org
+        let ordererOrgs = this.orgs.filter(org => org.isOrderer);
+        assert(ordererOrgs.length == 1);
+        await ordererOrgs[0].generate();
+    }
+
+    async up(){
+        //TODO
+        return;
     }
 
 }

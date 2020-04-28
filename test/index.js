@@ -12,8 +12,10 @@ require('dotenv').config();
     await consortium.pushEnvironnement();
     console.log("Consortium: shareOtherOrgs");
     await consortium.shareOtherOrgs();
-    console.log("Consortium: generateAndUp");
-    await consortium.generateAndUp();
+    console.log("Consortium: generate");
+    await consortium.generate();
+    console.log("Consortium: up");
+    await consortium.up();
     console.log("Consortium: done");
 
     // await consortium.orgs[1].monitor();  //TODO Not working yet, as it's still the peers that generate their certificates

@@ -20,7 +20,7 @@ class DockercomposeGenerator{
         }
     }
 
-    async generateForOrdererPeer(peer){
+    async generateForOrdererPeer(peer){  // No disctinction here between main and secondary org
         let config = {
             version: 2,
             volumes: await this.getVolumeBlock(peer),

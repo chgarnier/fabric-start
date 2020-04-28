@@ -113,6 +113,43 @@ class PeerManager {
     //     console.log(`==> ${this.name} generating... done`);
     // }
 
+    async downloadArtifacts(organizationManager){  //TODO We shouldn't pass the organizationManager as it should be accessible through this instance attributes  //TODO This should be put inside the OrdererPeerManager as its aim is to only be used from the orderer
+        // Create directories to receive certificates artifacts
+        for(let org of organizationManager.otherOrgs.filter(o => o.name!=this.name)){
+            if(org.isOrderer()){
+                await this.ssh(`'mkdir -p /fabric-start/building/artifacts/crypto-config/ordererOrganizations/${org.domainName}/orderers/orderer.${org.domainName}/tls'`); //TODO Use node native mkdir instead of bash one ?
+            }
+            else{
+                await this.ssh(`'mkdir -p /fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}.${org.domainName}/peers/${org.mainPeerName}.${org.domainName}/tls'`);  // Not sure if we need the domain here
+            }
+        }
+
+        // Download member MSP
+        let defaultWwwPort=8080
+        for(let org of organizationManager.otherOrgs.filter(o => o.name!=this.name)){
+            await peer.ssh(
+                `'wget --directory-prefix crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/admincerts \
+                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/admincerts/Admin@${org.name}.${org.domainName}-cert.pem'`
+            );
+
+            await this.ssh(
+                `'wget --directory-prefix crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/cacerts \
+                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/cacerts/ca.${org.name}.${org.domainName}-cert.pem'`
+            );
+
+            await this.ssh(
+                `'wget --directory-prefix crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/tlscacerts \
+                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/tlscacerts/tlsca.${org.name}.${org.domainName}-cert.pem'`
+            );
+
+            await this.ssh(
+                `'wget --directory-prefix crypto-config/peerOrganizations/${org.name}.${org.domainName}/peers/${org.mainPeerName}/tls \
+                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/\${ORG}.$DOMAIN/peers/peer0.\${ORG}.$DOMAIN/tls/ca.crt'`
+            );
+        }
+        // That is different from the legacy downloadMemberMSP because here we do not use the docker container cli to retrieve the files as we have the ip in the nodejs environnement
+    }
+
     async up(legacyId){
         console.log(`==> ${this.name} uping...`);
         await this.ssh(`'\
