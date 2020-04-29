@@ -2,6 +2,7 @@ const OrganizationManager = require("./OrganizationManager");
 var fs = require("fs-extra");
 // const fs = require('fs').promises;
 var rimraf = require("rimraf");
+var assert = require("assert");
 
 class ConsortiumManager {
 

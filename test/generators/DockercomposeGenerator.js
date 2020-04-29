@@ -22,29 +22,31 @@ class DockercomposeGenerator{
 
     async generateForOrdererPeer(peer){  // No disctinction here between main and secondary org
         let config = {
-            version: 2,
+            version: "2",
             volumes: await this.getVolumeBlock(peer),
-            services: []
+            services: {
+                ...await this.getOrdererServiceBlock(peer),
+                ...await this.getCliServiceBlock(),
+                ...await this.getWwwServiceBlock()
+            }
         }
-        config.services.push(await this.getOrdererServiceBlock(peer));
-        config.services.push(await this.getCliServiceBlock());
-        config.services.push(await this.getWwwServiceBlock());
         return config;
     }
 
     async generateForPeer(peer){
         let config = {
-            version: 2,
+            version: "2",
             volumes: await this.getVolumeBlock(peer),
-            services: []
+            services: {
+                ...await this.getCaServiceBlock(),
+                ...await this.getPeerServiceBlock(peer),
+                ...await this.getCouchdbServiceBlock(),
+                ...await this.getApiServiceBlock(peer),
+                ...await this.getCliDomainServiceBlock(),
+                ...await this.getCliServiceBlock(),
+                ...await this.getWwwServiceBlock()
+            }
         }
-        config.services.push(await this.getCaServiceBlock());
-        config.services.push(await this.getPeerServiceBlock(peer));
-        config.services.push(await this.getCouchdbServiceBlock());
-        config.services.push(await this.getApiServiceBlock(peer));
-        config.services.push(await this.getCliDomainServiceBlock());
-        config.services.push(await this.getCliServiceBlock());
-        config.services.push(await this.getWwwServiceBlock());
         return config;
     }
 
@@ -77,7 +79,7 @@ class DockercomposeGenerator{
                     `FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/${caPrivateKeyName}`
                 ],
                 "ports": [
-                    "CA_PORT:7054"
+                    "7054:7054"
                 ],
                 "command": "sh -c 'fabric-ca-server start -b admin:adminpw -d'",
                 "volumes": [
@@ -109,12 +111,12 @@ class DockercomposeGenerator{
                 "working_dir": "/etc/hyperledger",
                 "command": "orderer",
                 "ports": [
-                    "ORDERER_PORT:7050"
+                    "7050:7050"
                 ],
                 "volumes": [
                     "../artifacts/channel:/etc/hyperledger/configtx",
                     `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.domainName}/orderers/${peer.name}/:/etc/hyperledger/crypto/orderer`,
-                    "orderer.DOMAIN:/var/hyperledger/production/orderer"
+                    `orderer.${this.organizationManager.domainName}:/var/hyperledger/production/orderer`
                 ]
             }
         }
@@ -198,10 +200,10 @@ class DockercomposeGenerator{
                 },
                 "container_name": `api.${this.orgExtension}`,
                 "ports": [
-                    "API_PORT:4000"
+                    "4000:4000"
                 ],
                 "environment": [
-                    "ORG=ORG",
+                    `ORG=${this.organizationManager.name}`,
                     "PORT=4000"
                 ],
                 "depends_on": [

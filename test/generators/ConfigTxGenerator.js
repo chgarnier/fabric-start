@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 yaml = require('js-yaml');
 
 class ConfigTxGenerator {
@@ -10,7 +10,7 @@ class ConfigTxGenerator {
     async generate(){  //TODO We still need to generate the configtx of the Orderer
         let config = this.organizationManager.isMain?await this.getMainConfig():await this.getSecondaryConfig();
         let yamlData = yaml.safeDump(config);
-        fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/artifacts/configtx.yaml`, yamlData);
+        await fs.writeFile(`${this.organizationManager.rootDirectory}/building/artifacts/configtx.yaml`, yamlData);
     }
 
     async getMainConfig(){
