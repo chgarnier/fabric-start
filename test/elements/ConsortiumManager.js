@@ -91,7 +91,9 @@ class ConsortiumManager {
 
     async up(){
         //TODO
-        return;
+        let ordererOrgs = this.orgs.filter(org => org.isOrderer);
+        assert(ordererOrgs.length == 1);
+        await ordererOrgs[0].up();
     }
 
 }

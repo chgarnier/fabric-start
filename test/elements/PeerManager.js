@@ -164,13 +164,9 @@ class PeerManager {
         // That is different from the legacy downloadMemberMSP because here we do not use the docker container cli to retrieve the files as we have the ip in the nodejs environnement
     }
 
-    async up(legacyId) {
-        console.log(`==> ${this.name} uping...`);
-        await this.ssh(`'\
-            cd ~/fabric-start/building \
-            && ./network.sh -m up-${legacyId}\
-        '`)
-        console.log(`==> ${this.name} uping... done`);
+    async up() {
+        // Download channel tx files
+        // TODO Maybe put the different channels in the conf.json along with the leading orgs (those in charge of creating for each channel)
     }
 
 }
