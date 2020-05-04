@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 yaml = require('js-yaml');
+var assert = require("assert");
 
 class ConfigTxGenerator {
 
@@ -10,7 +11,8 @@ class ConfigTxGenerator {
     async generate(){  //TODO We still need to generate the configtx of the Orderer
         let config = this.organizationManager.isMain?await this.getMainConfig():await this.getSecondaryConfig();
         let yamlData = yaml.safeDump(config);
-        await fs.writeFile(`${this.organizationManager.rootDirectory}/building/artifacts/configtx.yaml`, yamlData);
+        let filepath = `${this.organizationManager.rootDirectory}/building/artifacts/configtx.yaml`;
+        await fs.writeFile(filepath, yamlData);
     }
 
     async getMainConfig(){
@@ -72,7 +74,7 @@ class ConfigTxGenerator {
     }
 
     async getProfilesBlock(){
-        return {
+        let block = {
             ... {
                 OrdererGenesis: {
                     Orderer: {
@@ -93,16 +95,18 @@ class ConfigTxGenerator {
                 }
             },
             ...pairArray(this.organizationManager.otherOrgs.filter(e => e.name!="orderer")).reduce((acc, orgs) => ({...acc,
-                [`${orgs[0]}-${orgs[1]}`]: {
+                [`${orgs[0].name}-${orgs[1].name}`]: {
                     Consortium: "SampleConsortium",
-                    Application: this.getApplicationDefaultsBlock(),
-                    Organizations: [
-                        this.getOrganizationBlock(orgs[0]),
-                        this.getOrganizationBlock(orgs[1])
-                    ]
+                    Application: {
+                        Organizations: [
+                            this.getOrganizationBlock(orgs[0]),
+                            this.getOrganizationBlock(orgs[1])
+                        ]
+                    }
                 }
             }), {})
         }
+        return block;
     }
 }
 
@@ -118,6 +122,6 @@ function pairArray(arr){
         return arr.filter(b => b != a).map(b => [a, b]);
     })
     let flattenedPairs = [].concat(...unflattenedPairs);
-    let uniquePairs = flattenedPairs.filter(p => p[0]<p[1]);  // Remove duplicates
+    let uniquePairs = flattenedPairs.filter(p => p[0].name<p[1].name);  // Remove duplicates
     return uniquePairs;
 }

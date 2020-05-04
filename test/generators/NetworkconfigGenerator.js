@@ -48,3 +48,5 @@ class NetworkconfigGenerator {  //Only used by an ordererOrg that will generate 
     }
 
 }
+
+module.exports = NetworkconfigGenerator;

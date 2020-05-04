@@ -29,7 +29,7 @@ class OrganizationManager {
             else {
                 this.peers.push(new PeerManager(peerName, this.name, this.domainName, peerOptions.isMain, peerOptions.ec2Type));
             }
-            if(peerOptions.isMain){  //TODO Should be useless if otherOrgs and Organization are linked somehow (with inheritance or something)
+            if (peerOptions.isMain) {  //TODO Should be useless if otherOrgs and Organization are linked somehow (with inheritance or something)
                 this.mainPeerName = peerName;
             }
         }
@@ -73,7 +73,7 @@ class OrganizationManager {
         return (await this.getMainPeer()).ip;
     }
 
-    async getMainPeer(){
+    async getMainPeer() {
         let mainPeers = this.peers.filter(peer => peer.isMain);
         assert(mainPeers.length == 1);
         return mainPeers[0];
@@ -94,9 +94,9 @@ class OrganizationManager {
 
         await peer.ssh(`'mkdir -p "~/fabric-start/building/artifacts/channel"'`);
         let channels = ["common"];
-        for(let org_a of this.otherOrgs.filter(org => !org.isOrderer)){  //TODO Comme la distinction entre la classe PeerManager et OrdererPeerManager, on devrait avoir une distinction entre OrganizationManager et OrdererOrganizationManager
-            for(let org_b of this.otherOrgs.filter(org => !org.isOrderer)){
-                if(org_a.name < org_b.name){  // Unicity of orgs couples whatever the order is (in js, "a"<"b" is true while "b"<"a" is false)
+        for (let org_a of this.otherOrgs.filter(org => !org.isOrderer)) {  //TODO Comme la distinction entre la classe PeerManager et OrdererPeerManager, on devrait avoir une distinction entre OrganizationManager et OrdererOrganizationManager
+            for (let org_b of this.otherOrgs.filter(org => !org.isOrderer)) {
+                if (org_a.name < org_b.name) {  // Unicity of orgs couples whatever the order is (in js, "a"<"b" is true while "b"<"a" is false)
                     channels.push(`${org_a.name}-${org_b.name}`);
                 }
             }
@@ -134,16 +134,19 @@ class OrganizationManager {
                 throw new Error(e.stack);
             });
 
-        //Generating configtx and config.json files
-        await (new ConfigTxGenerator(this).generate())
+        //Generating configtx and config.json files  //TODO Sometimes, it seems that the file isn't created right after the end of these instructions, resulting on the configtxgen below to fail
+        let configTxGenerator = new ConfigTxGenerator(this);
+        await configTxGenerator.generate()
             .catch(e => {
                 console.error(`Error while generating configtx for ${this.name}`);
                 throw new Error(e.stack);
             });
 
+        
+
         //TODO Shouldn't the orderer should have retrieved all other orgs certificates before running that
         await this._execute(`\
-            docker run --rm -v ${this.rootDirectory}/building/artifacts:/etc/hyperledger/artifacts -w /etc/hyperledger/artifacts hyperledger/fabric-tools:1.4.2 \
+            ls ${this.rootDirectory}/building/artifacts && docker run --rm -v ${this.rootDirectory}/building/artifacts:/etc/hyperledger/artifacts -w /etc/hyperledger/artifacts hyperledger/fabric-tools:1.4.2 \
             /bin/bash -c "FABRIC_CFG_PATH=./ configtxgen  -printOrg ${this.name}MSP > ${this.name}Config.json"\
         `).catch(e => {
             console.error(`Error while generating Config.json for ${this.name}`);
@@ -151,22 +154,22 @@ class OrganizationManager {
         });
     }
 
-    async _distributeArtifactsToPeer(){
-        for(let peer of this.peers){
+    async _distributeArtifactsToPeer() {
+        for (let peer of this.peers) {
             await peer.scp(`${this.rootDirectory}/building/artifacts`, "~/fabric-start/building");  //TODO We shouldn't copy the whole crypto-config dir, but only what is usefull for this specific peer
             await peer.scp(`${this.rootDirectory}/building/dockercompose`, "~/fabric-start/building");  //TODO Same as above, we should only copy files that we need and not the whole directory
         }
     }
 
-    async _servePeerArtifacts(){  // For peer only
-        let ordererOrg = this.otherOrgs.filter(e => e.name=="orderer")[0];
-        for(let peer of this.peers){
+    async _servePeerArtifacts() {  // For peer only
+        let ordererOrg = this.otherOrgs.filter(e => e.name == "orderer")[0];
+        for (let peer of this.peers) {
             await peer.servePeerArtifacts(ordererOrg);
         }
     }
 
-    async _downloadArtifacts(){  // For orderer only, from legacy downloadArtifactsOrderer in generate-orderer command in network.sh
-        for(let peer of this.peers){  //TODO We suppose here that all peers of the orderer org are orderers peers, but it may be true
+    async _downloadArtifacts() {  // For orderer only, from legacy downloadArtifactsOrderer in generate-orderer command in network.sh
+        for (let peer of this.peers) {  //TODO We suppose here that all peers of the orderer org are orderers peers, but it may be true
             await peer.downloadArtifacts(this);
         }
     }
@@ -178,11 +181,11 @@ class OrganizationManager {
 
         // Organization host distribute files to its peers
         // And Each peer serve its files via www  //TODO
-        if(this.isOrderer){
+        if (this.isOrderer) {
             await this._downloadArtifacts();
             await this._generateOrdererArtifacts();
         }
-        else{  // Orderer serve its artifacts after being up ?
+        else {  // Orderer serve its artifacts after being up ?
             await this._servePeerArtifacts();
         }
 

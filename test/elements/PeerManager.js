@@ -99,7 +99,7 @@ class PeerManager {
     //     console.log(`==> ${this.name} generating... done`);
     // }
 
-    async _copyFilesToWww(srcDir, srcFile){  // srcFile can be "" to copy the whole dir. Copy with the hieararchy from artifacts/ in ~/fabric-start/building/www
+    async _copyFilesToWww(srcDir, srcFile) {  // srcFile can be "" to copy the whole dir. Copy with the hieararchy from artifacts/ in ~/fabric-start/building/www
         assert(!srcDir.endsWith("/"));
         let srcFilePath = `${srcDir}/${srcFile}`;
         let srcDirRightPart = srcDir.split("/building/").pop();
@@ -118,6 +118,7 @@ class PeerManager {
         await this._copyFilesToWww(`~/fabric-start/building/artifacts`, `${this.orgName}Config.json`);
 
         //Up WWW server
+        await this.ssh(`'docker-compose --file ~/fabric-start/building/dockercompose/docker-compose-${this.orgName}-${this.name}.yaml down'`);  //TODO There may be a better place to down the older network. Or we can just simply delete the machines each time we do a test
         await this.ssh(`'docker-compose --file ~/fabric-start/building/dockercompose/docker-compose-${this.orgName}-${this.name}.yaml up -d "www.${this.orgName}.${this.orgDomain}"'`);  //TODO Check that it actually start with all that quotes  //TODO Also check that because we are multiple peers with all the same orgname.orgdomain it doesn't mess up
 
         //Add orgs to hosts  //TODO From legacy function addOrgToCliHosts, do we have to keep this ?
@@ -141,23 +142,23 @@ class PeerManager {
         let defaultWwwPort = 8080
         for (let org of organizationManager.otherOrgs.filter(o => o.name != this.orgName)) {  //TODO The path should change if we download an orderer org artifacts
             await this.ssh(
-                `'wget --directory-prefix crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/admincerts \
+                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/admincerts \
                 http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/admincerts/Admin@${org.name}.${org.domainName}-cert.pem'`
             );
 
             await this.ssh(
-                `'wget --directory-prefix crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/cacerts \
+                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/cacerts \
                 http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/cacerts/ca.${org.name}.${org.domainName}-cert.pem'`
             );
 
             await this.ssh(
-                `'wget --directory-prefix crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/tlscacerts \
+                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/tlscacerts \
                 http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/tlscacerts/tlsca.${org.name}.${org.domainName}-cert.pem'`
             );
 
             await this.ssh(
                 `'wget --directory-prefix crypto-config/peerOrganizations/${org.name}.${org.domainName}/peers/${org.mainPeerName}/tls \
-                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/\${ORG}.$DOMAIN/peers/peer0.\${ORG}.$DOMAIN/tls/ca.crt'`
+                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/peers/${org.mainPeerName}/tls/ca.crt'`
             );
         }
         // That is different from the legacy downloadMemberMSP because here we do not use the docker container cli to retrieve the files as we have the ip in the nodejs environnement

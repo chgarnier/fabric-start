@@ -26,6 +26,7 @@ class DockercomposeGenerator{
             volumes: await this.getVolumeBlock(peer),
             services: {
                 ...await this.getOrdererServiceBlock(peer),
+                ...await this.getCliDomainServiceBlock(),
                 ...await this.getCliServiceBlock(),
                 ...await this.getWwwServiceBlock()
             }
@@ -116,7 +117,7 @@ class DockercomposeGenerator{
                 "volumes": [
                     "../artifacts/channel:/etc/hyperledger/configtx",
                     `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.domainName}/orderers/${peer.name}/:/etc/hyperledger/crypto/orderer`,
-                    `orderer.${this.organizationManager.domainName}:/var/hyperledger/production/orderer`
+                    `${peer.name}:/var/hyperledger/production/orderer`
                 ]
             }
         }

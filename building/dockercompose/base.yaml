@@ -78,5 +78,5 @@ services:
   www-base:
     image: nginx
     volumes:
-     - ../www/artifacts:/usr/share/nginx/html:ro
-     - ../www/nginx.conf:/etc/nginx/nginx.conf:ro
+     - ../www/artifacts:/usr/share/nginx/html
+     - ../www/nginx.conf:/etc/nginx/nginx.conf
