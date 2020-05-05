@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/chgarnier/fabric-start#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "docker-machine": "^3.0.1",
     "dotenv": "^8.2.0",
     "fabric-client": "^1.4.8",
@@ -28,7 +29,9 @@
     "js-yaml": "^3.13.1",
     "rimraf": "^3.0.2",
     "spawn-promise": "^0.1.8",
-    "template-file": "^3.1.0"
+    "template-file": "^3.1.0",
+    "url-exists": "^1.0.3",
+    "url-exists-promise": "^1.0.2"
   },
   "devDependencies": {
     "eslint": "^6.8.0"

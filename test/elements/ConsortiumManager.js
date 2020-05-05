@@ -6,12 +6,13 @@ var assert = require("assert");
 
 class ConsortiumManager {
 
-    constructor(name, orgsOptions){
+    constructor(name, conf){
         this.name = name;
         this.orgs = []
-        for(let orgOptions of orgsOptions){
+        for(let orgOptions of conf.organizations){
+            let channels = orgOptions.isOrderer?conf.channels:conf.channels.filter(c => c.organizations.filter(o => o.name == orgOptions.name).length>0);  //TODO Should the ordrerer really need to create (and then have access) all the channels tx ?
             this.orgs.push(new OrganizationManager(orgOptions.name, `${this.name}.com`, orgOptions.legacyId, orgOptions.rootDirectory, orgOptions.isOrderer
-            , orgOptions.isMain, orgOptions.peersOptions));
+            , orgOptions.isMain, orgOptions.peersOptions, channels));
         }
     }
 
@@ -90,10 +91,15 @@ class ConsortiumManager {
     }
 
     async up(){
-        //TODO
         let ordererOrgs = this.orgs.filter(org => org.isOrderer);
         assert(ordererOrgs.length == 1);
         await ordererOrgs[0].up();
+
+        let promisesUp = [];
+        for(let org of this.orgs.filter(org => !org.isOrderer)){
+            promisesUp.push(org.up());
+        }
+        await Promise.all(promisesUp);
     }
 
 }

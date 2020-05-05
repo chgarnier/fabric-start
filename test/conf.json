@@ -1,73 +1,107 @@
-[
-    {
-        "name": "orderer",
-        "isOrderer": true,
-        "isMain": true,
-        "legacyId": "orderer",
-        "rootDirectory": "/tmp/fabric-start-orderer",
-        "peersOptions": [
-            {
-                "ec2Type": "m5.large",
-                "isMain": true,
-                "isOrderer": true
-            }
-        ]
-    },
-    {
-        "name": "addeo",
-        "legacyId": "1",
-        "isOrderer": false,
-        "isMain": false,
-        "rootDirectory": "/tmp/fabric-start-addeo",
-        "peersOptions": [
-            {
-                "ec2Type": "t2.medium",
-                "isMain": true,
-                "isOrderer": false
-            },
-            {
-                "ec2Type": "t2.medium",
-                "isMain": false,
-                "isOrderer": false
-            }
-        ]
-    },
-    {
-        "name": "aucoffre",
-        "legacyId": "2",
-        "isOrderer": false,
-        "isMain": false,
-        "rootDirectory": "/tmp/fabric-start-aucoffre",
-        "peersOptions": [
-            {
-                "ec2Type": "t2.medium",
-                "isMain": true,
-                "isOrderer": false
-            },
-            {
-                "ec2Type": "t2.medium",
-                "isMain": false,
-                "isOrderer": false
-            }
-        ]
-    },
-    {
-        "name": "shoyo",
-        "legacyId": "3",
-        "isOrderer": false,
-        "isMain": false,
-        "rootDirectory": "/tmp/fabric-start-shoyo",
-        "peersOptions": [
-            {
-                "ec2Type": "t2.medium",
-                "isMain": true,
-                "isOrderer": false
-            },
-            {
-                "ec2Type": "t2.medium",
-                "isMain": false,
-                "isOrderer": false
-            }
-        ]
-    }
-]
+{
+    "organizations": [
+        {
+            "name": "orderer",
+            "isOrderer": true,
+            "isMain": true,
+            "legacyId": "orderer",
+            "rootDirectory": "/tmp/fabric-start-orderer",
+            "peersOptions": [
+                {
+                    "ec2Type": "m5.large",
+                    "isMain": true,
+                    "isOrderer": true
+                }
+            ]
+        },
+        {
+            "name": "addeo",
+            "legacyId": "1",
+            "isOrderer": false,
+            "isMain": false,
+            "rootDirectory": "/tmp/fabric-start-addeo",
+            "peersOptions": [
+                {
+                    "ec2Type": "t2.medium",
+                    "isMain": true,
+                    "isOrderer": false
+                },
+                {
+                    "ec2Type": "t2.medium",
+                    "isMain": false,
+                    "isOrderer": false
+                }
+            ]
+        },
+        {
+            "name": "aucoffre",
+            "legacyId": "2",
+            "isOrderer": false,
+            "isMain": false,
+            "rootDirectory": "/tmp/fabric-start-aucoffre",
+            "peersOptions": [
+                {
+                    "ec2Type": "t2.medium",
+                    "isMain": true,
+                    "isOrderer": false
+                },
+                {
+                    "ec2Type": "t2.medium",
+                    "isMain": false,
+                    "isOrderer": false
+                }
+            ]
+        },
+        {
+            "name": "shoyo",
+            "legacyId": "3",
+            "isOrderer": false,
+            "isMain": false,
+            "rootDirectory": "/tmp/fabric-start-shoyo",
+            "peersOptions": [
+                {
+                    "ec2Type": "t2.medium",
+                    "isMain": true,
+                    "isOrderer": false
+                },
+                {
+                    "ec2Type": "t2.medium",
+                    "isMain": false,
+                    "isOrderer": false
+                }
+            ]
+        }
+    ],
+    "channels": [
+        {
+            "name": "common",
+            "organizations": [
+                {
+                    "name": "addeo",
+                    "isLeader": true
+                },
+                {
+                    "name": "aucoffre",
+                    "isLeader": false
+                },
+                {
+                    "name": "shoyo",
+                    "isLeader": false
+                }
+            ]
+        },
+        {
+            "name": "addeo-aucoffre",
+            "organizations": [
+                {
+                    "name": "addeo",
+                    "isLeader": true
+                },
+                {
+                    "name": "aucoffre",
+                    "isLeader": false
+                }
+            ]
+        }
+    ]
+}

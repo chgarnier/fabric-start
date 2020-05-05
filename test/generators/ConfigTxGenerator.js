@@ -94,14 +94,11 @@ class ConfigTxGenerator {
                         ...{Organizations: this.organizationManager.otherOrgs.filter(e => e.name!="orderer").map(org => this.getOrganizationBlock(org))}}
                 }
             },
-            ...pairArray(this.organizationManager.otherOrgs.filter(e => e.name!="orderer")).reduce((acc, orgs) => ({...acc,
-                [`${orgs[0].name}-${orgs[1].name}`]: {
+            ...this.organizationManager.channels.reduce((acc, channel) => ({...acc,
+                [`${channel.name}`]: {
                     Consortium: "SampleConsortium",
                     Application: {
-                        Organizations: [
-                            this.getOrganizationBlock(orgs[0]),
-                            this.getOrganizationBlock(orgs[1])
-                        ]
+                        Organizations: channel.organizations.map(o => this.getOrganizationBlock(this.organizationManager.otherOrgs.find(oO => oO.name==o.name)))
                     }
                 }
             }), {})
@@ -111,17 +108,3 @@ class ConfigTxGenerator {
 }
 
 module.exports = ConfigTxGenerator;
-
-/**
- * 
- * @param {*} arr e.g. [1, 2, 3]
- * @returns All pairs, e.g. [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ] ] 
- */
-function pairArray(arr){
-    let unflattenedPairs = arr.map(a => {
-        return arr.filter(b => b != a).map(b => [a, b]);
-    })
-    let flattenedPairs = [].concat(...unflattenedPairs);
-    let uniquePairs = flattenedPairs.filter(p => p[0].name<p[1].name);  // Remove duplicates
-    return uniquePairs;
-}

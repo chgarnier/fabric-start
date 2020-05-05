@@ -161,7 +161,7 @@ class DockercomposeGenerator{
                     `couchdb.${this.orgExtension}`
                 ],
                 "extra_hosts": [
-                        `orderer.${this.orgExtension}": ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].value}`,  //TODO Change with orderer full adress  //TODO Shouldn't it be .ip instead of .value ?
+                        `orderer.${this.organizationManager.domainName}": ${this.organizationManager.otherOrgs.find(e => e.name=="orderer").ip}`,  //TODO Change with orderer full adress  //TODO Shouldn't it be .ip instead of .value ?
                         `couchdb.${this.orgExtension}: ${this.organizationManager.ip}`  //TODO Ici on suppose que couchDB tourne sur la mainPeer
                 ]
             }
