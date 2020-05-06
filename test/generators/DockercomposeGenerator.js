@@ -100,11 +100,11 @@ class DockercomposeGenerator {
                     "ORDERER_GENERAL_GENESISMETHOD=file",
                     "ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block",
                     `ORDERER_GENERAL_LOCALMSPID=${this.organizationManager.name}MSP`,
-                    `ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/crypto/${this.organizationManager.name}/msp`,  //TODO Should it be organization name or "orderer" ?
+                    `ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/crypto/orderer/msp`,
                     "ORDERER_GENERAL_TLS_ENABLED=true",
-                    `ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/crypto/${this.organizationManager.name}/tls/server.key`,
-                    `ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/crypto/${this.organizationManager.name}/tls/server.crt`,
-                    `ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/crypto/${this.organizationManager.name}/tls/ca.crt]`
+                    `ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/crypto/orderer/tls/server.key`,
+                    `ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/crypto/orderer/tls/server.crt`,
+                    `ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/crypto/orderer/tls/ca.crt]`
                 ],
                 "working_dir": "/etc/hyperledger",
                 "command": "orderer",
@@ -114,7 +114,7 @@ class DockercomposeGenerator {
                 "volumes": [
                     "../artifacts/channel:/etc/hyperledger/configtx",
                     `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.name}/orderers/${peer.name}/:/etc/hyperledger/crypto/orderer`,
-                    `${peer.name}:/var/hyperledger/production/orderer`,
+                    `${peer.name}:/var/hyperledger/production/orderer`
                 ]
             }
         }
