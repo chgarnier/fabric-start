@@ -11,7 +11,7 @@ class ConsortiumManager {
         this.orgs = []
         for(let orgOptions of conf.organizations){
             let channels = orgOptions.isOrderer?conf.channels:conf.channels.filter(c => c.organizations.filter(o => o.name == orgOptions.name).length>0);  //TODO Should the ordrerer really need to create (and then have access) all the channels tx ?
-            this.orgs.push(new OrganizationManager(orgOptions.name, `${this.name}.com`, orgOptions.legacyId, orgOptions.rootDirectory, orgOptions.isOrderer
+            this.orgs.push(new OrganizationManager(orgOptions.name, orgOptions.rootDirectory, orgOptions.isOrderer
             , orgOptions.isMain, orgOptions.peersOptions, channels));
         }
     }
@@ -55,9 +55,7 @@ class ConsortiumManager {
         for(let org of this.orgs){
             otherOrgs.push({  //TODO This should be a public purified version of the org object, without all the fonctionnalities (maybe only the attributes ?)  //TODO There should be a way to retrieve this info on an already running network
                 ip: org.ip,
-                ipLegacyEnvName: org.isOrderer?'IP_ORDERER':`IP${org.legacyId}`,
                 name: org.name,
-                domainName: org.domainName,
                 mainPeerName: org.peers.filter(p => p.isMain)[0].name,
                 isOrderer: org.isOrderer,
                 peers: org.peers.map(peer => {
@@ -68,12 +66,9 @@ class ConsortiumManager {
                 })
             })
         }
-        let promises = [];
-        for(let org of this.orgs){
+        for (let org of this.orgs) {
             org.otherOrgs = otherOrgs;
-            promises.push(org.exportOthersOrgs());
         }
-        await Promise.all(promises);
     }
 
     async generate(){

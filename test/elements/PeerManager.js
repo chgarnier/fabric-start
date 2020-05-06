@@ -83,21 +83,6 @@ class PeerManager {
         // }
     }
 
-    async exportOthersOrgs(otherOrgs) {
-        for (let otherOrg of otherOrgs) {
-            await exec(`docker-machine ssh ${this.name} 'echo "export ${otherOrg.ipLegacyEnvName}=${otherOrg.ip}" >> ~/.bashrc'`, { maxBuffer: Infinity });
-        }
-    }
-
-    // async generate(){ // TODO This is to be replaced by peer name when 
-    //     console.log(`==> ${this.name} generating...`);
-    //     await this.ssh(`'\
-    //         cd ~/fabric-start/building \
-    //         && ./network.sh -m generate-peer -o ${this.org.name}\
-    //     '`)
-    //     console.log(`==> ${this.name} generating... done`);
-    // }
-
     async _copyFilesToWww(srcDir, srcFile) {  // srcFile can be "" to copy the whole dir. Copy with the hieararchy from artifacts/ in ~/fabric-start/building/www
         assert(!srcDir.endsWith("/"));
         let srcFilePath = `${srcDir}/${srcFile}`;
@@ -112,29 +97,28 @@ class PeerManager {
 
     async servePeerArtifacts(ordererOrg) {  //TODO Should files only be served on the main peer of the org ? 
         //copyFilesToWWW
-        await this._copyFilesToWww(`~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${this.org.name}.${this.org.domainName}/peers/${this.name}/tls`, `ca.crt`);
-        await this._copyFilesToWww(`~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${this.org.name}.${this.org.domainName}`, `msp`);
+        await this._copyFilesToWww(`~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${this.org.name}/peers/${this.name}/tls`, `ca.crt`);
+        await this._copyFilesToWww(`~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${this.org.name}`, `msp`);
         await this._copyFilesToWww(`~/fabric-start/building/artifacts`, `${this.org.name}Config.json`);
 
         //Up WWW server
         let dockerComposeFilepath = `~/fabric-start/building/dockercompose/docker-compose-${this.org.name}-${this.name}.yaml`;
         await this.ssh(`'docker-compose --file ${dockerComposeFilepath} down'`);  //TODO There may be a better place to down the older network. Or we can just simply delete the machines each time we do a test
-        await this.ssh(`'docker-compose --file ${dockerComposeFilepath} up -d "www.${this.org.name}.${this.org.domainName}"'`);  //TODO Check that it actually start with all that quotes  //TODO Also check that because we are multiple peers with all the same orgname.orgdomain it doesn't mess up
+        await this.ssh(`'docker-compose --file ${dockerComposeFilepath} up -d "www"'`);  //TODO Check that it actually start with all that quotes  //TODO Also check that because we are multiple peers with all the same orgname.orgdomain it doesn't mess up
 
         //Add orgs to hosts  //TODO From legacy function addOrgToCliHosts, do we have to keep this ?
-        await this.ssh(`'echo "${ordererOrg.ip} orderer.${ordererOrg.domainName}" >> ~/fabric-start/building/artifacts/hosts/${this.org.name}/cli_hosts'`);
-        await this.ssh(`'echo "${ordererOrg.ip} www.${ordererOrg.domainName}" >> ~/fabric-start/building/artifacts/hosts/${this.org.name}/cli_hosts'`);
-        await this.ssh(`'echo "${ordererOrg.ip} orderer.${ordererOrg.domainName}" >> ~/fabric-start/building/artifacts/hosts/${this.org.name}/api_hosts'`);
+        await this.ssh(`'echo "${ordererOrg.ip} ${ordererOrg.name}" >> ~/fabric-start/building/artifacts/hosts/${this.org.name}/cli_hosts'`);
+        await this.ssh(`'echo "${ordererOrg.ip} ${ordererOrg.name}" >> ~/fabric-start/building/artifacts/hosts/${this.org.name}/api_hosts'`);
     }
 
     async downloadArtifacts(organizationManager) {  //TODO We shouldn't pass the organizationManager as it should be accessible through this instance attributes  //TODO This should be put inside the OrdererPeerManager as its aim is to only be used from the orderer
         // Create directories to receive certificates artifacts
         for (let org of organizationManager.otherOrgs.filter(o => o.name != this.org.name)) {
             if (org.isOrderer) {
-                await this.ssh(`'mkdir -p ~/fabric-start/building/artifacts/crypto-config/ordererOrganizations/${org.domainName}/orderers/orderer.${org.domainName}/tls'`); //TODO Use node native mkdir instead of bash one ?
+                await this.ssh(`'mkdir -p ~/fabric-start/building/artifacts/crypto-config/ordererOrganizations/${org.name}/orderers/${org.mainPeerName}/tls'`); //TODO Use node native mkdir instead of bash one ?
             }
             else {
-                await this.ssh(`'mkdir -p ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}.${org.domainName}/peers/${org.mainPeerName}.${org.domainName}/tls'`);  // Not sure if we need the domain here
+                await this.ssh(`'mkdir -p ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}/peers/${org.mainPeerName}/tls'`);  // Not sure if we need the domain here
             }
         }
 
@@ -142,30 +126,30 @@ class PeerManager {
         let defaultWwwPort = 8080;
         for (let org of organizationManager.otherOrgs.filter(o => o.name != this.org.name)) {  //TODO The path should change if we download an orderer org artifacts
             await this.ssh(
-                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/admincerts \
-                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/admincerts/Admin@${org.name}.${org.domainName}-cert.pem'`
+                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}/msp/admincerts \
+                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}/msp/admincerts/Admin@${org.name}-cert.pem'`
             );
 
             await this.ssh(
-                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/cacerts \
-                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/cacerts/ca.${org.name}.${org.domainName}-cert.pem'`
+                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}/msp/cacerts \
+                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}/msp/cacerts/ca.${org.name}-cert.pem'`
             );
 
             await this.ssh(
-                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/tlscacerts \
-                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp/tlscacerts/tlsca.${org.name}.${org.domainName}-cert.pem'`
+                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}/msp/tlscacerts \
+                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}/msp/tlscacerts/tlsca.${org.name}-cert.pem'`
             );
 
             await this.ssh(
-                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}.${org.domainName}/peers/${org.mainPeerName}/tls \
-                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}.${org.domainName}/peers/${org.mainPeerName}/tls/ca.crt'`
+                `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}/peers/${org.mainPeerName}/tls \
+                http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}/peers/${org.mainPeerName}/tls/ca.crt'`
             );
         }
         // That is different from the legacy downloadMemberMSP because here we do not use the docker container cli to retrieve the files as we have the ip in the nodejs environnement
     }
 
     async _changeOwnership(){
-        await this.ssh(`'docker-compose --file ~/fabric-start/building/dockercompose/docker-compose-${this.org.name}-${this.name}.yaml run --rm "cli.${this.org.domainName}" bash -c "chown -R $UID:$(id -g) ."'`);  //TODO Check that this change is working at the correct level
+        await this.ssh(`'docker-compose --file ~/fabric-start/building/dockercompose/docker-compose-${this.org.name}-${this.name}.yaml run --rm "cli" bash -c "chown -R $UID:$(id -g) ."'`);  //TODO Check that this change is working at the correct level
     }
 
     async _downloadArtifactsMember(){  // From legacy downloadArtifactsMember
@@ -180,13 +164,13 @@ class PeerManager {
         await this.ssh(`'wget --directory-prefix ~/fabric-start/building/artifacts/ http://${ordererOrg.ip}:8080/network-config.json'`);
 
         // Download orderer cert file
-        await this.ssh(`'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/ordererOrganizations/${ordererOrg.domainName}/orderers/${ordererOrg.name}.${ordererOrg.domainName}/tls\
-            http://${ordererOrg.ip}:8080/crypto-config/ordererOrganizations/${ordererOrg.domainName}/orderers/${ordererOrg.name}.${ordererOrg.domainName}/tls/ca.crt'`);  //TODO Have a way to specify the base path in the organizationManager class so that we don't have to rebuild it every time we need it
+        await this.ssh(`'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/ordererOrganizations/${ordererOrg.name}/orderers/${ordererOrg.mainPeerName}/tls\
+            http://${ordererOrg.ip}:8080/crypto-config/ordererOrganizations/${ordererOrg.name}/orderers/${ordererOrg.mainPeerName}/tls/ca.crt'`);  //TODO Have a way to specify the base path in the organizationManager class so that we don't have to rebuild it every time we need it
 
         // Download other orgs cert files
         for(let org of this.org.otherOrgs.filter(o => !o.isOrderer)){
-            await this.ssh(`'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}.${org.domainName}/peers/${org.mainPeerName}/tls\
-                http://${org.ip}:8080/crypto-config/peerOrganizations/${org.name}.${org.domainName}/peers/${org.mainPeerName}/tls/ca.crt'`);
+            await this.ssh(`'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}/peers/${org.mainPeerName}/tls\
+                http://${org.ip}:8080/crypto-config/peerOrganizations/${org.name}/peers/${org.mainPeerName}/tls/ca.crt'`);
         }
 
         await this._changeOwnership();
@@ -196,7 +180,7 @@ class PeerManager {
         let ordererOrg = this.org.otherOrgs.find(o => o.isOrderer);
 
         await this.ssh(`'docker-compose --file ~/fabric-start/building/dockercompose/docker-compose-${this.org.name}-${this.name}.yaml\
-            run --rm "cli.${this.org.name}.${this.org.domainName}" bash -c "peer channel create -o ${ordererOrg.ip}:7050 -c ${channel.name} -f /etc/hyperledger/artifacts/channel/${channel.name}.tx --tls --cafile /etc/hyperledger/crypto/orderer/tls/ca.crt"'`);  //TODO This could be done with the node sdk
+            run --rm "cli" bash -c "peer channel create -o ${ordererOrg.ip}:7050 -c ${channel.name} -f /etc/hyperledger/artifacts/channel/${channel.name}.tx --tls --cafile /etc/hyperledger/crypto/orderer/tls/ca.crt"'`);  //TODO This could be done with the node sdk
         await this._changeOwnership();
         await this._copyFilesToWww(`~/fabric-start/building/artifacts`, `${channel.name}.block`);  //TODO Check that it is the correct place to put the file
     }
@@ -223,7 +207,7 @@ class PeerManager {
      */
     async _joinChannel(channel){  // From legacy joinChannel
         await this.ssh(`'docker-compose --file ~/fabric-start/building/dockercompose/docker-compose-${this.org.name}-${this.name}.yaml\
-            run --rm "cli.${this.org.name}.${this.org.domainName}" bash -c "CORE_PEER_ADDRESS=${this.ip}:7051 peer channel join -b ${channel.name}.block"'`);
+            run --rm "cli" bash -c "CORE_PEER_ADDRESS=${this.ip}:7051 peer channel join -b ${channel.name}.block"'`);
     }
 
     async up() {
@@ -232,7 +216,7 @@ class PeerManager {
         await this.ssh(`'docker-compose --file ${dockerComposeFilepath} down'`);
         await this.ssh(`'docker-compose --file ${dockerComposeFilepath} up -d'`);
         console.log(`Waiting 60 seconds for ${this.name} to up...`);
-        await new Promise((resolve) => setTimeout(resolve, 1000));  // Wait for a minute  //TODO Find a better way to wait until the services are ready
+        await new Promise((resolve) => setTimeout(resolve, 60000));  // Wait for a minute  //TODO Find a better way to wait until the services are ready
         console.log(`Waiting 60 seconds for ${this.name} to up... done`);
         //TODO We should add all the mechanics to install chaincodes
 

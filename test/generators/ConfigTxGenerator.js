@@ -38,7 +38,7 @@ class ConfigTxGenerator {
         return {
             "OrdererType": "solo",
             "Addresses": [
-                `orderer.${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].domainName}:7050`
+                `${this.organizationManager.otherOrgs.find(e => e.isOrderer).ip}:7050`
             ],
             "BatchTimeout": "2s",
             "BatchSize": {
@@ -59,7 +59,7 @@ class ConfigTxGenerator {
         return {
             Name: `${org.name}MSP`,
             ID: `${org.name}MSP`,
-            MSPDir: org.isOrderer?`crypto-config/ordererOrganizations/${org.domainName}/msp`:`crypto-config/peerOrganizations/${org.name}.${org.domainName}/msp`,
+            MSPDir: org.isOrderer?`crypto-config/ordererOrganizations/${org.name}/msp`:`crypto-config/peerOrganizations/${org.name}/msp`,
             AnchorPeers: [{
                 Host: org.mainPeerName,
                 Port: 7051  // TODO State in some document that the peers need to be opened on 7051
@@ -79,11 +79,11 @@ class ConfigTxGenerator {
                 OrdererGenesis: {
                     Orderer: {
                         ...await this.getOrdererDefaultsBlock(),
-                        ...{Organizations: [this.getOrganizationBlock(this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0])]}
+                        ...{Organizations: [this.getOrganizationBlock(this.organizationManager.otherOrgs.find(e => e.isOrderer))]}
                     },
                     Consortiums: {
                         SampleConsortium: {
-                            Organizations: this.organizationManager.otherOrgs.filter(e => e.name!="orderer").map(org => this.getOrganizationBlock(org))
+                            Organizations: this.organizationManager.otherOrgs.filter(e => !e.isOrderer).map(org => this.getOrganizationBlock(org))
                         }
                     }
                 },
@@ -91,7 +91,7 @@ class ConfigTxGenerator {
                     Consortium: "SampleConsortium",
                     Application: {
                         ...this.getApplicationDefaultsBlock(),
-                        ...{Organizations: this.organizationManager.otherOrgs.filter(e => e.name!="orderer").map(org => this.getOrganizationBlock(org))}}
+                        ...{Organizations: this.organizationManager.otherOrgs.filter(e => !e.isOrderer).map(org => this.getOrganizationBlock(org))}}
                 }
             },
             ...this.organizationManager.channels.reduce((acc, channel) => ({...acc,

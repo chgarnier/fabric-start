@@ -2,7 +2,7 @@ class NetworkconfigGenerator {  //Only used by an ordererOrg that will generate 
 
     constructor(organizationManager){
         this.organizationManager = organizationManager;
-        this.orgExtension = `${this.organizationManager.name}.${this.organizationManager.domainName}`;
+        this.orgExtension = `${this.organizationManager.name}`;  //TODO Useless now that we deleted the domain
     }
 
     async generate(){
@@ -15,9 +15,9 @@ class NetworkconfigGenerator {  //Only used by an ordererOrg that will generate 
 
     async getOrdererBlock(org){
         return {
-			"url": `grpcs://${org.name}.${org.domainName}:7050`,
-			"server-hostname": `${org.name}.${org.domainName}`,
-			"tls_cacerts": `crypto-config/ordererOrganizations/${org.domainName}/orderers/${org.name}.${org.domainName}/tls/ca.crt`
+			"url": `grpcs://${org.ip}:7050`,
+			"server-hostname": `${org.mainPeerName}`,
+			"tls_cacerts": `crypto-config/ordererOrganizations/${org.name}/orderers/${org.mainPeerName}/tls/ca.crt`
 		};
     }
 
@@ -25,7 +25,7 @@ class NetworkconfigGenerator {  //Only used by an ordererOrg that will generate 
         let block = {
 			"name":  `peer${org.name}`,
 			"mspid": `${org.name}MSP`,
-			"ca": `https://ca.${org.name}.${org.domainName}:7054`,  //TODO Remplacer le cryptogen par un CA
+			"ca": `https://ca.${org.name}:7054`,  //TODO Remplacer le cryptogen par un CA
 			"admin": {
 				"key":  "crypto-config/peerOrganizations/ORG.DOMAIN/users/Admin@ORG.DOMAIN/msp/keystore",
 				"cert": "crypto-config/peerOrganizations/ORG.DOMAIN/users/Admin@ORG.DOMAIN/msp/signcerts"
@@ -36,10 +36,10 @@ class NetworkconfigGenerator {  //Only used by an ordererOrg that will generate 
                 "requests": `grpcs://${peer.name}:7051`,  //TODO Does peer.name really contains the full address to reach the peer ? It should because it kind of DNS resolve...
 				"events": 	`grpcs://${peer.name}:7053`,
 				"server-hostname": peer.name,
-				"tls_cacerts": `crypto-config/peerOrganizations/${org.name}.${org.domainName}/peers/${peer.name}/tls/ca.crt`
+				"tls_cacerts": `crypto-config/peerOrganizations/${org.name}/peers/${peer.name}/tls/ca.crt`
             }
             if(peer.isMain){
-                block[peer.name]["couchdb-ip-addr"] = `http://couchdb.${org.name}.${org.domainName}`;
+                block[peer.name]["couchdb-ip-addr"] = `http://couchdb.${org.name}`;
                 block[peer.name]["couchdb-port"] = "5984";
                 block[peer.name]["key-value-store"] = "fabric-client/lib/impl/CouchDBKeyValueStore.js";
             }

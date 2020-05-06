@@ -4,29 +4,27 @@ const fs = require('fs');
 yaml = require('js-yaml');
 var path = require('path');
 
-class DockercomposeGenerator{
+class DockercomposeGenerator {
 
     //Prerequisites: Cryptogen has been already run
 
-    constructor(organizationManager){
+    constructor(organizationManager) {
         this.organizationManager = organizationManager;
-        this.orgExtension = `${this.organizationManager.name}.${this.organizationManager.domainName}`;
     }
 
-    async generate(){
-        for(let peer of this.organizationManager.peers){  //TODO The generate should on wether the peer is the main for the org or not, and wether it is an orderer or not (and also if orderer AND main org ?)
-            let config = this.organizationManager.isOrderer?await this.generateForOrdererPeer(peer):await this.generateForPeer(peer);
+    async generate() {
+        for (let peer of this.organizationManager.peers) {  //TODO The generate should on wether the peer is the main for the org or not, and wether it is an orderer or not (and also if orderer AND main org ?)
+            let config = this.organizationManager.isOrderer ? await this.generateForOrdererPeer(peer) : await this.generateForPeer(peer);
             fs.writeFileSync(`${this.organizationManager.rootDirectory}/building/dockercompose/docker-compose-${this.organizationManager.name}-${peer.name}.yaml`, yaml.safeDump(config));
         }
     }
 
-    async generateForOrdererPeer(peer){  // No disctinction here between main and secondary org
+    async generateForOrdererPeer(peer) {  // No disctinction here between main and secondary org
         let config = {
             version: "2",
             volumes: await this.getVolumeBlock(peer),
             services: {
                 ...await this.getOrdererServiceBlock(peer),
-                ...await this.getCliDomainServiceBlock(),
                 ...await this.getCliServiceBlock(),
                 ...await this.getWwwServiceBlock()
             }
@@ -34,7 +32,7 @@ class DockercomposeGenerator{
         return config;
     }
 
-    async generateForPeer(peer){
+    async generateForPeer(peer) {
         let config = {
             version: "2",
             volumes: await this.getVolumeBlock(peer),
@@ -43,7 +41,6 @@ class DockercomposeGenerator{
                 ...await this.getPeerServiceBlock(peer),
                 ...await this.getCouchdbServiceBlock(),
                 ...await this.getApiServiceBlock(peer),
-                ...await this.getCliDomainServiceBlock(),
                 ...await this.getCliServiceBlock(),
                 ...await this.getWwwServiceBlock()
             }
@@ -51,7 +48,7 @@ class DockercomposeGenerator{
         return config;
     }
 
-    async getVolumeBlock(peer){
+    async getVolumeBlock(peer) {
         let volumeBlock = {
             [`${peer.name}`]: null
         };
@@ -61,22 +58,22 @@ class DockercomposeGenerator{
     /**
      * Only called for a peer and not an orderer
      */
-    async getCaServiceBlock(){
-        let globString = `${this.organizationManager.rootDirectory}/building/artifacts/crypto-config/peerOrganizations/${this.orgExtension}/ca/*_sk`;
-        let files = await glob(globString, {absolute: true});  //TODO Check that it returns the correct filename
+    async getCaServiceBlock() {
+        let globString = `${this.organizationManager.rootDirectory}/building/artifacts/crypto-config/peerOrganizations/${this.organizationManager.name}/ca/*_sk`;
+        let files = await glob(globString, { absolute: true });  //TODO Check that it returns the correct filename
         let caPrivateKeyName = path.basename(files[0]);
 
         let block = {
-            [`ca.${this.orgExtension}`]: {
-                "container_name": `ca.${this.orgExtension}`,
+            [`ca.${this.organizationManager.name}`]: {
+                "container_name": `ca.${this.organizationManager.name}`,
                 "image": "hyperledger/fabric-ca:1.4.0",
                 "environment": [
                     "FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server",
-                    `FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.${this.orgExtension}-cert.pem`,
+                    `FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.${this.organizationManager.name}-cert.pem`,
                     `FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/${caPrivateKeyName}`,
                     "FABRIC_CA_SERVER_TLS_ENABLED=true",
-                    `FABRIC_CA_SERVER_CA_NAME=ca.${this.orgExtension}`,
-                    `FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.${this.orgExtension}-cert.pem`,
+                    `FABRIC_CA_SERVER_CA_NAME=ca.${this.organizationManager.name}`,
+                    `FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.${this.organizationManager.name}-cert.pem`,
                     `FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/${caPrivateKeyName}`
                 ],
                 "ports": [
@@ -84,7 +81,7 @@ class DockercomposeGenerator{
                 ],
                 "command": "sh -c 'fabric-ca-server start -b admin:adminpw -d'",
                 "volumes": [
-                    `../artifacts/crypto-config/peerOrganizations/${this.orgExtension}/ca/:/etc/hyperledger/fabric-ca-server-config`,
+                    `../artifacts/crypto-config/peerOrganizations/${this.organizationManager.name}/ca/:/etc/hyperledger/fabric-ca-server-config`,
                     `../artifacts/fabric-ca-server-config-${this.organizationManager.name}.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml`
                 ]
             }
@@ -92,7 +89,7 @@ class DockercomposeGenerator{
         return block;
     }
 
-    async getOrdererServiceBlock(peer){
+    async getOrdererServiceBlock(peer) {
         let block = {
             [peer.name]: {
                 "container_name": peer.name,
@@ -116,18 +113,18 @@ class DockercomposeGenerator{
                 ],
                 "volumes": [
                     "../artifacts/channel:/etc/hyperledger/configtx",
-                    `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.domainName}/orderers/${peer.name}/:/etc/hyperledger/crypto/orderer`,
-                    `${peer.name}:/var/hyperledger/production/orderer`
+                    `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.name}/orderers/${peer.name}/:/etc/hyperledger/crypto/orderer`,
+                    `${peer.name}:/var/hyperledger/production/orderer`,
                 ]
             }
         }
         return block;
     }
 
-    async getPeerServiceBlock(peer){
+    async getPeerServiceBlock(peer) {
         let defaults = {
-            peerPort:7051,
-            peerEventPort:7053
+            peerPort: 7051,
+            peerEventPort: 7053
         }
         let block = {
             [peer.name]: {
@@ -143,7 +140,7 @@ class DockercomposeGenerator{
                     `CORE_PEER_CHAINCODELISTENADDRESS=${peer.name}:7052`,
                     "CORE_LEDGER_STATE_STATEDATABASE=CouchDB",
                     "CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE:true",
-                    `CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.${this.orgExtension}:5984`,
+                    `CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.${this.organizationManager.name}:5984`,
                     "CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=",
                     "CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD="
                 ],
@@ -152,34 +149,34 @@ class DockercomposeGenerator{
                     `${defaults.peerEventPort}:7053`
                 ],
                 "volumes": [
-                    `../artifacts/crypto-config/peerOrganizations/${this.orgExtension}/peers/${peer.name}/:/etc/hyperledger/crypto/peer`,
+                    `../artifacts/crypto-config/peerOrganizations/${this.organizationManager.name}/peers/${peer.name}/:/etc/hyperledger/crypto/peer`,
                     `${peer.name}:/var/hyperledger/production`,
                     "/var/run/docker.sock:/var/run/docker.sock"
                 ],
                 "depends_on": [
-                    `ca.${this.orgExtension}`,
-                    `couchdb.${this.orgExtension}`
+                    `ca.${this.organizationManager.name}`,
+                    `couchdb.${this.organizationManager.name}`
                 ],
-                "extra_hosts": [
-                        `orderer.${this.organizationManager.domainName}": ${this.organizationManager.otherOrgs.find(e => e.name=="orderer").ip}`,  //TODO Change with orderer full adress  //TODO Shouldn't it be .ip instead of .value ?
-                        `couchdb.${this.orgExtension}: ${this.organizationManager.ip}`  //TODO Ici on suppose que couchDB tourne sur la mainPeer
-                ]
+                // "extra_hosts": [
+                //     `${this.organizationManager.mainPeerName}": ${this.organizationManager.otherOrgs.find(e => e.isOrderer).ip}`,  //TODO Change with orderer full adress  //TODO Shouldn't it be .ip instead of .value ?
+                //     `couchdb.${this.organizationManager.name}: ${this.organizationManager.ip}`  //TODO Ici on suppose que couchDB tourne sur la mainPeer
+                // ]
             }
         }
         return block;
     }
 
-    async getCouchdbServiceBlock(){
+    async getCouchdbServiceBlock() {
         let defaults = {
             "couchDbPort": 5984
         }
         let block = {
-            [`couchdb.${this.orgExtension}`]: {
+            [`couchdb.${this.organizationManager.name}`]: {
                 "extends": {
                     "file": "base-intercept.yaml",
                     "service": "couchdb-base"
                 },
-                "container_name": `couchdb.${this.orgExtension}`,
+                "container_name": `couchdb.${this.organizationManager.name}`,
                 "environment": [
                     "COUCHDB_USER=",
                     "COUCHDB_PASSWORD="
@@ -192,14 +189,14 @@ class DockercomposeGenerator{
         return block;
     }
 
-    async getApiServiceBlock(peer){
+    async getApiServiceBlock(peer) {
         let block = {
-            [`api.${this.orgExtension}`]: {
+            [`api.${this.organizationManager.name}`]: {
                 "extends": {
                     "file": "base-intercept.yaml",
                     "service": "api-base"
                 },
-                "container_name": `api.${this.orgExtension}`,
+                "container_name": `api.${this.organizationManager.name}`,
                 "ports": [
                     "4000:4000"
                 ],
@@ -210,76 +207,51 @@ class DockercomposeGenerator{
                 "depends_on": [
                     peer.name
                 ],
-                "extra_hosts": [
-                    `couchdb.${this.orgExtension}: ${this.organizationManager.ip}`
-                ]
+                // "extra_hosts": [
+                //     `couchdb.${this.organizationManager.name}: ${this.organizationManager.ip}`
+                // ]
             }
         }
-        for(let org of this.organizationManager.otherOrgs){
-            block[`api.${this.orgExtension}`]["extra_hosts"].push(`${org.mainPeerName}: ${org.ip}`);
-        }
+        // for (let org of this.organizationManager.otherOrgs) {
+        //     block[`api.${this.organizationManager.name}`]["extra_hosts"].push(`${org.mainPeerName}: ${org.ip}`);
+        // }
         return block;
     }
 
-    async getCliDomainServiceBlock(){
+    async getCliServiceBlock() {
         let block = {
-            [`cli.${this.organizationManager.domainName}`]: {
-                "container_name": `cli.${this.organizationManager.domainName}`,
+            [`cli`]: {
+                "container_name": `cli`,
                 "extends": {
                     "file": "base-intercept.yaml",
                     "service": "cli-base"
-                },
-                "volumes": [
-                    `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.domainName}/orderers/${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].mainPeerName}/tls:/etc/hyperledger/crypto/orderer/tls`
-                ],
-                "extra_hosts": [  //TODO This needs to be dynamically set
-                    `orderer.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
-                    `www.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
-                    `www.addeo.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="addeo")[0].ip}`,
-                    `www.aucoffre.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="aucoffre")[0].ip}`,
-                    `www.shoyo.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="shoyo")[0].ip}`
-                ]
-            }
-        }
-        return block;
-    }
-
-    async getCliServiceBlock(){
-        let block = {
-            [`cli.${this.orgExtension}`]: {
-                "container_name": `cli.${this.orgExtension}`,
-                "extends": {
-                    "service": `cli.${this.organizationManager.domainName}`
                 },
                 "environment": [
                     `CORE_PEER_LOCALMSPID=${this.organizationManager.name}MSP`
                 ],
                 "volumes": [
-                    `../artifacts/crypto-config/peerOrganizations/${this.orgExtension}/users/Admin@${this.orgExtension}:/etc/hyperledger/crypto/peer`
+                    `../artifacts/crypto-config/ordererOrganizations/${this.organizationManager.otherOrgs.find(e => e.isOrderer).name}/orderers/${this.organizationManager.otherOrgs.find(e => e.isOrderer).mainPeerName}/tls:/etc/hyperledger/crypto/orderer/tls`,
+                    `../artifacts/crypto-config/peerOrganizations/${this.organizationManager.name}/users/Admin@${this.organizationManager.name}:/etc/hyperledger/crypto/peer`
                 ],
-                "extra_hosts": [  //TODO This needs to be dynamically set
-                    `orderer.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
-                    `www.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="orderer")[0].ip}`,
-                    `www.addeo.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="addeo")[0].ip}`,
-                    `www.aucoffre.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="aucoffre")[0].ip}`,
-                    `www.shoyo.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.name=="shoyo")[0].ip}`
-                ]
+                // "extra_hosts": [  //TODO This needs to be dynamically set
+                //     `orderer.myrmica.com: ${this.organizationManager.otherOrgs.filter(e => e.isOrderer).ip}`
+                // ]
             }
         }
         return block;
     }
 
-    async getWwwServiceBlock(){
+    async getWwwServiceBlock() {
         let defaults = {
             wwwPort: 8080
         }
         let block = {
-            [`www.${this.orgExtension}`]: {
+            [`www`]: {
                 "extends": {
                     "file": "base-intercept.yaml",
                     "service": "www-base"
                 },
-                "container_name": `www.${this.orgExtension}`,
+                "container_name": `www`,
                 "ports": [
                     `${defaults.wwwPort}:80`
                 ]

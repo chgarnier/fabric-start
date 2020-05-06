@@ -19,7 +19,7 @@ class CryptoconfigGenerator {
         return {
             PeerOrgs: [{
                 Name: this.organizationManager.name,
-                Domain: `${this.organizationManager.name}.${this.organizationManager.domainName}`,
+                Domain: `${this.organizationManager.name}`,
                 CA: {
                     Hostname: "ca"
                 },
@@ -39,12 +39,16 @@ class CryptoconfigGenerator {
             "OrdererOrgs": [
                 {
                     "Name": this.organizationManager.name,  // Initially, it was "Orderer" with a capital O
-                    "Domain": this.organizationManager.domainName,
-                    "Specs": [
-                        {
-                            "Hostname": this.organizationManager.name  // Initially, it was "orderer"
-                        }
-                    ]
+                    "Domain": this.organizationManager.name,
+                    // "Specs": [
+                    //     {
+                    //         "Hostname": this.organizationManager.name  // Initially, it was "orderer"
+                    //     }
+                    // ],
+                    Template: {
+                        Count: this.organizationManager.peers.length,
+                        SANS: ["localhost"]
+                    }
                 }
             ]
         }
