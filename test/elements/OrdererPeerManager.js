@@ -12,7 +12,6 @@ class OrdererPeerManager extends PeerManager {
     }
 
     async generateChannelConfigTransaction(channels){
-        await this.ssh(`'rm -rf ~/fabric-start/building/artifacts/channel && mkdir ~/fabric-start/building/artifacts/channel'`);
         for(let channel of channels){
             await this.ssh(`'docker-compose --file ~/fabric-start/building/dockercompose/docker-compose-${this.org.name}-${this.name}.yaml run --rm -e FABRIC_CFG_PATH=/etc/hyperledger/artifacts "cli" configtxgen -profile "${channel.name}" -outputCreateChannelTx "./channel/${channel.name}.tx" -channelID "${channel.name}"'`);
             await this._changeOwnership();
@@ -27,6 +26,7 @@ class OrdererPeerManager extends PeerManager {
     async up(){
         let dockerComposeFilepath = `~/fabric-start/building/dockercompose/docker-compose-${this.org.name}-${this.name}.yaml`;
         await this.ssh(`'docker-compose --file ${dockerComposeFilepath} down'`);
+        await this.ssh(`'docker volume prune -f'`);
         await this.ssh(`'docker-compose --file ${dockerComposeFilepath} up -d'`);
 
         await this._copyFilesToWww(`~/fabric-start/building/artifacts/crypto-config/ordererOrganizations/${this.org.name}/orderers/${this.name}/tls`, `ca.crt`);

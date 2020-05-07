@@ -61,7 +61,7 @@ class ConfigTxGenerator {
             ID: `${org.name}MSP`,
             MSPDir: org.isOrderer?`crypto-config/ordererOrganizations/${org.name}/msp`:`crypto-config/peerOrganizations/${org.name}/msp`,
             AnchorPeers: [{
-                Host: org.mainPeerName,
+                Host: org.ip,
                 Port: 7051  // TODO State in some document that the peers need to be opened on 7051
             }]
         };

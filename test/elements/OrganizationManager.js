@@ -83,7 +83,7 @@ class OrganizationManager {
         await (new NetworkconfigGenerator(this).generate());
         await peer.scp(`${this.rootDirectory}/building/artifacts/network-config.json`, "~/fabric-start/building/artifacts/network-config.json");
 
-        await peer.ssh(`'mkdir -p ~/fabric-start/building/artifacts/channel'`);
+        await peer.ssh(`'rm -rf ~/fabric-start/building/artifacts/channel && mkdir -p ~/fabric-start/building/artifacts/channel'`);
         await peer.generateGenesis();  // We need that the docker-compose.yaml file have been generated before running this
         await peer.generateChannelConfigTransaction(this.channels);
     }

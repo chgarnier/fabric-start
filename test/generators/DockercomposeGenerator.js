@@ -93,7 +93,7 @@ class DockercomposeGenerator {
         let block = {
             [peer.name]: {
                 "container_name": peer.name,
-                "image": "hyperledger/fabric-orderer:1.4.0",
+                "image": "hyperledger/fabric-orderer:1.4.2",
                 "environment": [
                     "ORDERER_GENERAL_LOGLEVEL=debug",
                     "ORDERER_GENERAL_LISTENADDRESS=0.0.0.0",
@@ -136,8 +136,8 @@ class DockercomposeGenerator {
                 "environment": [
                     `CORE_PEER_ID=${peer.name}`,
                     `CORE_PEER_LOCALMSPID=${this.organizationManager.name}MSP`,
-                    `CORE_PEER_ADDRESS=${peer.name}:7051`,
-                    `CORE_PEER_CHAINCODELISTENADDRESS=${peer.name}:7052`,
+                    `CORE_PEER_ADDRESS=${peer.ip}:7051`,
+                    `CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052`,
                     "CORE_LEDGER_STATE_STATEDATABASE=CouchDB",
                     "CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE:true",
                     `CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb.${this.organizationManager.name}:5984`,

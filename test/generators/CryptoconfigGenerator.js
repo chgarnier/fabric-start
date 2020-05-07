@@ -16,7 +16,7 @@ class CryptoconfigGenerator {
     }
 
     async getPeerConfig(){
-        return {
+        let block = {
             PeerOrgs: [{
                 Name: this.organizationManager.name,
                 Domain: `${this.organizationManager.name}`,
@@ -32,10 +32,14 @@ class CryptoconfigGenerator {
                 }
             }]
         }
+        for(let peer of this.organizationManager.peers){
+            block.PeerOrgs[0].Template.SANS.push(peer.ip);  //TODO Check that it shouldn't be ip of other orgs instead ?
+        }
+        return block;
     }
 
     async getOrdererConfig(){
-        return {
+        let block = {
             "OrdererOrgs": [
                 {
                     "Name": this.organizationManager.name,  // Initially, it was "Orderer" with a capital O
@@ -52,6 +56,10 @@ class CryptoconfigGenerator {
                 }
             ]
         }
+        for(let org of this.organizationManager.otherOrgs){
+            block["OrdererOrgs"][0]["Template"]["SANS"].push(org.ip);  //TODO We should add all ip of all peers of all orgs instead of only the main ip of the orgs
+        }
+        return block;
     }
 
 }

@@ -104,6 +104,7 @@ class PeerManager {
         //Up WWW server
         let dockerComposeFilepath = `~/fabric-start/building/dockercompose/docker-compose-${this.org.name}-${this.name}.yaml`;
         await this.ssh(`'docker-compose --file ${dockerComposeFilepath} down'`);  //TODO There may be a better place to down the older network. Or we can just simply delete the machines each time we do a test
+        await this.ssh(`'docker volume prune -f'`);
         await this.ssh(`'docker-compose --file ${dockerComposeFilepath} up -d "www"'`);  //TODO Check that it actually start with all that quotes  //TODO Also check that because we are multiple peers with all the same orgname.orgdomain it doesn't mess up
 
         //Add orgs to hosts  //TODO From legacy function addOrgToCliHosts, do we have to keep this ?
@@ -180,7 +181,7 @@ class PeerManager {
         let ordererOrg = this.org.otherOrgs.find(o => o.isOrderer);
 
         await this.ssh(`'docker-compose --file ~/fabric-start/building/dockercompose/docker-compose-${this.org.name}-${this.name}.yaml\
-            run --rm "cli" bash -c "peer channel create -o ${ordererOrg.ip}:7050 -c ${channel.name} -f /etc/hyperledger/artifacts/channel/${channel.name}.tx --tls --cafile /etc/hyperledger/crypto/orderer/tls/ca.crt"'`);  //TODO This could be done with the node sdk
+            run --rm "cli" bash -c "peer channel create -o ${ordererOrg.ip}:7050 --ordererTLSHostnameOverride ${ordererOrg.mainPeerName} -c ${channel.name} -f /etc/hyperledger/artifacts/channel/${channel.name}.tx --tls --cafile /etc/hyperledger/crypto/orderer/tls/ca.crt"'`);  //TODO This could be done with the node sdk
         await this._changeOwnership();
         await this._copyFilesToWww(`~/fabric-start/building/artifacts`, `${channel.name}.block`);  //TODO Check that it is the correct place to put the file
     }
@@ -214,6 +215,7 @@ class PeerManager {
         await this._downloadArtifactsMember();
         let dockerComposeFilepath = `~/fabric-start/building/dockercompose/docker-compose-${this.org.name}-${this.name}.yaml`;
         await this.ssh(`'docker-compose --file ${dockerComposeFilepath} down'`);
+        await this.ssh(`'docker volume prune -f'`);
         await this.ssh(`'docker-compose --file ${dockerComposeFilepath} up -d'`);
         console.log(`Waiting 60 seconds for ${this.name} to up...`);
         await new Promise((resolve) => setTimeout(resolve, 60000));  // Wait for a minute  //TODO Find a better way to wait until the services are ready
