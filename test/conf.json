@@ -5,7 +5,7 @@
             "isOrderer": true,
             "isMain": true,
             "rootDirectory": "/tmp/fabric-start-orderer",
-            "peersOptions": [
+            "peers": [
                 {
                     "ec2Type": "m5.large",
                     "isMain": true,
@@ -18,7 +18,7 @@
             "isOrderer": false,
             "isMain": false,
             "rootDirectory": "/tmp/fabric-start-addeo",
-            "peersOptions": [
+            "peers": [
                 {
                     "ec2Type": "t2.medium",
                     "isMain": true,
@@ -36,7 +36,7 @@
             "isOrderer": false,
             "isMain": false,
             "rootDirectory": "/tmp/fabric-start-aucoffre",
-            "peersOptions": [
+            "peers": [
                 {
                     "ec2Type": "t2.medium",
                     "isMain": true,
@@ -54,7 +54,7 @@
             "isOrderer": false,
             "isMain": false,
             "rootDirectory": "/tmp/fabric-start-shoyo",
-            "peersOptions": [
+            "peers": [
                 {
                     "ec2Type": "t2.medium",
                     "isMain": true,
