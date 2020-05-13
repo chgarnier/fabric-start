@@ -9,14 +9,8 @@ class ConsortiumManager {
         this.name = name;
         this.orgsConfs = conf.organizations.map(orgConf => ({
             ...orgConf,
-            channels: conf.channels,
+            channels: orgConf.isOrderer?conf.channels:conf.channels.filter(c => c.organizations.filter(o => o.name==orgConf.name).length >= 1),  //Only add channels in which the organization is in or all if orderer.
         }));
-        // this.orgs = [];
-        // for(let orgOptions of conf.organizations){
-        //     let channels = orgOptions.isOrderer?conf.channels:conf.channels.filter(c => c.organizations.filter(o => o.name == orgOptions.name).length>0);  //TODO Should the ordrerer really need to create (and then have access) all the channels tx ?
-        //     this.orgs.push(new OrganizationManager(orgOptions.name, orgOptions.rootDirectory, orgOptions.isOrderer
-        //     , orgOptions.isMain, orgOptions.peers, channels));
-        // }
     }
 
     async build() {
@@ -84,14 +78,14 @@ class ConsortiumManager {
      */
     async _shareOtherOrgs() {
         for (const orgConf of this.orgsConfs) {
-            orgConf.otherOrganizations = await Promise.all(this.orgsConfs.filter(x => x.name != orgConf.name).map(async otherOrgConf => {
+            orgConf.otherOrganizations = await Promise.all(this.orgsConfs.map(async otherOrgConf => {  // We include our org aswell so we can easily loop through all orgs
                 let otherOrg = await OrganizationManager.instantiateFromConfiguration(`${otherOrgConf.rootDirectory}/conf.json`);
                 return {
-                    ip: otherOrg.ip,  // Should be done manually when creating a multi-host network
-                    name: otherOrgConf.name,
-                    mainPeerName: otherOrgConf.peers.filter(p => p.isMain)[0].name,
-                    isOrderer: otherOrgConf.isOrderer,
-                    peers: otherOrgConf.peers.map(peer => ({
+                    ip: await otherOrg.ip,  // Should be done manually when creating a multi-host network
+                    name: otherOrg.name,
+                    mainPeerName: otherOrg.peers.filter(p => p.isMain)[0].name,
+                    isOrderer: otherOrg.isOrderer,
+                    peers: otherOrg.peers.map(peer => ({
                         name: peer.name,
                         ip: peer.ip,
                     })),

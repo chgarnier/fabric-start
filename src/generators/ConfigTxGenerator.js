@@ -27,7 +27,7 @@ class ConfigTxGenerator {
     async getSecondaryConfig(){
         return {
             "Organizations": [
-                this.getOrganizationBlock(this.organizationManager)  // Either the organizationManager or this org otherOrg because they share the same attributes
+                this.getOrganizationBlock(this.organizationManager.otherOrgs.find(o => o.name==this.organizationManager.name))  // We need to pass an otherOrg object which is dict-like
                 //TODO But maybe that otherOrgs should just be a superClass, with less details, of the organizationManager class
             ]
         }
@@ -61,7 +61,7 @@ class ConfigTxGenerator {
             ID: `${org.name}MSP`,
             MSPDir: org.isOrderer?`crypto-config/ordererOrganizations/${org.name}/msp`:`crypto-config/peerOrganizations/${org.name}/msp`,
             AnchorPeers: [{
-                Host: org.ip,
+                Host: org.ip,  //TODO We should always have an OrganizationManager so that we don't hesitate how to call the ip
                 Port: 7051  // TODO State in some document that the peers need to be opened on 7051
             }]
         };
@@ -83,7 +83,7 @@ class ConfigTxGenerator {
                     },
                     Consortiums: {
                         SampleConsortium: {
-                            Organizations: this.organizationManager.otherOrgs.filter(e => !e.isOrderer).map(org => this.getOrganizationBlock(org))
+                            Organizations:  this.organizationManager.otherOrgs.filter(e => !e.isOrderer).map(org => this.getOrganizationBlock(org))
                         }
                     }
                 },
@@ -94,7 +94,7 @@ class ConfigTxGenerator {
                         ...{Organizations: this.organizationManager.otherOrgs.filter(e => !e.isOrderer).map(org => this.getOrganizationBlock(org))}}
                 }
             },
-            ...this.organizationManager.channels.reduce((acc, channel) => ({...acc,
+            ...await this.organizationManager.channels.reduce((acc, channel) => ({...acc,
                 [`${channel.name}`]: {
                     Consortium: "SampleConsortium",
                     Application: {

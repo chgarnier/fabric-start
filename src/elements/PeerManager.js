@@ -23,7 +23,7 @@ class PeerManager {
                     throw Error(e.stack);
                 }
             });
-        this.ip = await this.getIp();
+        this.ip = await this._getIp();
     }
 
     async createMachine() {
@@ -63,7 +63,7 @@ class PeerManager {
         await exec(`docker-machine scp -r ${src} ${this.name}:${dst}`, { maxBuffer: Infinity });
     }
 
-    async getIp() {
+    async _getIp() {
         const { stdout, stderr } = await exec(`docker-machine ip ${this.name}`, { maxBuffer: Infinity });
         if (stderr) {
             throw Error(stderr);
@@ -112,9 +112,9 @@ class PeerManager {
         await this.ssh(`'echo "${ordererOrg.ip} ${ordererOrg.name}" >> ~/fabric-start/building/artifacts/hosts/${this.org.name}/api_hosts'`);
     }
 
-    async downloadArtifacts(organizationManager) {  //TODO We shouldn't pass the organizationManager as it should be accessible through this instance attributes  //TODO This should be put inside the OrdererPeerManager as its aim is to only be used from the orderer
+    async downloadArtifacts() {
         // Create directories to receive certificates artifacts
-        for (let org of organizationManager.otherOrgs.filter(o => o.name != this.org.name)) {
+        for (let org of this.org.otherOrgs.filter(o => o.name != this.org.name)) {
             if (org.isOrderer) {
                 await this.ssh(`'mkdir -p ~/fabric-start/building/artifacts/crypto-config/ordererOrganizations/${org.name}/orderers/${org.mainPeerName}/tls'`); //TODO Use node native mkdir instead of bash one ?
             }
@@ -125,7 +125,7 @@ class PeerManager {
 
         // Download member MSP
         let defaultWwwPort = 8080;
-        for (let org of organizationManager.otherOrgs.filter(o => o.name != this.org.name)) {  //TODO The path should change if we download an orderer org artifacts
+        for (let org of this.org.otherOrgs.filter(o => o.name != this.org.name)) {  //TODO The path should change if we download an orderer org artifacts
             await this.ssh(
                 `'wget --directory-prefix ~/fabric-start/building/artifacts/crypto-config/peerOrganizations/${org.name}/msp/admincerts \
                 http://${org.ip}:${defaultWwwPort}/crypto-config/peerOrganizations/${org.name}/msp/admincerts/Admin@${org.name}-cert.pem'`

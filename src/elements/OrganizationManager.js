@@ -14,7 +14,7 @@ var fs = require("fs-extra");
 class OrganizationManager {
 
     constructor(name, rootDirectory, isOrderer, isMain, peers, channels) {
-        this.configurationFilepath = null; //TODO
+        this.configurationFilepath = null; //TODO This could also load from the nodejs sdk
         this.name = name;
         this.rootDirectory = rootDirectory;
         this.isOrderer = isOrderer;
@@ -36,6 +36,11 @@ class OrganizationManager {
         this.otherOrgs = [];
     }
 
+    _getFromFile(propertyName){
+        let conf = fs.readFileSync(this.configurationFilepath);
+        return conf[propertyName];
+    }
+
     static async instantiateFromConfiguration(configurationFilepath) {
         let conf = JSON.parse(fs.readFileSync(configurationFilepath));
         let org = new OrganizationManager(
@@ -46,24 +51,14 @@ class OrganizationManager {
             conf.peers,
             conf.channels
         );
-        org.ip = await org.getIp();
         if (conf.otherOrganizations) {
             for (let otherOrg of conf.otherOrganizations) {
                 org.otherOrgs.push(otherOrg);
             }
         }
+        await org.init();
+        org.ip = (await org.getMainPeer()).ip;
         return org;
-    }
-
-    get(key){
-        let conf = fs.readFileSync(this.configurationFilepath);
-        return conf[key];
-    }
-
-    set(key, value){
-        let conf = fs.readFileSync(this.configurationFilepath);
-        conf[key] = value;
-        fs.writeFileSync(this.configurationFilepath, JSON.stringify(conf));
     }
 
     async init() {
@@ -72,7 +67,6 @@ class OrganizationManager {
             promises.push(peer.init());
         }
         await Promise.all(promises);
-        this.ip = await this.getIp();
     }
 
     async _execute(cmd) {
@@ -96,10 +90,6 @@ class OrganizationManager {
             promises.push(peer.pushEnvironnement(archivePath));
         }
         await Promise.all(promises);
-    }
-
-    async getIp() {
-        return (await this.getMainPeer()).ip;
     }
 
     async getMainPeer() {
@@ -183,7 +173,7 @@ class OrganizationManager {
 
     async _downloadArtifacts() {  // For orderer only, from legacy downloadArtifactsOrderer in generate-orderer command in network.sh
         for (let peer of this.peers) {  //TODO We suppose here that all peers of the orderer org are orderers peers, but it may be true
-            await peer.downloadArtifacts(this);
+            await peer.downloadArtifacts();
         }
     }
 
