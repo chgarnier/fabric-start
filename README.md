@@ -7,7 +7,7 @@ The scripts are, at the time of writing, implementing the following specs:
 * Use cryptogen to generate the certificates.
 * Use one solo orderer.
 
-If you want to use your own architecture, you can jump directly to [the alternatives section](#alternative).
+If you want to use your own architecture, you can jump directly to [the alternatives section](#or-use-your-own-scripts).
 
 ## 0. Requirements
 
@@ -35,7 +35,7 @@ Starting the prototype network will roughly follow the same steps as you can fin
 
 Coordination for starting the first prototype network will occur in the following issue : *TODO create the issue*.
 
-## 2. Alternative : use your own scripts {: #alternative }
+## 2. Or use your own scripts
 
 Instead of using the provided scripts, you can use your own management of your peers/certificates. You'll still need, however, to implement the requirements in order to be reachable in the network:
 - Hyperledger fabric version 1.4.
